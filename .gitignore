@@ -1,0 +1,9 @@
+bin
+obj
+*.suo
+*.user
+Tests/bin/*
+Tests/obj/*
+Tests/NUnit/bin/*
+Tests/NUnit/obj/*
+*.suo
