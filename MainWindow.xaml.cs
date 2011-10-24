@@ -284,24 +284,26 @@
 					return;
 				}
 
-				var candles = File.ReadAllLines("LKOH_history.txt").Select(line =>
-				{
-					var parts = line.Split(',');
-					var time = DateTime.ParseExact(parts[0] + parts[1], "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-					return new TimeFrameCandle
-					{
-						OpenPrice = parts[2].To<decimal>(),
-						HighPrice = parts[3].To<decimal>(),
-						LowPrice = parts[4].To<decimal>(),
-						ClosePrice = parts[5].To<decimal>(),
-						TimeFrame = _timeFrame,
-						Time = time,
-						TotalVolume = parts[6].To<int>(),
-						Security = _security,
-					};
-				});
+                //var candles = File.ReadAllLines("LKOH_history.txt").Select(line =>
+                //{
+                //    var parts = line.Split(',');
+                //    var time = DateTime.ParseExact(parts[0] + parts[1], "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                //    return new TimeFrameCandle
+                //    {
+                //        OpenPrice = parts[2].To<decimal>(),
+                //        HighPrice = parts[3].To<decimal>(),
+                //        LowPrice = parts[4].To<decimal>(),
+                //        ClosePrice = parts[5].To<decimal>(),
+                //        TimeFrame = _timeFrame,
+                //        Time = time,
+                //        TotalVolume = parts[6].To<int>(),
+                //        Security = _security,
+                //    };
+                //});
 
-				DrawCandles(candles.Cast<Candle>());
+                //DrawCandles(candles.Cast<Candle>());
+
+                IEnumerable<TimeFrameCandle> candles = new List<TimeFrameCandle>();
 
 				// создаем торговую стратегию, скользящие средние на 80 5-минуток и 10 5-минуток
                 _strategy = new ESmaStrategy(_candleManager, new ExponentialMovingAverage { Length = 80 }, new ExponentialMovingAverage { Length = 10 }, _timeFrame)
