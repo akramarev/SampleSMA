@@ -61,8 +61,8 @@
                 <TextBox Height="23" HorizontalAlignment="Left" Name="txtHistoryPath" VerticalAlignment="Top" Width="244" Text="Z:\Documents\Trading\StockSharp\History Data" />
                 <Button Content="..." Grid.Column="1" Name="btnFindHistoryPath" VerticalAlignment="Top" Click="btnFindHistoryPath_Click" Margin="0,1,0,0" Width="25" />
                 <ProgressBar Grid.Row="1" Height="22" HorizontalAlignment="Left" Name="pbHistoryTestProgress" VerticalAlignment="Top" Width="244" />
-                <TextBox Grid.Row="2" Height="23" HorizontalAlignment="Left" Name="txtHistoryRangeBegin" VerticalAlignment="Top" Width="88" Text="17.10.2011" />
-                <TextBox Grid.Row="2" Height="23" HorizontalAlignment="Right" Name="txtHistoryRangeEnd" VerticalAlignment="Top" Width="91" Text="23.10.2011" Margin="0,0,59,0" />
+                <TextBox Grid.Row="2" Height="23" HorizontalAlignment="Left" Name="txtHistoryRangeBegin" VerticalAlignment="Top" Width="88" />
+                <TextBox Grid.Row="2" Height="23" HorizontalAlignment="Right" Name="txtHistoryRangeEnd" VerticalAlignment="Top" Width="91" Margin="0,0,59,0" />
             </Grid>
             <Grid Name="grid3" Height="89" VerticalAlignment="Top" Margin="0,187,0,0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Width="553">
                 <Grid.RowDefinitions>
@@ -80,14 +80,14 @@
                 <ColumnDefinition Width="43*" />
             </Grid.ColumnDefinitions>
                 <Label Content="Статус:" Margin="0,0,0,3" />
-                <Label x:Name="Status" Grid.Column="1" Margin="0,0,0,3" />
+                <Label x:Name="Status" Grid.Column="1" Margin="0,0,0,3" Content="Stopped" />
                 <Label Content="P&amp;L:" Margin="0,0,33,3" Grid.Column="2" />
-                <Label x:Name="PnL" Grid.Column="3" Margin="0,0,0,3" />
+                <Label x:Name="PnL" Grid.Column="3" Margin="0,0,0,3" Content="0.0" />
                 <Label Grid.Row="2" Content="Проскаль.:" Margin="0,0,0,3" />
-                <Label x:Name="Slippage" Grid.Column="1" Grid.Row="2" Margin="0,0,0,3" Height="26" VerticalAlignment="Bottom" />
-                <Label x:Name="Position" Grid.Column="1" Grid.Row="1" Margin="0,0,0,3" />
+                <Label x:Name="Slippage" Grid.Column="1" Grid.Row="2" Margin="0,0,0,3" Height="26" VerticalAlignment="Bottom" Content="0.0" />
+                <Label x:Name="Position" Grid.Column="1" Grid.Row="1" Margin="0,0,0,3" Content="0" />
                 <Label Grid.Row="1" Content="Поза:" Margin="0,0,2,3" />
-                <Label x:Name="Latency" Grid.Row="1" Margin="0,0,0,3" Grid.Column="3" />
+                <Label x:Name="Latency" Grid.Row="1" Margin="0,0,0,3" Grid.Column="3" Content="00:00:00.00" />
                 <Label Grid.Row="1" Content="Задержка:" Margin="2,0,0,3" Grid.Column="2" />
             <Button x:Name="Report" Grid.Column="3" Width="100" IsEnabled="False" Content="Отчет" Click="Report_Click" Margin="59,3,28,4" Grid.Row="2" />
         </Grid>

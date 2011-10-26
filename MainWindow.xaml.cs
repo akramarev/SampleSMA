@@ -1,36 +1,33 @@
 ﻿namespace SampleSMA
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.Linq;
-	using System.ComponentModel;
-	using System.Globalization;
-	using System.IO;
-	using System.Threading;
-	using System.Windows;
-	using System.Windows.Forms;
-	using MessageBox = System.Windows.MessageBox;
-
-	using AmCharts.Windows.Stock;
-
-	using Ecng.Collections;
-	using Ecng.Common;
-	using Ecng.Xaml;
-	using Ecng.ComponentModel;
-
-	using StockSharp.Algo.Logging;
-	using StockSharp.Algo.Candles;
-	using StockSharp.Algo.Reporting;
-	using StockSharp.Algo.Strategies;
-	using StockSharp.Algo.Indicators;
-	using StockSharp.Algo.Indicators.Trend;
-	using StockSharp.BusinessEntities;
-	using StockSharp.Quik;
-	using StockSharp.Xaml;
-    using StockSharp.Algo.Testing;
-    using StockSharp.Algo.Storages;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Threading;
+    using System.Windows;
+    using System.Windows.Forms;
+    using AmCharts.Windows.Stock;
+    using Ecng.Collections;
+    using Ecng.Common;
+    using Ecng.ComponentModel;
     using Ecng.Serialization;
+    using Ecng.Xaml;
+    using StockSharp.Algo.Candles;
+    using StockSharp.Algo.Indicators;
+    using StockSharp.Algo.Indicators.Trend;
+    using StockSharp.Algo.Logging;
+    using StockSharp.Algo.Reporting;
+    using StockSharp.Algo.Storages;
+    using StockSharp.Algo.Strategies;
+    using StockSharp.Algo.Testing;
+    using StockSharp.BusinessEntities;
+    using StockSharp.Quik;
+    using StockSharp.Xaml;
+    using MessageBox = System.Windows.MessageBox;
 
 	public partial class MainWindow
 	{
@@ -41,8 +38,9 @@
 		private DateTime _lastCandleTime;
 		private bool _isTodaySmaDrawn;
 		private CandleManager _candleManager;
-		private readonly ICollection<CustomChartIndicator> _longSmaGraph;
-		private readonly ICollection<CustomChartIndicator> _shortSmaGraph;
+        private readonly ICollection<CustomChartIndicator> _filterMAGraph;
+		private readonly ICollection<CustomChartIndicator> _longMAGraph;
+		private readonly ICollection<CustomChartIndicator> _shortMAGraph;
 		private Security _security;
 
         private DateTime _lastUpdateDate;
@@ -56,11 +54,15 @@
 			var cci = new CultureInfo(Thread.CurrentThread.CurrentCulture.Name) { NumberFormat = { NumberDecimalSeparator = "." } };
 			Thread.CurrentThread.CurrentCulture = cci;
 
-			_longSmaGraph = _chart.CreateTrend("Длинная", GraphType.Line);
-			_shortSmaGraph = _chart.CreateTrend("Короткая", GraphType.Line);
+			_longMAGraph = _chart.CreateTrend("LongMA", GraphType.Line);
+			_shortMAGraph = _chart.CreateTrend("ShortMA", GraphType.Line);
+            _filterMAGraph = _chart.CreateTrend("FilterMA", GraphType.Line);
 
-            txtHistoryRangeBegin.Text = DateTime.Now.AddDays(-3).ToShortDateString();
-            txtHistoryRangeEnd.Text = DateTime.Now.ToShortDateString();
+            //txtHistoryRangeBegin.Text = DateTime.Now.AddDays(-3).ToShortDateString();
+            //txtHistoryRangeEnd.Text = DateTime.Now.ToShortDateString();
+
+            txtHistoryRangeBegin.Text = "5.10.2011 10:05:00";
+            txtHistoryRangeEnd.Text = "5.10.2011 23:45:00";
 		}
 
 		private void _orders_OrderSelected(object sender, EventArgs e)
@@ -224,15 +226,20 @@
 		{
 			this.GuiSync(() =>
 			{
-				_longSmaGraph.Add(new CustomChartIndicator
+                _filterMAGraph.Add(new CustomChartIndicator
+                {
+                    Time = time,
+                    Value = (double)_strategy.FilterMA.LastValue
+                });
+				_longMAGraph.Add(new CustomChartIndicator
 				{
 					Time = time,
-					Value = (double)_strategy.LongSma.LastValue
+					Value = (double)_strategy.LongMA.LastValue
 				});
-				_shortSmaGraph.Add(new CustomChartIndicator
+				_shortMAGraph.Add(new CustomChartIndicator
 				{
 					Time = time,
-					Value = (double)_strategy.ShortSma.LastValue
+					Value = (double)_strategy.ShortMA.LastValue
 				});
 			});
 		}
@@ -306,7 +313,7 @@
                 IEnumerable<TimeFrameCandle> candles = new List<TimeFrameCandle>();
 
 				// создаем торговую стратегию, скользящие средние на 80 5-минуток и 10 5-минуток
-                _strategy = new ESmaStrategy(_candleManager, new ExponentialMovingAverage { Length = 80 }, new ExponentialMovingAverage { Length = 10 }, _timeFrame)
+                _strategy = new ESmaStrategy(_candleManager, new ExponentialMovingAverage { Length = 100 }, new ExponentialMovingAverage { Length = 13 }, new ExponentialMovingAverage { Length = 10 }, _timeFrame)
 				{
 					Volume = 1,
 					Security = _security,
@@ -322,11 +329,12 @@
 				// начинаем вычислять скользящие средние
 				foreach (var candle in candles)
 				{
-					_strategy.LongSma.Process((DecimalIndicatorValue)candle.ClosePrice);
-					_strategy.ShortSma.Process((DecimalIndicatorValue)candle.ClosePrice);
+                    _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+					_strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+					_strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
 
 					// если все скользящие сформировались, то начинаем их отрисовывать
-					if (index >= _strategy.LongSma.Length)
+					if (index >= _strategy.LongMA.Length)
 						DrawSmaLines(candle.Time);
 
 					index++;
@@ -344,8 +352,9 @@
 
 				foreach (var candle in candles)
 				{
-					_strategy.LongSma.Process((DecimalIndicatorValue)candle.ClosePrice);
-					_strategy.ShortSma.Process((DecimalIndicatorValue)candle.ClosePrice);
+                    _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+					_strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+					_strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
 
 					DrawSmaLines(candle.Time);
 
@@ -502,7 +511,7 @@
             //_candleManager.CandlesChanged += (token, candles) => DrawCandles(candles);
 
             // создаем торговую стратегию, скользящие средние на 12 5-минуток и 10 5-минуток
-            _strategy = new ESmaStrategy(_candleManager, new ExponentialMovingAverage { Length = 50 }, new ExponentialMovingAverage { Length = 10 }, _timeFrame)
+            _strategy = new ESmaStrategy(_candleManager, new ExponentialMovingAverage { Length = 100 }, new ExponentialMovingAverage { Length = 20 }, new ExponentialMovingAverage { Length = 10 }, _timeFrame)
             {
                 Volume = 1,
                 Portfolio = portfolio,
@@ -545,8 +554,9 @@
                         // рисуем сколзяшки
                         foreach (var candle in candles)
                         {
-                            _strategy.LongSma.Process((DecimalIndicatorValue)candle.ClosePrice);
-                            _strategy.ShortSma.Process((DecimalIndicatorValue)candle.ClosePrice);
+                            _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                            _strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                            _strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
 
                             DrawSmaLines(candle.Time);
                         }

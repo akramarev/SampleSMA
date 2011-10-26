@@ -11,28 +11,31 @@ namespace SampleSMA
 
 	class ESmaStrategy : TimeFrameStrategy
 	{
-		private readonly CandleManager _candleManager;
-		private bool _isShortLessThenLong;
+        public ExponentialMovingAverage FilterMA { get; private set; }
+        public ExponentialMovingAverage LongMA { get; private set; }
+        public ExponentialMovingAverage ShortMA { get; private set; }
 
+        private decimal _prevFilterMAValue;
+        private decimal _prevLongMAValue;
+        private decimal _prevShortMAValue;
+
+        public TimeFrameCandle LastCandle { get; private set; }
+
+		private readonly CandleManager _candleManager;
 		private DateTime _nextTime;
 
-        public ESmaStrategy(CandleManager candleManager, ExponentialMovingAverage longSma, ExponentialMovingAverage shortSma, TimeSpan timeFrame)
+        public ESmaStrategy(CandleManager candleManager, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA, TimeSpan timeFrame)
 			: base(timeFrame)
 		{
 			_candleManager = candleManager;
 
-			this.LongSma = longSma;
-			this.ShortSma = shortSma;
+            this.FilterMA = filterMA;
+			this.LongMA = longMA;
+			this.ShortMA = shortMA;
 		}
-
-		public ExponentialMovingAverage LongSma { get; private set; }
-        public ExponentialMovingAverage ShortSma { get; private set; }
 
 		protected override void OnStarting()
 		{
-			// запоминаем текущее положение относительно друг друга
-			_isShortLessThenLong = this.ShortSma.LastValue < this.LongSma.LastValue;
-
 			// вычисляем время окончания текущей пятиминутки
 			_nextTime = base.TimeFrame.GetCandleBounds(base.Trader).Max;
 
@@ -58,48 +61,62 @@ namespace SampleSMA
 				return ProcessResults.Continue;
 			}
 
-			// получаем сформированную свечку
-			var candle = _candleManager.GetTimeFrameCandle(base.Security, base.TimeFrame, _nextTime - base.TimeFrame);
+			// получаем сформированную свечку (заполняем предыдущую свечку если она null)
+            this.LastCandle = _candleManager.GetTimeFrameCandle(base.Security, base.TimeFrame, _nextTime - base.TimeFrame);
+            
+            if (this.LastCandle == null)
+            {
+                return ProcessResults.Continue;
+            }
 
-			// если свечки не существует (не было ни одной сделке в тайм-фрейме), то ждем окончания следующей свечки.
-			if (candle == null)
-			{
-				// если прошло больше 10 секунд с момента окончания свечки, а она так и не появилась,
-				// значит сделок в прошедшей 5-минутке не было, и переходим на следующую свечку
-				if ((base.Trader.MarketTime - _nextTime) > TimeSpan.FromSeconds(10))
-					_nextTime = base.TimeFrame.GetCandleBounds(base.Trader.MarketTime).Max;
-
-				return ProcessResults.Continue;
-			}
-
+            // move internal time tracker to the next candle
 			_nextTime += base.TimeFrame;
 
-			// добавляем новую свечку
-			this.LongSma.Process((DecimalIndicatorValue)candle.ClosePrice);
-			this.ShortSma.Process((DecimalIndicatorValue)candle.ClosePrice);
+            // processing Filer, Short and Long MA (also take care about "prev-" variables)
+            this.FilterMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
+            if (this._prevFilterMAValue == 0) { this._prevFilterMAValue = this.FilterMA.LastValue; }
 
-			// вычисляем новое положение относительно друг друга
-			var isShortLessThenLong = this.ShortSma.LastValue < this.LongSma.LastValue;
+            this.ShortMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
+            if (this._prevShortMAValue == 0) { this._prevShortMAValue = this.ShortMA.LastValue; }
 
-			// если произошло пересечение
-			if (_isShortLessThenLong != isShortLessThenLong)
+            this.LongMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
+            if (this._prevLongMAValue == 0) { this._prevLongMAValue = this.LongMA.LastValue; }
+
+			// calculate MA X-ing cases 
+            bool xUp = this.ShortMA.LastValue > this.LongMA.LastValue && this._prevShortMAValue <= this._prevLongMAValue;
+            bool xDown = this.ShortMA.LastValue < this.LongMA.LastValue && this._prevShortMAValue >= this._prevLongMAValue;
+
+            // calculate Filters
+            bool upFilter = this.FilterMA.LastValue > this._prevFilterMAValue;
+            bool downFilter = !upFilter;
+
+            OrderDirections direction;
+            Order order = null;
+
+            // calculate order direction
+            if (xUp && upFilter)
+            {
+                direction = OrderDirections.Buy;
+                order = this.CreateOrder(direction, base.Security.GetMarketPrice(direction), base.Volume);
+            }
+
+			if (xDown && downFilter)
 			{
-				// если короткая меньше чем длинная, то продажа, иначе, покупка.
-				var direction = isShortLessThenLong ? OrderDirections.Sell : OrderDirections.Buy;
+                direction = OrderDirections.Sell;
+                order = this.CreateOrder(direction, base.Security.GetMarketPrice(direction), base.Volume);
+            }
 
-				// создаем заявку
-				var order = this.CreateOrder(direction, base.Security.GetMarketPrice(direction), base.Volume);
+            // make order
+            if (order != null)
+            {
+                MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
+                base.ChildStrategies.Add(marketQuotingStrategy);
+            }
 
-				// регистрируем заявку (обычным способом - лимитированной заявкой)
-				// base.RegisterOrder(order);
-
-				// регистрируем заявку (через квотирование)
-                var strategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
-                base.ChildStrategies.Add(strategy);
-
-				// запоминаем текущее положение относительно друг друга
-				_isShortLessThenLong = isShortLessThenLong;
-			}
+            // update "prev-" variables
+            this._prevFilterMAValue = this.FilterMA.LastValue;
+            this._prevShortMAValue = this.ShortMA.LastValue;
+            this._prevLongMAValue = this.LongMA.LastValue;
 
 			return ProcessResults.Continue;
 		}
