@@ -8,6 +8,8 @@ namespace SampleSMA
 	using StockSharp.Algo.Indicators.Trend;
 	using StockSharp.Algo.Strategies;
 	using StockSharp.BusinessEntities;
+    using System.Collections.Generic;
+    using System.Linq;
 
 	class ESmaStrategy : TimeFrameStrategy
 	{
@@ -24,6 +26,9 @@ namespace SampleSMA
 		private readonly CandleManager _candleManager;
 		private DateTime _nextTime;
 
+        // all order made by strategy, but not by child strategies
+        private List<Order> _primaryStrategyOrders = new List<Order>();
+
         public ESmaStrategy(CandleManager candleManager, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA, TimeSpan timeFrame)
 			: base(timeFrame)
 		{
@@ -32,6 +37,9 @@ namespace SampleSMA
             this.FilterMA = filterMA;
 			this.LongMA = longMA;
 			this.ShortMA = shortMA;
+
+            // subscribe to new trades (required for child strategies)
+            base.NewMyTrades += ProtectMyNewTrades;
 		}
 
 		protected override void OnStarting()
@@ -111,6 +119,8 @@ namespace SampleSMA
             {
                 MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
                 base.ChildStrategies.Add(marketQuotingStrategy);
+
+                _primaryStrategyOrders.Add(order);
             }
 
             // update "prev-" variables
@@ -120,5 +130,38 @@ namespace SampleSMA
 
 			return ProcessResults.Continue;
 		}
+
+        private void ProtectMyNewTrades(IEnumerable<MyTrade> trades)
+        {
+            // take care about trades that were made by main strategy
+            trades = trades.Where(t => _primaryStrategyOrders.Any(o => t.Order == o));
+
+            // если не найдена ни одна сделка для заявки TargetOrder
+            if (trades.Count() == 0)
+                return;
+
+            var basket = new BasketStrategy(BasketStrategyFinishModes.All);
+
+            foreach (MyTrade trade in trades)
+            {
+                var s = new BasketStrategy(BasketStrategyFinishModes.First);
+
+                var takeProfit = new TakeProfitStrategy(trade, 500);
+                var stopLoss = new StopLossStrategy(trade, 2.Percents());
+
+                s.ChildStrategies.Add(takeProfit);
+                s.ChildStrategies.Add(stopLoss);
+
+                basket.ChildStrategies.Add(s);
+            }
+
+            base.ChildStrategies.Add(basket);
+        }
+
+        protected override void DisposeManaged()
+        {
+            base.NewMyTrades -= ProtectMyNewTrades;
+            base.DisposeManaged();
+        }
 	}
 }
