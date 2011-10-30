@@ -46,7 +46,12 @@
         private DateTime _lastUpdateDate;
         private DateTime _startEmulationTime;
 
+        private int _shortMAPeriod = 6;
+        private int _longMAPeriod = 18;
+        private int _filterMAPeriod = 96;
+
         private LogManager _logManager = new LogManager();
+        private MainWindowLogSource _log = new MainWindowLogSource();
 
 		public MainWindow()
 		{
@@ -58,19 +63,19 @@
 
 			_longMAGraph = _chart.CreateTrend("LongMA", GraphType.Line);
 			_shortMAGraph = _chart.CreateTrend("ShortMA", GraphType.Line);
-            _filterMAGraph = _chart.CreateTrend("FilterMA", GraphType.Line);
+            //_filterMAGraph = _chart.CreateTrend("FilterMA", GraphType.Line);
 
             //txtHistoryRangeBegin.Text = DateTime.Now.AddDays(-3).ToShortDateString();
             //txtHistoryRangeEnd.Text = DateTime.Now.ToShortDateString();
 
-            txtHistoryRangeBegin.Text = "27.10.2011 10:05:00";
-            txtHistoryRangeEnd.Text = "27.10.2011 23:45:00";
+            txtHistoryRangeBegin.Text = "24.10.2011 10:00:00";
+            txtHistoryRangeEnd.Text = "24.10.2011 23:00:00";
 
             // попробовать сразу найти месторасположение Quik по запущенному процессу
             this.Path.Text = QuikTerminal.GetDefaultPath();
 
-            // bind log manager with monitor window
-            //_logManager.Listeners.Add(new GuiLogListener(_monitorWindow));
+            _logManager.Sources.Add(_log);
+            _logManager.Listeners.Add(_monitor);
 		}
 
 		private void _orders_OrderSelected(object sender, EventArgs e)
@@ -234,11 +239,11 @@
 		{
 			this.GuiSync(() =>
 			{
-                _filterMAGraph.Add(new CustomChartIndicator
-                {
-                    Time = time,
-                    Value = (double)_strategy.FilterMA.LastValue
-                });
+                //_filterMAGraph.Add(new CustomChartIndicator
+                //{
+                //    Time = time,
+                //    Value = (double)_strategy.FilterMA.LastValue
+                //});
 				_longMAGraph.Add(new CustomChartIndicator
 				{
 					Time = time,
@@ -321,7 +326,7 @@
                 IEnumerable<TimeFrameCandle> candles = new List<TimeFrameCandle>();
 
 				// создаем торговую стратегию, скользящие средние на 80 5-минуток и 10 5-минуток
-                _strategy = new ESmaStrategy(_candleManager, new ExponentialMovingAverage { Length = 100 }, new ExponentialMovingAverage { Length = 13 }, new ExponentialMovingAverage { Length = 10 }, _timeFrame)
+                _strategy = new ESmaStrategy(_candleManager, new ExponentialMovingAverage { Length = this._filterMAPeriod }, new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod }, _timeFrame)
 				{
 					Volume = 1,
 					Security = _security,
@@ -436,14 +441,16 @@
                 return;
             }
 
+            _log.AddLog(new LogMessage(_log, DateTime.Now, ErrorTypes.None, "History testing has begun."));
+
             // создаем тестовый инструмент, на котором будет производится тестирование
             var security = new Security
             {
                 Id = this.txtSecurityId.Text, // по идентификатору инструмента будет искаться папка с историческими маркет данными
                 Code = this.txtSecurityCode.Text,
                 Name = this.txtSecurityCode.Text,
-                MinStepSize = 5,
-                MinStepPrice = 2,
+                MinStepSize = 1,
+                MinStepPrice = 1,
                 Exchange = Exchange.Test,
             };
 
@@ -489,7 +496,7 @@
             emuTrader.DepthGenerators[security] = new TrendMarketDepthGenerator(security)
             {
                 // стакан для инструмента в истории обновляется раз в 60 (1) секунд
-                Interval = TimeSpan.FromSeconds(1),
+                Interval = TimeSpan.FromSeconds(10),
             };
 
             //_trader.NewMyTrades += trades => this.GuiAsync(() =>
@@ -521,13 +528,16 @@
             //_candleManager.CandlesChanged += (token, candles) => DrawCandles(candles);
 
             // создаем торговую стратегию, скользящие средние на 12 5-минуток и 10 5-минуток
-            _strategy = new ESmaStrategy(_candleManager, new ExponentialMovingAverage { Length = 100 }, new ExponentialMovingAverage { Length = 20 }, new ExponentialMovingAverage { Length = 10 }, _timeFrame)
+            _strategy = new ESmaStrategy(_candleManager, new ExponentialMovingAverage { Length = this._filterMAPeriod }, new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod }, _timeFrame)
             {
                 Volume = 1,
                 Portfolio = portfolio,
                 Security = security,
                 Trader = _trader
             };
+
+            _strategy.Log += OnLog;
+            _logManager.Sources.Add(_strategy);
 
             // вывод сделок real time
             //_strategy.NewOrder += OnNewOrder;
@@ -562,11 +572,28 @@
                         DrawCandles(candles);
 
                         // рисуем сколзяшки
+                        _strategy.FilterMA.Reset();
+                        _strategy.LongMA.Reset();
+                        _strategy.ShortMA.Reset();
+
+                        var firstCandle = candles.FirstOrDefault();
+
+                        _strategy.FilterMA.RemoveStartFootprint((DecimalIndicatorValue)firstCandle.ClosePrice);
+                        _strategy.LongMA.RemoveStartFootprint((DecimalIndicatorValue)firstCandle.ClosePrice);
+                        _strategy.ShortMA.RemoveStartFootprint((DecimalIndicatorValue)firstCandle.ClosePrice);
+
                         foreach (var candle in candles)
                         {
                             _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
                             _strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
                             _strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+
+                            //if (candle.Time > DateTime.Parse("24.10.2011 20:29:00") && candle.Time < DateTime.Parse("24.10.2011 20:36:00"))
+                            //{
+                            //    this._log.AddLog(new LogMessage(this._log, candle.Time, ErrorTypes.None, "Test (CandleTime: {0}). SMA: {1}, LMA: {2}",
+                            //        candle.Time,
+                            //        _strategy.ShortMA.LastValue, _strategy.LongMA.LastValue));
+                            //}
 
                             DrawSmaLines(candle.Time);
                         }
@@ -609,6 +636,42 @@
 
             // запускаем эмуляцию, задавая период тестирования (startTime, stopTime).
             emuTrader.Start(startTime, stopTime);
+        }
+
+        public class MainWindowLogSource : ILogSource
+        {
+            public MainWindowLogSource()
+            {
+                this.Id = Guid.NewGuid();
+            }
+
+            public INotifyList<ILogSource> Childs
+            {
+                get { return null; }
+            }
+
+            public Guid Id
+            {
+                get;
+                set;
+            }
+
+            public void AddLog(LogMessage message)
+            {
+                this.Log(message);
+            }
+
+            public event Action<LogMessage> Log;
+
+            public string Name
+            {
+                get { return "MainWindow"; }
+            }
+
+            public ILogSource Parent
+            {
+                get { return null; }
+            }
         }
 	}
 }

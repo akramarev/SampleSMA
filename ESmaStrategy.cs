@@ -69,26 +69,45 @@ namespace SampleSMA
 				return ProcessResults.Continue;
 			}
 
-			// получаем сформированную свечку (заполняем предыдущую свечку если она null)
+			// получаем сформированную свечку
             this.LastCandle = _candleManager.GetTimeFrameCandle(base.Security, base.TimeFrame, _nextTime - base.TimeFrame);
-            
+
+            // move internal time tracker to the next candle
+            _nextTime += base.TimeFrame;
+
             if (this.LastCandle == null)
             {
                 return ProcessResults.Continue;
             }
 
-            // move internal time tracker to the next candle
-			_nextTime += base.TimeFrame;
-
             // processing Filer, Short and Long MA (also take care about "prev-" variables)
             this.FilterMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
-            if (this._prevFilterMAValue == 0) { this._prevFilterMAValue = this.FilterMA.LastValue; }
+            if (this._prevFilterMAValue == 0) 
+            { 
+                this._prevFilterMAValue = this.FilterMA.LastValue;
+                this.FilterMA.RemoveStartFootprint((DecimalIndicatorValue)this.LastCandle.ClosePrice);
+            }
 
             this.ShortMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
-            if (this._prevShortMAValue == 0) { this._prevShortMAValue = this.ShortMA.LastValue; }
+            if (this._prevShortMAValue == 0) 
+            { 
+                this._prevShortMAValue = this.ShortMA.LastValue;
+                this.ShortMA.RemoveStartFootprint((DecimalIndicatorValue)this.LastCandle.ClosePrice);
+            }
 
             this.LongMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
-            if (this._prevLongMAValue == 0) { this._prevLongMAValue = this.LongMA.LastValue; }
+            if (this._prevLongMAValue == 0)
+            {
+                this._prevLongMAValue = this.LongMA.LastValue;
+                this.LongMA.RemoveStartFootprint((DecimalIndicatorValue)this.LastCandle.ClosePrice);
+            }
+
+            //if (this.LastCandle.Time > DateTime.Parse("24.10.2011 20:29:00") && this.LastCandle.Time < DateTime.Parse("24.10.2011 20:36:00"))
+            //{
+            //    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Test (CandleTime: {0}). SMA: {1}, LMA: {2}",
+            //        this.LastCandle.Time,
+            //        this.ShortMA.LastValue, this.LongMA.LastValue));
+            //}
 
 			// calculate MA X-ing cases 
             bool xUp = this.ShortMA.LastValue > this.LongMA.LastValue && this._prevShortMAValue <= this._prevLongMAValue;
@@ -108,10 +127,12 @@ namespace SampleSMA
                 {
                     direction = OrderDirections.Buy;
                     order = this.CreateOrder(direction, base.Security.GetMarketPrice(direction), base.Volume);
+
+                    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Up appeared (CandleTime: {0}), and filter allowed the deal.", this.LastCandle.Time));
                 }
                 else
                 {
-                    this.AddLog(new LogMessage(this, DateTime.Now, ErrorTypes.None, "Xing Up appeared (MarketTime: {0}, CandleTime: {1}), but filter blocked the deal.", base.Trader.MarketTime, this.LastCandle.Time));
+                    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Up appeared (CandleTime: {0}), but filter blocked the deal.", this.LastCandle.Time));
                 }
             }
 
@@ -121,18 +142,21 @@ namespace SampleSMA
                 {
                     direction = OrderDirections.Sell;
                     order = this.CreateOrder(direction, base.Security.GetMarketPrice(direction), base.Volume);
+
+                    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Down appeared (CandleTime: {0}), and filter allowed the deal.", this.LastCandle.Time));
                 }
                 else
                 {
-                    this.AddLog(new LogMessage(this, DateTime.Now, ErrorTypes.None, "Xing Down appeared (MarketTime: {0}, CandleTime: {1}), but filter blocked the deal.", base.Trader.MarketTime, this.LastCandle.Time));
+                    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Down appeared (CandleTime: {0}), but filter blocked the deal.", this.LastCandle.Time));
                 }
             }
 
             // make order
             if (order != null)
             {
-                MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
-                base.ChildStrategies.Add(marketQuotingStrategy);
+                //MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
+                //base.ChildStrategies.Add(marketQuotingStrategy);
+                base.RegisterOrder(order);
 
                 _primaryStrategyOrders.Add(order);
             }
@@ -160,8 +184,8 @@ namespace SampleSMA
             {
                 var s = new BasketStrategy(BasketStrategyFinishModes.First);
 
-                var takeProfit = new TakeProfitStrategy(trade, 500);
-                var stopLoss = new StopLossStrategy(trade, 2.Percents());
+                var takeProfit = new TakeProfitStrategy(trade, 200);
+                var stopLoss = new StopLossStrategy(trade, 1.Percents());
 
                 s.ChildStrategies.Add(takeProfit);
                 s.ChildStrategies.Add(stopLoss);
