@@ -1,17 +1,17 @@
 namespace SampleSMA
 {
-	using System;
-
-	using StockSharp.Algo;
-	using StockSharp.Algo.Candles;
-	using StockSharp.Algo.Indicators;
-	using StockSharp.Algo.Indicators.Trend;
-	using StockSharp.Algo.Strategies;
-	using StockSharp.BusinessEntities;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using StockSharp.Algo;
+    using StockSharp.Algo.Logging;
+    using StockSharp.Algo.Candles;
+    using StockSharp.Algo.Indicators;
+    using StockSharp.Algo.Indicators.Trend;
+    using StockSharp.Algo.Strategies;
+    using StockSharp.BusinessEntities;
 
-	class ESmaStrategy : TimeFrameStrategy
+    class ESmaStrategy : TimeFrameStrategy
 	{
         public ExponentialMovingAverage FilterMA { get; private set; }
         public ExponentialMovingAverage LongMA { get; private set; }
@@ -102,16 +102,30 @@ namespace SampleSMA
             Order order = null;
 
             // calculate order direction
-            if (xUp && upFilter)
+            if (xUp)
             {
-                direction = OrderDirections.Buy;
-                order = this.CreateOrder(direction, base.Security.GetMarketPrice(direction), base.Volume);
+                if (upFilter)
+                {
+                    direction = OrderDirections.Buy;
+                    order = this.CreateOrder(direction, base.Security.GetMarketPrice(direction), base.Volume);
+                }
+                else
+                {
+                    this.AddLog(new LogMessage(this, DateTime.Now, ErrorTypes.None, "Xing Up appeared (MarketTime: {0}, CandleTime: {1}), but filter blocked the deal.", base.Trader.MarketTime, this.LastCandle.Time));
+                }
             }
 
-			if (xDown && downFilter)
+			if (xDown)
 			{
-                direction = OrderDirections.Sell;
-                order = this.CreateOrder(direction, base.Security.GetMarketPrice(direction), base.Volume);
+                if (downFilter)
+                {
+                    direction = OrderDirections.Sell;
+                    order = this.CreateOrder(direction, base.Security.GetMarketPrice(direction), base.Volume);
+                }
+                else
+                {
+                    this.AddLog(new LogMessage(this, DateTime.Now, ErrorTypes.None, "Xing Down appeared (MarketTime: {0}, CandleTime: {1}), but filter blocked the deal.", base.Trader.MarketTime, this.LastCandle.Time));
+                }
             }
 
             // make order

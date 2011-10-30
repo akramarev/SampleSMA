@@ -46,6 +46,8 @@
         private DateTime _lastUpdateDate;
         private DateTime _startEmulationTime;
 
+        private LogManager _logManager = new LogManager();
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -61,8 +63,14 @@
             //txtHistoryRangeBegin.Text = DateTime.Now.AddDays(-3).ToShortDateString();
             //txtHistoryRangeEnd.Text = DateTime.Now.ToShortDateString();
 
-            txtHistoryRangeBegin.Text = "5.10.2011 10:05:00";
-            txtHistoryRangeEnd.Text = "5.10.2011 23:45:00";
+            txtHistoryRangeBegin.Text = "27.10.2011 10:05:00";
+            txtHistoryRangeEnd.Text = "27.10.2011 23:45:00";
+
+            // попробовать сразу найти месторасположение Quik по запущенному процессу
+            this.Path.Text = QuikTerminal.GetDefaultPath();
+
+            // bind log manager with monitor window
+            //_logManager.Listeners.Add(new GuiLogListener(_monitorWindow));
 		}
 
 		private void _orders_OrderSelected(object sender, EventArgs e)
@@ -323,6 +331,8 @@
 				_strategy.Log += OnLog;
 				_strategy.NewOrder += OnNewOrder;
 				_strategy.PropertyChanged += OnStrategyPropertyChanged;
+
+                _logManager.Sources.Add(_strategy);
 
 				var index = 0;
 

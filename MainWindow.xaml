@@ -89,15 +89,16 @@
                 <Label Grid.Row="1" Content="Поза:" Margin="0,0,2,3" />
                 <Label x:Name="Latency" Grid.Row="1" Margin="0,0,0,3" Grid.Column="3" Content="00:00:00.00" />
                 <Label Grid.Row="1" Content="Задержка:" Margin="2,0,0,3" Grid.Column="2" />
-            <Button x:Name="Report" Grid.Column="3" Width="100" IsEnabled="False" Content="Отчет" Click="Report_Click" Margin="59,3,28,4" Grid.Row="2" />
+            <Button x:Name="Report" Grid.Column="3" IsEnabled="False" Content="Отчет" Click="Report_Click" Margin="0,3,96,4" Grid.Row="2" />
+            <Button Content="Monitor" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Right" Margin="0,3,0,0" Name="btnMonitorWindow" VerticalAlignment="Top" Width="90" />
         </Grid>
             <Grid Height="27" HorizontalAlignment="Left" Margin="141,4,0,0" Name="grid4" VerticalAlignment="Top" Grid.Column="1" Width="260">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <TextBox Height="23" HorizontalAlignment="Left" Margin="8,4,0,0" Name="txtSecurityId" VerticalAlignment="Top" Width="120" Text="RIZ1@RTS" />
-                <TextBox Grid.Column="1" Height="23" HorizontalAlignment="Left" Name="txtSecurityCode" VerticalAlignment="Top" Width="120" Text="RIZ1" Margin="0,4,0,0" />
+                <TextBox Height="23" HorizontalAlignment="Left" Margin="8,4,0,0" Name="txtSecurityId" VerticalAlignment="Top" Width="120" Text="SRZ1@RTS" />
+                <TextBox Grid.Column="1" Height="23" HorizontalAlignment="Left" Name="txtSecurityCode" VerticalAlignment="Top" Width="120" Text="SRZ1" Margin="0,4,0,0" />
             </Grid>
         <EcngTradingXaml:OrderGrid x:Name="_orders" OrderSelected="_orders_OrderSelected" Margin="0,402,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2" Grid.Column="1" />
             <EcngTradingXaml:TradeGrid x:Name="_trades" Margin="0,282,0,0" HorizontalAlignment="Left" Width="552" Height="114" VerticalAlignment="Top" Grid.Column="1" />
