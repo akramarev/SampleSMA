@@ -33,7 +33,7 @@
 	{
 		private readonly TimeSpan _timeFrame = TimeSpan.FromMinutes(5);
 		private ITrader _trader;
-		private ESmaStrategy _strategy;
+		private EmaStrategy _strategy;
 		private bool _isDdeStarted;
 		private DateTime _lastCandleTime;
 		private bool _isTodaySmaDrawn;
@@ -194,13 +194,6 @@
 			this.GuiAsync(() => _chart.Orders.Add(order));
 		}
 
-		private void OnLog(LogMessage message)
-		{
-			// если стратегия вывела не просто сообщение, то вывести на экран.
-			if (message.Type != ErrorTypes.None)
-				this.GuiAsync(() => MessageBox.Show(this, message.Message));
-		}
-
 		private void DrawCandles(IEnumerable<Candle> candles)
 		{
 			this.GuiAsync(() => _chart.Candles.AddRange(candles));
@@ -326,14 +319,13 @@
                 IEnumerable<TimeFrameCandle> candles = new List<TimeFrameCandle>();
 
 				// создаем торговую стратегию, скользящие средние на 80 5-минуток и 10 5-минуток
-                _strategy = new ESmaStrategy(_candleManager, new ExponentialMovingAverage { Length = this._filterMAPeriod }, new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod }, _timeFrame)
+                _strategy = new EmaStrategy(_candleManager, new ExponentialMovingAverage { Length = this._filterMAPeriod }, new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod }, _timeFrame)
 				{
 					Volume = 1,
 					Security = _security,
 					Portfolio = this.Portfolios.SelectedPortfolio,
 					Trader = _trader,
 				};
-				_strategy.Log += OnLog;
 				_strategy.NewOrder += OnNewOrder;
 				_strategy.PropertyChanged += OnStrategyPropertyChanged;
 
@@ -450,8 +442,8 @@
                 Code = this.txtSecurityCode.Text,
                 Name = this.txtSecurityCode.Text,
                 MinStepSize = 1,
-                MinStepPrice = 1,
-                Exchange = Exchange.Test,
+                MinStepPrice = 5,
+                Exchange = Exchange.Rts,
             };
 
             // тестовый портфель
@@ -499,14 +491,6 @@
                 Interval = TimeSpan.FromSeconds(10),
             };
 
-            //_trader.NewMyTrades += trades => this.GuiAsync(() =>
-            //{
-            //    if (_strategy != null)
-            //    {
-            //        _trades.Trades.AddRange(trades);
-            //    }
-            //});
-
             _candleManager = new CandleManager();
 
             var builder = new CandleBuilder(new SyncTraderTradeSource(_trader));
@@ -519,16 +503,8 @@
 
             _candleManager.RegisterTimeFrameCandles(security, _timeFrame);
 
-            // отрисовка свечей real time
-            //_candleManager.NewCandles += (token, candles) =>
-            //{
-            //    DrawCandles(candles);
-            //    DrawSma();
-            //};
-            //_candleManager.CandlesChanged += (token, candles) => DrawCandles(candles);
-
             // создаем торговую стратегию, скользящие средние на 12 5-минуток и 10 5-минуток
-            _strategy = new ESmaStrategy(_candleManager, new ExponentialMovingAverage { Length = this._filterMAPeriod }, new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod }, _timeFrame)
+            _strategy = new EmaStrategy(_candleManager, new ExponentialMovingAverage { Length = this._filterMAPeriod }, new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod }, _timeFrame)
             {
                 Volume = 1,
                 Portfolio = portfolio,
@@ -536,12 +512,7 @@
                 Trader = _trader
             };
 
-            _strategy.Log += OnLog;
             _logManager.Sources.Add(_strategy);
-
-            // вывод сделок real time
-            //_strategy.NewOrder += OnNewOrder;
-            //_strategy.PropertyChanged += OnStrategyPropertyChanged;
 
             // и подписываемся на событие изменения времени, чтобы обновить ProgressBar
             _trader.MarketTimeChanged += () =>
@@ -672,6 +643,56 @@
             {
                 get { return null; }
             }
+        }
+
+        private void btnOptimize_Click(object sender, RoutedEventArgs e)
+        {
+            // создаем тестовый инструмент, на котором будет производится тестирование
+            var security = new Security
+            {
+                Id = this.txtSecurityId.Text, // по идентификатору инструмента будет искаться папка с историческими маркет данными
+                Code = this.txtSecurityCode.Text,
+                Name = this.txtSecurityCode.Text,
+                MinStepSize = 1,
+                MinStepPrice = 5,
+                Exchange = Exchange.Rts,
+            };
+
+            var storage = new TradingStorage(new InMemoryStorage())
+            {
+                BasePath = this.txtHistoryPath.Text
+            };
+
+            var portfolio = new Portfolio { Name = "test account", BeginAmount = 30000m };
+
+            DateTime startTime;
+            DateTime stopTime;
+
+            if (!DateTime.TryParse(txtHistoryRangeEnd.Text, out stopTime))
+            {
+                stopTime = DateTime.Now;
+                txtHistoryRangeEnd.Text = stopTime.ToString();
+            }
+
+            if (!DateTime.TryParse(txtHistoryRangeBegin.Text, out startTime))
+            {
+                startTime = stopTime.AddDays(-3);
+                txtHistoryRangeBegin.Text = startTime.ToString();
+            }
+
+            EMAStrategyOptimizer optimizer = new EMAStrategyOptimizer(security, storage, portfolio, startTime, stopTime);
+            optimizer.StateChanged += () =>
+            {
+                if (optimizer.State == OptimizationState.Finished)
+                {
+                    this.GuiAsync(() => MessageBox.Show(this, String.Format("Opt done. The best startegy: {0}, {1}, {2} PnL: {3}",
+                        optimizer.BestStrategy.FilterMA.Length,
+                        optimizer.BestStrategy.LongMA.Length, optimizer.BestStrategy.ShortMA.Length, 
+                        optimizer.BestStrategy.PnLManager.PnL)));
+                }
+            };
+
+            optimizer.Optimize();
         }
 	}
 }

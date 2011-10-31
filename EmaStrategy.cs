@@ -11,11 +11,14 @@ namespace SampleSMA
     using StockSharp.Algo.Strategies;
     using StockSharp.BusinessEntities;
 
-    class ESmaStrategy : TimeFrameStrategy
+    public class EmaStrategy : TimeFrameStrategy
 	{
         public ExponentialMovingAverage FilterMA { get; private set; }
         public ExponentialMovingAverage LongMA { get; private set; }
         public ExponentialMovingAverage ShortMA { get; private set; }
+
+        public Unit TakeProfitUnit { get; set; }
+        public Unit StopLossUnit { get; set; }
 
         private decimal _prevFilterMAValue;
         private decimal _prevLongMAValue;
@@ -29,14 +32,19 @@ namespace SampleSMA
         // all order made by strategy, but not by child strategies
         private List<Order> _primaryStrategyOrders = new List<Order>();
 
-        public ESmaStrategy(CandleManager candleManager, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA, TimeSpan timeFrame)
+        public EmaStrategy(CandleManager candleManager, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA, TimeSpan timeFrame)
 			: base(timeFrame)
 		{
-			_candleManager = candleManager;
+            this.Name = "EmaStrategy";
+
+			this._candleManager = candleManager;
 
             this.FilterMA = filterMA;
 			this.LongMA = longMA;
 			this.ShortMA = shortMA;
+
+            this.TakeProfitUnit = 200;
+            this.StopLossUnit = 300;
 
             // subscribe to new trades (required for child strategies)
             base.NewMyTrades += ProtectMyNewTrades;
@@ -182,10 +190,10 @@ namespace SampleSMA
 
             foreach (MyTrade trade in trades)
             {
-                var s = new BasketStrategy(BasketStrategyFinishModes.First);
+                var s = new BasketStrategy(BasketStrategyFinishModes.First) { Name = "ProtectStrategy" };
 
-                var takeProfit = new TakeProfitStrategy(trade, 200);
-                var stopLoss = new StopLossStrategy(trade, 1.Percents());
+                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) { Name = "TakeProfitStrategy" };
+                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { Name = "StopLossStrategy" };
 
                 s.ChildStrategies.Add(takeProfit);
                 s.ChildStrategies.Add(stopLoss);

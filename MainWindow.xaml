@@ -66,6 +66,7 @@
             <ProgressBar Grid.Row="1" Height="22" HorizontalAlignment="Left" Name="pbHistoryTestProgress" VerticalAlignment="Top" Width="244" />
             <TextBox Grid.Row="2" Height="23" HorizontalAlignment="Left" Name="txtHistoryRangeBegin" VerticalAlignment="Top" Width="88" />
             <TextBox Grid.Row="2" Height="23" HorizontalAlignment="Right" Name="txtHistoryRangeEnd" VerticalAlignment="Top" Width="91" Margin="0,0,59,0" />
+            <Button Content="Optimize" Grid.Row="3" Height="40" Margin="0,8,0,0" Name="btnOptimize" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100" Click="btnOptimize_Click" />
         </Grid>
         <Grid Name="grid3" Height="89" VerticalAlignment="Top" Margin="0,187,0,0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Width="553">
             <Grid.RowDefinitions>

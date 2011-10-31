@@ -120,7 +120,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ESmaStrategy.cs" />
+    <Compile Include="EmaStrategy.cs" />
+    <Compile Include="EMAStrategyOptimizer.cs" />
     <Compile Include="ExponentialMovingAverageEx.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
