@@ -61,8 +61,8 @@
 			var cci = new CultureInfo(Thread.CurrentThread.CurrentCulture.Name) { NumberFormat = { NumberDecimalSeparator = "." } };
 			Thread.CurrentThread.CurrentCulture = cci;
 
-			_longMAGraph = _chart.CreateTrend("LongMA", GraphType.Line);
-			_shortMAGraph = _chart.CreateTrend("ShortMA", GraphType.Line);
+			//_longMAGraph = _chart.CreateTrend("LongMA", GraphType.Line);
+			//_shortMAGraph = _chart.CreateTrend("ShortMA", GraphType.Line);
             //_filterMAGraph = _chart.CreateTrend("FilterMA", GraphType.Line);
 
             SetDefaultHistoryRange();
@@ -103,7 +103,7 @@
                 IEnumerable<TimeFrameCandle> historyCandles = GetHistoryCandlesFromFile(_security);
                 if (historyCandles != null)
                 {
-                    DrawCandles(historyCandles.Cast<Candle>());
+                    DrawCandles(historyCandles);
 
                     foreach (var candle in historyCandles)
                     {
@@ -290,7 +290,7 @@
                         }
 
                         // рисуем график
-                        var candles = _candleManager.GetTimeFrameCandles(security, _timeFrame).Cast<Candle>();
+                        var candles = _candleManager.GetTimeFrameCandles(security, _timeFrame);
                         DrawCandles(candles);
 
                         // рисуем сколзяшки
@@ -319,7 +319,7 @@
                         // заполняем order'ы
                         _orders.Orders.Clear();
                         _orders.Orders.AddRange(_strategy.Orders);
-                        this.GuiAsync(() => _chart.Orders.AddRange(_strategy.Orders));
+                        //this.GuiAsync(() => _chart.Orders.AddRange(_strategy.Orders));
 
                         // заполняем трейды
                         _trades.Trades.Clear();
@@ -460,7 +460,7 @@
 
                         _candleManager.NewCandles += (token, candles) =>
                         {
-                            DrawCandles(candles);
+                            DrawCandles(candles.Cast<TimeFrameCandle>());
 
                             if (_isTodaySmaDrawn)
                             {
@@ -468,7 +468,7 @@
                             }
                         };
 
-                        _candleManager.CandlesChanged += (token, candles) => DrawCandles(candles);
+                        _candleManager.CandlesChanged += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
 
                         _trader.ConnectionError += ex =>
                         {
@@ -535,9 +535,10 @@
 
         #region Draw candles and indicators
 
-        private void DrawCandles(IEnumerable<Candle> candles)
+        private void DrawCandles(IEnumerable<TimeFrameCandle> candles)
         {
-            this.GuiAsync(() => _chart.Candles.AddRange(candles));
+            //this.GuiAsync(() => _chart.Candles.AddRange(candles));
+            this.GuiAsync(() => _candleChart.AddCandles(candles));
         }
 
         private void DrawSma()
@@ -571,24 +572,24 @@
 
         private void DrawSmaLines(DateTime time)
         {
-            this.GuiSync(() =>
-            {
-                //_filterMAGraph.Add(new CustomChartIndicator
-                //{
-                //    Time = time,
-                //    Value = (double)_strategy.FilterMA.LastValue
-                //});
-                _longMAGraph.Add(new CustomChartIndicator
-                {
-                    Time = time,
-                    Value = (double)_strategy.LongMA.LastValue
-                });
-                _shortMAGraph.Add(new CustomChartIndicator
-                {
-                    Time = time,
-                    Value = (double)_strategy.ShortMA.LastValue
-                });
-            });
+            //this.GuiSync(() =>
+            //{
+            //    //_filterMAGraph.Add(new CustomChartIndicator
+            //    //{
+            //    //    Time = time,
+            //    //    Value = (double)_strategy.FilterMA.LastValue
+            //    //});
+            //    _longMAGraph.Add(new CustomChartIndicator
+            //    {
+            //        Time = time,
+            //        Value = (double)_strategy.LongMA.LastValue
+            //    });
+            //    _shortMAGraph.Add(new CustomChartIndicator
+            //    {
+            //        Time = time,
+            //        Value = (double)_strategy.ShortMA.LastValue
+            //    });
+            //});
         }
 
         #endregion
@@ -640,7 +641,7 @@
         private void OnNewOrder(Order order)
         {
             _orders.Orders.Add(order);
-            this.GuiAsync(() => _chart.Orders.Add(order));
+            //this.GuiAsync(() => _chart.Orders.Add(order));
         }
 
         private void _orders_OrderSelected(object sender, EventArgs e)
@@ -671,6 +672,9 @@
 
             txtHistoryRangeBegin.Text = (d.Date + Exchange.Rts.WorkingTime.Times[0].Min).ToString("g");
             txtHistoryRangeEnd.Text = (d.Date + Exchange.Rts.WorkingTime.Times[2].Max).ToString("g");
+
+            txtHistoryRangeBegin.Text = "24.10.2011 10:00:00";
+            txtHistoryRangeEnd.Text = "24.10.2011 23:00:00";
         }
 
         private IEnumerable<TimeFrameCandle> GetHistoryCandlesFromFile(Security security)
