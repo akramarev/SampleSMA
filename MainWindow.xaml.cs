@@ -35,7 +35,7 @@
 		private ITrader _trader;
 		private EmaStrategy _strategy;
 		private bool _isDdeStarted;
-		private DateTime _lastCandleTime;
+		private DateTime _lastCandleTime = DateTime.Now.Date.AddDays(-1);
 		private bool _isTodaySmaDrawn;
 		private CandleManager _candleManager;
         private readonly ICollection<CustomChartIndicator> _filterMAGraph;
@@ -65,11 +65,7 @@
 			_shortMAGraph = _chart.CreateTrend("ShortMA", GraphType.Line);
             //_filterMAGraph = _chart.CreateTrend("FilterMA", GraphType.Line);
 
-            //txtHistoryRangeBegin.Text = DateTime.Now.AddDays(-3).ToShortDateString();
-            //txtHistoryRangeEnd.Text = DateTime.Now.ToShortDateString();
-
-            txtHistoryRangeBegin.Text = "24.10.2011 10:00:00";
-            txtHistoryRangeEnd.Text = "24.10.2011 23:00:00";
+            SetDefaultHistoryRange();
 
             // попробовать сразу найти месторасположение Quik по запущенному процессу
             this.Path.Text = QuikTerminal.GetDefaultPath();
@@ -78,335 +74,90 @@
             _logManager.Listeners.Add(_monitor);
 		}
 
-		private void _orders_OrderSelected(object sender, EventArgs e)
-		{
-			this.CancelOrders.IsEnabled = _orders.SelectedOrders.Count() > 0;
-		}
+        #region Main Event Handlers
 
-		protected override void OnClosing(CancelEventArgs e)
-		{
-			if (_trader != null)
-			{
-				if (_isDdeStarted)
-					StopDde();
+        private void Start_Click(object sender, RoutedEventArgs e)
+        {
+            if (_strategy == null)
+            {
+                if (this.Portfolios.SelectedPortfolio == null)
+                {
+                    MessageBox.Show(this, "Портфель не выбран.");
+                    return;
+                }
 
-				_trader.Dispose();
-			}
-
-			base.OnClosing(e);
-		}
-
-		private void FindPath_Click(object sender, RoutedEventArgs e)
-		{
-			var dlg = new FolderBrowserDialog();
-
-			if (!this.Path.Text.IsEmpty())
-				dlg.SelectedPath = this.Path.Text;
-
-			if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-			{
-				this.Path.Text = dlg.SelectedPath;
-			}
-		}
-
-		private void Connect_Click(object sender, RoutedEventArgs e)
-		{
-			if (_trader == null || !_trader.IsConnected)
-			{
-				if (_trader == null)
-				{
-					if (this.Path.Text.IsEmpty())
-					{
-						MessageBox.Show(this, "Путь к Quik не выбран.");
-						return;
-					}
-
-					// создаем шлюз
-					_trader = new RealTimeEmulationTrader<QuikTrader>(new QuikTrader(this.Path.Text));
-
-					this.Portfolios.Trader = _trader;
-
-					_trader.Connected += () =>
-					{
-						_candleManager = new CandleManager(_trader);
-
-						_trader.NewSecurities += securities => this.GuiAsync(() =>
-						{
-							// находим нужную бумагу
-                            var sec = securities.FirstOrDefault(s => s.Code == this.txtSecurityCode.Text);
-
-							if (sec != null)
-							{
-								_security = sec;
-
-								this.GuiAsync(() =>
-								{
-									this.Start.IsEnabled = true;
-								});
-							}
-						});
-
-						_trader.NewMyTrades += trades => this.GuiAsync(() =>
-						{
-							if (_strategy != null)
-							{
-								// найти те сделки, которые совершила стратегия скользящей средней
-								trades = trades.Where(t => _strategy.Orders.Any(o => o == t.Order));
-
-								_trades.Trades.AddRange(trades);
-							}
-						});
-
-						_candleManager.NewCandles += (token, candles) =>
-						{
-							DrawCandles(candles);
-
-							// если скользящие за сегодняшний день отрисованы, то рисуем в реальном времени текущие скользящие
-							if (_isTodaySmaDrawn)
-								DrawSma();
-						};
-						_candleManager.CandlesChanged += (token, candles) => DrawCandles(candles);
-						//_trader.ProcessDataError += ex => this.Sync(() => MessageBox.Show(this, ex.ToString()));
-						_trader.ConnectionError += ex =>
-						{
-							if (ex != null)
-								this.GuiAsync(() => MessageBox.Show(this, ex.ToString()));
-						};
-
-						this.GuiAsync(() =>
-						{
-							this.ConnectBtn.IsEnabled = false;
-							this.ExportDde.IsEnabled = true;
-							this.Report.IsEnabled = true;
-						});
-					};
-				}
-
-				_trader.Connect();
-			}
-			else
-				_trader.Disconnect();
-		}
-
-		private void OnNewOrder(Order order)
-		{
-			_orders.Orders.Add(order);
-			this.GuiAsync(() => _chart.Orders.Add(order));
-		}
-
-		private void DrawCandles(IEnumerable<Candle> candles)
-		{
-			this.GuiAsync(() => _chart.Candles.AddRange(candles));
-		}
-
-		private void DrawSma()
-		{
-			// нас не интересует текущая свечка, так как она еще не сформировалась
-			// и из нее нельзя брать цену закрытия
-
-			// вычисляем временные отрезки текущей свечки
-			var bounds = _timeFrame.GetCandleBounds(_trader);
-
-			// если появились новые полностью сформированные свечки
-			if ((_lastCandleTime + _timeFrame) < bounds.Min)
-			{
-				// отступ с конца интервала, чтобы не захватить текущую свечку.
-				var endOffset = TimeSpan.FromSeconds(1);
-
-				bounds = new Range<DateTime>(_lastCandleTime + _timeFrame, bounds.Min - endOffset);
-
-				// получаем эти свечки
-				var candles = _candleManager.GetTimeFrameCandles(_strategy.Security, _timeFrame, bounds);
-
-				if (candles.Count() > 0)
-				{
-					// получаем время самой последней свечки и запоминаем его как новое начало
-					_lastCandleTime = candles.Max(c => c.Time);
-
-					DrawSmaLines(bounds.Min);
-				}
-			}
-		}
-
-		private void DrawSmaLines(DateTime time)
-		{
-			this.GuiSync(() =>
-			{
-                //_filterMAGraph.Add(new CustomChartIndicator
-                //{
-                //    Time = time,
-                //    Value = (double)_strategy.FilterMA.LastValue
-                //});
-				_longMAGraph.Add(new CustomChartIndicator
-				{
-					Time = time,
-					Value = (double)_strategy.LongMA.LastValue
-				});
-				_shortMAGraph.Add(new CustomChartIndicator
-				{
-					Time = time,
-					Value = (double)_strategy.ShortMA.LastValue
-				});
-			});
-		}
-
-		private void OnStrategyPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			this.GuiAsync(() =>
-			{
-				this.Status.Content = _strategy.ProcessState;
-				this.PnL.Content = _strategy.PnLManager.PnL;
-				this.Slippage.Content = _strategy.SlippageManager.Slippage;
-				this.Position.Content = _strategy.PositionManager.Position;
-				this.Latency.Content = _strategy.LatencyManager.Latency;
-			});
-		}
-
-		private void StartDde()
-		{
-			_trader.StartExport();
-			_isDdeStarted = true;
-		}
-
-		private void StopDde()
-		{
-			_trader.StopExport();
-			_isDdeStarted = false;
-		}
-
-		private void ExportDde_Click(object sender, RoutedEventArgs e)
-		{
-			if (_isDdeStarted)
-				StopDde();
-			else
-				StartDde();
-		}
-
-		private void CancelOrders_Click(object sender, RoutedEventArgs e)
-		{
-			_orders.SelectedOrders.ForEach(_trader.CancelOrder);
-		}
-
-		private void Start_Click(object sender, RoutedEventArgs e)
-		{
-			if (_strategy == null)
-			{
-				if (this.Portfolios.SelectedPortfolio == null)
-				{
-					MessageBox.Show(this, "Портфель не выбран.");
-					return;
-				}
-
-                //var candles = File.ReadAllLines("LKOH_history.txt").Select(line =>
-                //{
-                //    var parts = line.Split(',');
-                //    var time = DateTime.ParseExact(parts[0] + parts[1], "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-                //    return new TimeFrameCandle
-                //    {
-                //        OpenPrice = parts[2].To<decimal>(),
-                //        HighPrice = parts[3].To<decimal>(),
-                //        LowPrice = parts[4].To<decimal>(),
-                //        ClosePrice = parts[5].To<decimal>(),
-                //        TimeFrame = _timeFrame,
-                //        Time = time,
-                //        TotalVolume = parts[6].To<int>(),
-                //        Security = _security,
-                //    };
-                //});
-
-                //DrawCandles(candles.Cast<Candle>());
-
-                IEnumerable<TimeFrameCandle> candles = new List<TimeFrameCandle>();
-
-				// создаем торговую стратегию, скользящие средние на 80 5-минуток и 10 5-минуток
-                _strategy = new EmaStrategy(_candleManager, new ExponentialMovingAverage { Length = this._filterMAPeriod }, new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod }, _timeFrame)
-				{
-					Volume = 1,
-					Security = _security,
-					Portfolio = this.Portfolios.SelectedPortfolio,
-					Trader = _trader,
-				};
-				_strategy.NewOrder += OnNewOrder;
-				_strategy.PropertyChanged += OnStrategyPropertyChanged;
-
+                _strategy = new EmaStrategy(_candleManager,
+                    new ExponentialMovingAverage { Length = this._filterMAPeriod },
+                    new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod },
+                    _timeFrame)
+                {
+                    Volume = 1,
+                    Security = _security,
+                    Portfolio = this.Portfolios.SelectedPortfolio,
+                    Trader = _trader,
+                };
+                _strategy.NewOrder += OnNewOrder;
+                _strategy.PropertyChanged += OnStrategyPropertyChanged;
                 _logManager.Sources.Add(_strategy);
 
-				var index = 0;
+                IEnumerable<TimeFrameCandle> historyCandles = GetHistoryCandlesFromFile(_security);
+                if (historyCandles != null)
+                {
+                    DrawCandles(historyCandles.Cast<Candle>());
 
-				// начинаем вычислять скользящие средние
-				foreach (var candle in candles)
-				{
-                    _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-					_strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-					_strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                    foreach (var candle in historyCandles)
+                    {
+                        _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                        _strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                        _strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
 
-					// если все скользящие сформировались, то начинаем их отрисовывать
-					if (index >= _strategy.LongMA.Length)
-						DrawSmaLines(candle.Time);
+                        DrawSmaLines(candle.Time);
 
-					index++;
+                        _lastCandleTime = candle.Time;
+                    }
+                }
 
-					_lastCandleTime = candle.Time;
-				}
+                // регистрируем наш тайм-фрейм
+                _candleManager.RegisterTimeFrameCandles(_security, _timeFrame);
 
-				// регистрируем наш тайм-фрейм
-				_candleManager.RegisterTimeFrameCandles(_security, _timeFrame);
+                // вычисляем временные отрезки текущей свечки
+                var bounds = _timeFrame.GetCandleBounds(_trader);
 
-				// вычисляем временные отрезки текущей свечки
-				var bounds = _timeFrame.GetCandleBounds(_trader);
+                Thread.Sleep(1000);
 
-				candles = _candleManager.GetTimeFrameCandles(_strategy.Security, _timeFrame, new Range<DateTime>(_lastCandleTime + _timeFrame, bounds.Min));
+                IEnumerable<TimeFrameCandle> candles = _candleManager.GetTimeFrameCandles(_strategy.Security, _timeFrame, new Range<DateTime>(_lastCandleTime + _timeFrame, bounds.Min));
 
-				foreach (var candle in candles)
-				{
-                    _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-					_strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-					_strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                if (candles.Count() > 0)
+                {
+                    foreach (var candle in candles)
+                    {
+                        _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                        _strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                        _strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
 
-					DrawSmaLines(candle.Time);
+                        DrawSmaLines(candle.Time);
 
-					_lastCandleTime = candle.Time;
-				}
+                        _lastCandleTime = candle.Time;
+                    }
+                }
 
-				_isTodaySmaDrawn = true;
+                _isTodaySmaDrawn = true;
 
-				this.Report.IsEnabled = true;
-			}
+                this.Report.IsEnabled = true;
+            }
 
-			if (_strategy.ProcessState == ProcessStates.Stopped)
-			{
-				// запускаем процесс получения стакана, необходимый для работы алгоритма котирования
-				_trader.RegisterQuotes(_strategy.Security);
-				_strategy.Start();
-				this.Start.Content = "Стоп";
-			}
-			else
-			{
-				_trader.UnRegisterQuotes(_strategy.Security);
-				_strategy.Stop();
-				this.Start.Content = "Старт";
-			}
-		}
-
-		private void Report_Click(object sender, RoutedEventArgs e)
-		{
-			// сгерерировать отчет по прошедшему тестированию
-			new ExcelStrategyReport(_strategy, "sma.xlsx").Generate();
-
-			// открыть отчет
-			Process.Start("sma.xlsx");
-		}
-
-        private void btnFindHistoryPath_Click(object sender, RoutedEventArgs e)
-        {
-            var dlg = new FolderBrowserDialog();
-
-            if (!this.txtHistoryPath.Text.IsEmpty())
-                dlg.SelectedPath = this.txtHistoryPath.Text;
-
-            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (_strategy.ProcessState == ProcessStates.Stopped)
             {
-                this.txtHistoryPath.Text = dlg.SelectedPath;
+                // запускаем процесс получения стакана, необходимый для работы алгоритма котирования
+                _trader.RegisterQuotes(_strategy.Security);
+                _strategy.Start();
+                this.Start.Content = "Стоп";
+            }
+            else
+            {
+                _trader.UnRegisterQuotes(_strategy.Security);
+                _strategy.Stop();
+                this.Start.Content = "Старт";
             }
         }
 
@@ -454,7 +205,7 @@
             {
                 BasePath = this.txtHistoryPath.Text
             };
-            
+
             DateTime startTime;
             DateTime stopTime;
 
@@ -469,7 +220,7 @@
                 startTime = stopTime.AddDays(-3);
                 txtHistoryRangeBegin.Text = startTime.ToString();
             }
- 
+
             EmulationTrader emuTrader = new EmulationTrader(
                 new[] { security },
                 new[] { portfolio })
@@ -549,22 +300,18 @@
 
                         var firstCandle = candles.FirstOrDefault();
 
-                        _strategy.FilterMA.RemoveStartFootprint((DecimalIndicatorValue)firstCandle.ClosePrice);
-                        _strategy.LongMA.RemoveStartFootprint((DecimalIndicatorValue)firstCandle.ClosePrice);
-                        _strategy.ShortMA.RemoveStartFootprint((DecimalIndicatorValue)firstCandle.ClosePrice);
+                        if (firstCandle != null)
+                        {
+                            _strategy.FilterMA.RemoveStartFootprint((DecimalIndicatorValue)firstCandle.ClosePrice);
+                            _strategy.LongMA.RemoveStartFootprint((DecimalIndicatorValue)firstCandle.ClosePrice);
+                            _strategy.ShortMA.RemoveStartFootprint((DecimalIndicatorValue)firstCandle.ClosePrice);
+                        }
 
                         foreach (var candle in candles)
                         {
                             _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
                             _strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
                             _strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-
-                            //if (candle.Time > DateTime.Parse("24.10.2011 20:29:00") && candle.Time < DateTime.Parse("24.10.2011 20:36:00"))
-                            //{
-                            //    this._log.AddLog(new LogMessage(this._log, candle.Time, ErrorTypes.None, "Test (CandleTime: {0}). SMA: {1}, LMA: {2}",
-                            //        candle.Time,
-                            //        _strategy.ShortMA.LastValue, _strategy.LongMA.LastValue));
-                            //}
 
                             DrawSmaLines(candle.Time);
                         }
@@ -609,42 +356,6 @@
             emuTrader.Start(startTime, stopTime);
         }
 
-        public class MainWindowLogSource : ILogSource
-        {
-            public MainWindowLogSource()
-            {
-                this.Id = Guid.NewGuid();
-            }
-
-            public INotifyList<ILogSource> Childs
-            {
-                get { return null; }
-            }
-
-            public Guid Id
-            {
-                get;
-                set;
-            }
-
-            public void AddLog(LogMessage message)
-            {
-                this.Log(message);
-            }
-
-            public event Action<LogMessage> Log;
-
-            public string Name
-            {
-                get { return "MainWindow"; }
-            }
-
-            public ILogSource Parent
-            {
-                get { return null; }
-            }
-        }
-
         private void btnOptimize_Click(object sender, RoutedEventArgs e)
         {
             // создаем тестовый инструмент, на котором будет производится тестирование
@@ -687,12 +398,346 @@
                 {
                     this.GuiAsync(() => MessageBox.Show(this, String.Format("Opt done. The best startegy: {0}, {1}, {2} PnL: {3}",
                         optimizer.BestStrategy.FilterMA.Length,
-                        optimizer.BestStrategy.LongMA.Length, optimizer.BestStrategy.ShortMA.Length, 
+                        optimizer.BestStrategy.LongMA.Length, optimizer.BestStrategy.ShortMA.Length,
                         optimizer.BestStrategy.PnLManager.PnL)));
                 }
             };
 
             optimizer.Optimize();
+        }
+
+        #endregion
+
+        #region Service Event Handlers
+
+        private void Connect_Click(object sender, RoutedEventArgs e)
+        {
+            if (_trader == null || !_trader.IsConnected)
+            {
+                if (_trader == null)
+                {
+                    if (this.Path.Text.IsEmpty())
+                    {
+                        MessageBox.Show(this, "Путь к Quik не выбран.");
+                        return;
+                    }
+
+                    // создаем шлюз
+                    _trader = new RealTimeEmulationTrader<QuikTrader>(new QuikTrader(this.Path.Text));
+
+                    this.Portfolios.Trader = _trader;
+
+                    _trader.Connected += () =>
+                    {
+                        _candleManager = new CandleManager(_trader);
+
+                        _trader.NewSecurities += securities => this.GuiAsync(() =>
+                        {
+                            // находим нужную бумагу
+                            var sec = securities.FirstOrDefault(s => s.Code == this.txtSecurityCode.Text);
+
+                            if (sec != null)
+                            {
+                                _security = sec;
+
+                                this.GuiAsync(() =>
+                                {
+                                    this.Start.IsEnabled = true;
+                                });
+                            }
+                        });
+
+                        _trader.NewMyTrades += trades => this.GuiAsync(() =>
+                        {
+                            if (_strategy != null)
+                            {
+                                // найти те сделки, которые совершила стратегия скользящей средней
+                                trades = trades.Where(t => _strategy.Orders.Any(o => o == t.Order));
+
+                                _trades.Trades.AddRange(trades);
+                            }
+                        });
+
+                        _candleManager.NewCandles += (token, candles) =>
+                        {
+                            DrawCandles(candles);
+
+                            if (_isTodaySmaDrawn)
+                            {
+                                DrawSma();
+                            }
+                        };
+
+                        _candleManager.CandlesChanged += (token, candles) => DrawCandles(candles);
+
+                        _trader.ConnectionError += ex =>
+                        {
+                            if (ex != null)
+                            {
+                                this._log.AddLog(new LogMessage(this._log, DateTime.Now, ErrorTypes.Error, ex.Message));
+                            }
+                        };
+
+                        this.GuiAsync(() =>
+                        {
+                            this.ConnectBtn.IsEnabled = false;
+                            this.ExportDde.IsEnabled = true;
+                            this.Report.IsEnabled = true;
+                        });
+                    };
+                }
+
+                _trader.Connect();
+            }
+            else
+                _trader.Disconnect();
+        }
+
+        private void StartDde()
+        {
+            _trader.StartExport();
+            _isDdeStarted = true;
+        }
+
+        private void StopDde()
+        {
+            _trader.StopExport();
+            _isDdeStarted = false;
+        }
+
+        private void ExportDde_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isDdeStarted)
+            {
+                StopDde();
+            }
+            else
+            {
+                StartDde();
+            }
+        }
+
+        private void CancelOrders_Click(object sender, RoutedEventArgs e)
+        {
+            _orders.SelectedOrders.ForEach(_trader.CancelOrder);
+        }
+
+        private void Report_Click(object sender, RoutedEventArgs e)
+        {
+            // сгерерировать отчет по прошедшему тестированию
+            new ExcelStrategyReport(_strategy, "sma.xlsx").Generate();
+
+            // открыть отчет
+            //Process.Start("sma.xlsx");
+        }
+
+        #endregion
+
+        #region Draw candles and indicators
+
+        private void DrawCandles(IEnumerable<Candle> candles)
+        {
+            this.GuiAsync(() => _chart.Candles.AddRange(candles));
+        }
+
+        private void DrawSma()
+        {
+            // нас не интересует текущая свечка, так как она еще не сформировалась
+            // и из нее нельзя брать цену закрытия
+
+            // вычисляем временные отрезки текущей свечки
+            var bounds = _timeFrame.GetCandleBounds(_trader);
+
+            // если появились новые полностью сформированные свечки
+            if ((_lastCandleTime + _timeFrame) <= bounds.Min)
+            {
+                // отступ с конца интервала, чтобы не захватить текущую свечку - 1 сек.
+                var endOffset = TimeSpan.Zero;//TimeSpan.FromSeconds(1);
+
+                bounds = new Range<DateTime>(_lastCandleTime + _timeFrame, bounds.Min - endOffset);
+
+                // получаем эти свечки
+                var candles = _candleManager.GetTimeFrameCandles(_strategy.Security, _timeFrame, bounds);
+
+                if (candles.Count() > 0)
+                {
+                    // получаем время самой последней свечки и запоминаем его как новое начало
+                    _lastCandleTime = candles.Max(c => c.Time);
+
+                    DrawSmaLines(bounds.Min);
+                }
+            }
+        }
+
+        private void DrawSmaLines(DateTime time)
+        {
+            this.GuiSync(() =>
+            {
+                //_filterMAGraph.Add(new CustomChartIndicator
+                //{
+                //    Time = time,
+                //    Value = (double)_strategy.FilterMA.LastValue
+                //});
+                _longMAGraph.Add(new CustomChartIndicator
+                {
+                    Time = time,
+                    Value = (double)_strategy.LongMA.LastValue
+                });
+                _shortMAGraph.Add(new CustomChartIndicator
+                {
+                    Time = time,
+                    Value = (double)_strategy.ShortMA.LastValue
+                });
+            });
+        }
+
+        #endregion
+
+        #region Interface Event Handlers
+
+        private void FindPath_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new FolderBrowserDialog();
+
+            if (!this.Path.Text.IsEmpty())
+                dlg.SelectedPath = this.Path.Text;
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.Path.Text = dlg.SelectedPath;
+            }
+        }
+
+        private void btnFindHistoryPath_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new FolderBrowserDialog();
+
+            if (!this.txtHistoryPath.Text.IsEmpty())
+                dlg.SelectedPath = this.txtHistoryPath.Text;
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.txtHistoryPath.Text = dlg.SelectedPath;
+            }
+        }
+
+        #endregion
+
+        #region Helpers Event Handlers
+
+        private void OnStrategyPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            this.GuiAsync(() =>
+            {
+                this.Status.Content = _strategy.ProcessState;
+                this.PnL.Content = _strategy.PnLManager.PnL;
+                this.Slippage.Content = _strategy.SlippageManager.Slippage;
+                this.Position.Content = _strategy.PositionManager.Position;
+                this.Latency.Content = _strategy.LatencyManager.Latency;
+            });
+        }
+
+        private void OnNewOrder(Order order)
+        {
+            _orders.Orders.Add(order);
+            this.GuiAsync(() => _chart.Orders.Add(order));
+        }
+
+        private void _orders_OrderSelected(object sender, EventArgs e)
+        {
+            this.CancelOrders.IsEnabled = _orders.SelectedOrders.Count() > 0;
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (_trader != null)
+            {
+                if (_isDdeStarted)
+                    StopDde();
+
+                _trader.Dispose();
+            }
+
+            base.OnClosing(e);
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private void SetDefaultHistoryRange()
+        {
+            DateTime d = DateTime.Now.AddDays(-1);
+
+            txtHistoryRangeBegin.Text = (d.Date + Exchange.Rts.WorkingTime.Times[0].Min).ToString("g");
+            txtHistoryRangeEnd.Text = (d.Date + Exchange.Rts.WorkingTime.Times[2].Max).ToString("g");
+        }
+
+        private IEnumerable<TimeFrameCandle> GetHistoryCandlesFromFile(Security security)
+        {
+            var historyFilePath = String.Format("{0}.txt", security.Code);
+
+            if (File.Exists(historyFilePath))
+            {
+                var candles = File.ReadAllLines(historyFilePath).Select(line =>
+                {
+                    var parts = line.Split(',');
+                    var time = DateTime.ParseExact(parts[0] + parts[1], "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                    return new TimeFrameCandle
+                    {
+                        OpenPrice = parts[2].To<decimal>(),
+                        HighPrice = parts[3].To<decimal>(),
+                        LowPrice = parts[4].To<decimal>(),
+                        ClosePrice = parts[5].To<decimal>(),
+                        TimeFrame = _timeFrame,
+                        Time = time,
+                        TotalVolume = parts[6].To<int>()/100,
+                        Security = security,
+                    };
+                });
+
+                return candles;
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        public class MainWindowLogSource : ILogSource
+        {
+            public MainWindowLogSource()
+            {
+                this.Id = Guid.NewGuid();
+            }
+
+            public INotifyList<ILogSource> Childs
+            {
+                get { return null; }
+            }
+
+            public Guid Id
+            {
+                get;
+                set;
+            }
+
+            public void AddLog(LogMessage message)
+            {
+                this.Log(message);
+            }
+
+            public event Action<LogMessage> Log;
+
+            public string Name
+            {
+                get { return "MainWindow"; }
+            }
+
+            public ILogSource Parent
+            {
+                get { return null; }
+            }
         }
 	}
 }

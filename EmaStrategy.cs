@@ -110,13 +110,6 @@ namespace SampleSMA
                 this.LongMA.RemoveStartFootprint((DecimalIndicatorValue)this.LastCandle.ClosePrice);
             }
 
-            //if (this.LastCandle.Time > DateTime.Parse("24.10.2011 20:29:00") && this.LastCandle.Time < DateTime.Parse("24.10.2011 20:36:00"))
-            //{
-            //    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Test (CandleTime: {0}). SMA: {1}, LMA: {2}",
-            //        this.LastCandle.Time,
-            //        this.ShortMA.LastValue, this.LongMA.LastValue));
-            //}
-
 			// calculate MA X-ing cases 
             bool xUp = this.ShortMA.LastValue > this.LongMA.LastValue && this._prevShortMAValue <= this._prevLongMAValue;
             bool xDown = this.ShortMA.LastValue < this.LongMA.LastValue && this._prevShortMAValue >= this._prevLongMAValue;
@@ -164,9 +157,16 @@ namespace SampleSMA
             {
                 //MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
                 //base.ChildStrategies.Add(marketQuotingStrategy);
-                base.RegisterOrder(order);
 
-                _primaryStrategyOrders.Add(order);
+                if (this.PositionManager.Position == 0)
+                {
+                    base.RegisterOrder(order);
+                    _primaryStrategyOrders.Add(order);
+                }
+                else
+                {
+                    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "PositionManager blocked the deal (CandleTime: {0}), we're already in position.", this.LastCandle.Time));
+                }
             }
 
             // update "prev-" variables
