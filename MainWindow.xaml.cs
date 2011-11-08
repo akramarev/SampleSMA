@@ -46,9 +46,9 @@
         private DateTime _lastUpdateDate;
         private DateTime _startEmulationTime;
 
-        private int _shortMAPeriod = 6;
-        private int _longMAPeriod = 18;
-        private int _filterMAPeriod = 96;
+        private int _filterMAPeriod = 90;
+        private int _longMAPeriod = 13;
+        private int _shortMAPeriod = 9;
 
         private LogManager _logManager = new LogManager();
         private MainWindowLogSource _log = new MainWindowLogSource();
@@ -391,18 +391,24 @@
                 txtHistoryRangeBegin.Text = startTime.ToString();
             }
 
+            Stopwatch sw = new Stopwatch();
+
             EMAStrategyOptimizer optimizer = new EMAStrategyOptimizer(security, storage, portfolio, startTime, stopTime);
             optimizer.StateChanged += () =>
             {
                 if (optimizer.State == OptimizationState.Finished)
                 {
-                    this.GuiAsync(() => MessageBox.Show(this, String.Format("Opt done. The best startegy: {0}, {1}, {2} PnL: {3}",
+                    sw.Stop();
+
+                    this.GuiAsync(() => MessageBox.Show(this, String.Format("Opt done ({0}). The best startegy: {1}, {2}, {3} PnL: {4}",
+                        sw.Elapsed,
                         optimizer.BestStrategy.FilterMA.Length,
                         optimizer.BestStrategy.LongMA.Length, optimizer.BestStrategy.ShortMA.Length,
                         optimizer.BestStrategy.PnLManager.PnL)));
                 }
             };
 
+            sw.Start();
             optimizer.Optimize();
         }
 

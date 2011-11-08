@@ -43,8 +43,8 @@ namespace SampleSMA
 			this.LongMA = longMA;
 			this.ShortMA = shortMA;
 
-            this.TakeProfitUnit = 200;
-            this.StopLossUnit = 300;
+            this.TakeProfitUnit = 30;
+            this.StopLossUnit = 55;
 
             // subscribe to new trades (required for child strategies)
             base.NewMyTrades += ProtectMyNewTrades;
