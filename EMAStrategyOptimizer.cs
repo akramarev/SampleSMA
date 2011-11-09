@@ -9,6 +9,7 @@ using StockSharp.Algo.Storages;
 using StockSharp.Algo.Testing;
 using StockSharp.BusinessEntities;
 using StockSharp.Algo;
+using StockSharp.Algo.Logging;
 
 namespace SampleSMA
 {
@@ -28,7 +29,7 @@ namespace SampleSMA
         }
 
         public EmaStrategy BestStrategy { get; protected set; }
-        private List<EmaStrategy> _performedStrategies = new List<EmaStrategy>();
+        public List<EmaStrategy> Strategies { get; protected set; }
 
         private readonly TimeSpan _timeFrame = TimeSpan.FromMinutes(5);
 
@@ -42,6 +43,8 @@ namespace SampleSMA
         public delegate void StateChangedHandler();
         public event StateChangedHandler StateChanged;
 
+        public SampleSMA.SimpleLogSource Log { get; set; }
+
         public EMAStrategyOptimizer(Security security, TradingStorage storage, Portfolio portfolio, DateTime startTime, DateTime stopTime)
         {
             _startTime = startTime;
@@ -50,13 +53,15 @@ namespace SampleSMA
             _security = security;
             _storage = storage;
             _portfolio = portfolio;
+
+            this.Strategies = new List<EmaStrategy>();
         }
 
         public void Optimize()
         {
             // clean up
-            BestStrategy = null;
-            _performedStrategies.Clear();
+            this.BestStrategy = null;
+            this.Strategies.Clear();
 
             this.OnStateChanged(OptimizationState.Began);
 
@@ -79,27 +84,24 @@ namespace SampleSMA
                 basketTrader.InnerTraders.Add(trader);
             }
 
-            // соединяемся с трейдером и запускаем экспорт,
-            // чтобы инициализировать переданными инструментами и портфелями необходимые свойства EmulationTrader
-            foreach (var trader in basketTrader.InnerTraders.Cast<IEmulationTrader>())
-            {
-                trader.Connect();
-                trader.StartExport();
-            }
+            EmulationTrader[] traders = basketTrader.InnerTraders.Cast<EmulationTrader>().ToArray();
 
-            // запускаем эмуляцию
-            foreach (var trader in basketTrader.InnerTraders.Cast<IEmulationTrader>())
+            for (int i = 0; i < traders.Length; i++)
             {
-                // указываем даты начала и конца тестирования
-                trader.Start(_startTime, _stopTime);
+                traders[i].Connect();
+                traders[i].StartExport();
+
+                traders[i].Start(_startTime, _stopTime);
+                //doneEvents[i].WaitOne();
             }
 
             WaitHandle.WaitAll(doneEvents);
 
             // debug
-            //_performedStrategies.ForEach(s => Console.WriteLine(s.PnLManager.PnL));
+            this.Strategies.ForEach(s => Log.AddLog(new LogMessage(Log, DateTime.Now, ErrorTypes.None, 
+                String.Format("Opt: {0}, {1}, {2}. PnL: {3} ", s.FilterMA.Length, s.LongMA.Length, s.ShortMA.Length, s.PnLManager.PnL))));
 
-            this.BestStrategy = _performedStrategies.OrderByDescending(s => s.PnLManager.PnL).FirstOrDefault();
+            this.BestStrategy = Strategies.OrderByDescending(s => s.PnLManager.PnL).FirstOrDefault();
             this.OnStateChanged(OptimizationState.Finished);
         }
 
@@ -113,7 +115,7 @@ namespace SampleSMA
             }
         }
 
-        private EmulationTrader GetOptTraderContext(int filterOptPeriod, int longOptPeriod, int shortOptPeriod, ManualResetEvent doneEvent)
+        public EmulationTrader GetOptTraderContext(int filterOptPeriod, int longOptPeriod, int shortOptPeriod, ManualResetEvent doneEvent)
         {
             // clone doesn't work for some reason
             var security = new Security
@@ -142,15 +144,15 @@ namespace SampleSMA
                 DaysInMemory = 5,
             };
 
-            //trader.DepthGenerators[security] = new TrendMarketDepthGenerator(security)
-            //{
-            //    // стакан для инструмента в истории обновляется раз в 1 секунду
-            //    Interval = TimeSpan.FromSeconds(1),
-            //};
+            trader.DepthGenerators[security] = new TrendMarketDepthGenerator(security)
+            {
+                // стакан для инструмента в истории обновляется раз в 1 секунду
+                Interval = TimeSpan.FromSeconds(1),
+            };
 
             CandleManager candleManager = new CandleManager();
 
-            var builder = new CandleBuilder(new SyncTraderTradeSource(trader));
+            var builder = new CandleBuilder(new TradeCandleBuilderSource(trader) { IsSyncProcess = true });
             candleManager.Sources.Add(builder);
 
             candleManager.RegisterTimeFrameCandles(security, _timeFrame);
@@ -166,7 +168,7 @@ namespace SampleSMA
                 Trader = trader
             };
 
-            _performedStrategies.Add(strategy);
+            this.Strategies.Add(strategy);
 
             trader.StateChanged += () =>
             {
@@ -200,11 +202,11 @@ namespace SampleSMA
         {
             List<OptVarItem> result = new List<OptVarItem>();
 
-            for (int a = 90; a <= 110; a += 10)
+            for (int a = 90; a <= 90; a += 10)
             {
-                for (int b = 12; b <= 14; b += 1)
+                for (int b = 13; b <= 13; b += 1)
                 {
-                    for (int c = 9; c < 11; c += 1)
+                    for (int c = 9; c <= 9; c += 1)
                     {
                         result.Add(new OptVarItem(a, b, c));
                     }
