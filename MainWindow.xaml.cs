@@ -366,8 +366,20 @@
                     }
 
                     // создаем шлюз
-                    _trader = new RealTimeEmulationTrader<QuikTrader>(new QuikTrader(this.Path.Text));
+                    if (rbFightMode.IsChecked.Value)
+                    {
+                        _trader = new RealTimeEmulationTrader<QuikTrader>(new QuikTrader(this.Path.Text));
+                    }
+                    else
+                    {
+                        _trader = new QuikTrader(this.Path.Text);
+                    }
 
+                    // deactivate trading mode radio buttons
+                    rbFightMode.IsEnabled = false;
+                    rbTrainingMode.IsEnabled = false;
+
+                    // connect trader with portoflio
                     this.Portfolios.Trader = _trader;
 
                     _trader.Connected += () =>

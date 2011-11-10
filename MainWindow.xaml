@@ -16,7 +16,7 @@
 
         <EcngTradingXaml:CandleChart x:Name="_chart" Margin="0,4,0,-4" />
 
-        <Grid Grid.Column="1" Margin="275,47,0,0" Height="134" VerticalAlignment="Top">
+        <Grid Grid.Column="1" Margin="275,47,0,0" Height="165" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -25,6 +25,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="22" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -36,64 +37,70 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="29" />
-                <RowDefinition Height="48*" />
+                <RowDefinition Height="28" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="63*" />
                 <RowDefinition Height="0" />
             </Grid.RowDefinitions>
             <TextBox x:Name="Path" Text="C:\Trading\FinamJunior" Grid.Row="2" />
             <Button x:Name="FindPath" Grid.Column="1" Grid.Row="2" Content="..." Width="25" HorizontalAlignment="Left" Click="FindPath_Click" />
             <EcngTradingXaml:PortfolioComboBox x:Name="Portfolios" Grid.Row="3" />
-            <Button x:Name="ConnectBtn" Width="100" Content="Подключиться" Click="Connect_Click" Margin="0,6,152,1" Grid.Row="15" />
-            <Button x:Name="ExportDde" Width="100" IsEnabled="False" Content="Экспорт DDE" Click="ExportDde_Click" Margin="106,6,46,1" Grid.Row="15" />
-            <Button x:Name="Start" Width="100" IsEnabled="False" Content="Старт" Click="Start_Click" Margin="0,15,0,0" Height="40" VerticalAlignment="Top" Grid.Row="16" HorizontalAlignment="Left" />
-            <Button x:Name="CancelOrders" Width="100" IsEnabled="False" Content="Отменить заявки" Click="CancelOrders_Click" Margin="106,15,0,6" Grid.Row="16" HorizontalAlignment="Left" />
+            <Button x:Name="ConnectBtn" Width="100" Content="Подключиться" Click="Connect_Click" Margin="0,4,152,2" Grid.Row="15" />
+            <Button x:Name="ExportDde" Width="100" IsEnabled="False" Content="Экспорт DDE" Click="ExportDde_Click" Margin="106,4,46,2" Grid.Row="15" />
+            <Button x:Name="Start" Width="100" IsEnabled="False" Content="Старт" Click="Start_Click" Margin="0,5,0,0" Height="33" VerticalAlignment="Top" Grid.Row="17" HorizontalAlignment="Left" />
+            <Button x:Name="CancelOrders" Width="100" IsEnabled="False" Content="Отменить заявки" Click="CancelOrders_Click" Margin="106,5,0,0" Grid.Row="17" HorizontalAlignment="Left" Height="33" VerticalAlignment="Top" />
+            <RadioButton Content="Training Mode" Grid.Row="16" Height="16" HorizontalAlignment="Left" Margin="0,4,0,0" Name="rbTrainingMode" VerticalAlignment="Top" Width="100" IsChecked="True" GroupName="TradingModeRbGroup" />
+            <RadioButton Content="Fight Mode" Grid.Row="16" Height="16" HorizontalAlignment="Left" Margin="106,4,0,0" Name="rbFightMode" VerticalAlignment="Top" Width="100" GroupName="TradingModeRbGroup" />
         </Grid>
-        <Grid Height="135" HorizontalAlignment="Left" Margin="0,46,0,0" Name="grid1" VerticalAlignment="Top" Grid.Column="1" Width="269">
+        <Grid Height="166" HorizontalAlignment="Left" Margin="0,46,0,0" Name="grid1" VerticalAlignment="Top" Grid.Column="1" Width="269">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="29" />
-                <RowDefinition Height="29" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="22" />
+                <RowDefinition Height="28" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="63*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="244" />
                 <ColumnDefinition Width="25*" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="btnHistoryStart" Grid.Row="1" Height="24" HorizontalAlignment="Left" VerticalAlignment="Top" Width="53" Content="Старт" Click="btnHistoryStart_Click" Margin="191,28,0,0" Grid.RowSpan="2" />
+            <Button x:Name="btnHistoryStart" Grid.Row="2" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Width="53" Content="Старт" Click="btnHistoryStart_Click" Margin="191,4,0,0" />
             <TextBox Height="23" HorizontalAlignment="Left" Name="txtHistoryPath" VerticalAlignment="Top" Width="244" Text="Z:\Documents\Trading\StockSharp\History Data" />
             <Button Content="..." Grid.Column="1" Name="btnFindHistoryPath" VerticalAlignment="Top" Click="btnFindHistoryPath_Click" Margin="0,1,0,0" Width="25" />
             <ProgressBar Grid.Row="1" Height="22" HorizontalAlignment="Left" Name="pbHistoryTestProgress" VerticalAlignment="Top" Width="244" />
-            <TextBox Grid.Row="2" Height="23" HorizontalAlignment="Left" Name="txtHistoryRangeBegin" VerticalAlignment="Top" Width="88" />
-            <TextBox Grid.Row="2" Height="23" HorizontalAlignment="Right" Name="txtHistoryRangeEnd" VerticalAlignment="Top" Width="91" Margin="0,0,59,0" />
-            <Button Content="Optimize" Grid.Row="3" Height="40" Margin="0,8,0,0" Name="btnOptimize" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100" Click="btnOptimize_Click" />
+            <TextBox Grid.Row="2" HorizontalAlignment="Left" Name="txtHistoryRangeBegin" VerticalAlignment="Top" Width="88" Margin="0,4,0,0" />
+            <TextBox Grid.Row="2" HorizontalAlignment="Right" Name="txtHistoryRangeEnd" VerticalAlignment="Top" Width="91" Margin="0,4,59,0" />
+            <Button Content="Optimize" Grid.Row="4" Height="33" Margin="0,5,0,0" Name="btnOptimize" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100" Click="btnOptimize_Click" />
         </Grid>
-        <Grid Name="grid3" Height="89" VerticalAlignment="Top" Margin="0,187,0,0" Grid.ColumnSpan="2" HorizontalAlignment="Right" Width="553">
+        <Grid Name="grid3" Height="61" VerticalAlignment="Top" Margin="0,215,0,0" HorizontalAlignment="Right" Width="552" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="29*" />
+                <RowDefinition Height="3*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="68" />
-                <ColumnDefinition Width="187" />
-                <ColumnDefinition Width="68" />
-                <ColumnDefinition Width="187" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="43*" />
+                <ColumnDefinition Width="29" />
+                <ColumnDefinition Width="59" />
+                <ColumnDefinition Width="61" />
+                <ColumnDefinition Width="69" />
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="77*" />
+                <ColumnDefinition Width="51*" />
+                <ColumnDefinition Width="72*" />
+                <ColumnDefinition Width="99*" />
             </Grid.ColumnDefinitions>
-            <Label Content="Статус:" Margin="0,0,0,3" />
-            <Label x:Name="Status" Grid.Column="1" Margin="0,0,0,3" Content="Stopped" />
-            <Label Content="P&amp;L:" Margin="0,0,33,3" Grid.Column="2" />
-            <Label x:Name="PnL" Grid.Column="3" Margin="0,0,0,3" Content="0.0" />
-            <Label Grid.Row="2" Content="Проскаль.:" Margin="0,0,0,3" />
-            <Label x:Name="Slippage" Grid.Column="1" Grid.Row="2" Margin="0,0,0,3" Height="26" VerticalAlignment="Bottom" Content="0.0" />
-            <Label x:Name="Position" Grid.Column="1" Grid.Row="1" Margin="0,0,0,3" Content="0" />
-            <Label Grid.Row="1" Content="Поза:" Margin="0,0,2,3" />
-            <Label x:Name="Latency" Grid.Row="1" Margin="0,0,0,3" Grid.Column="3" Content="00:00:00.00" />
-            <Label Grid.Row="1" Content="Задержка:" Margin="2,0,0,3" Grid.Column="2" />
-            <Button x:Name="Report" Grid.Column="3" IsEnabled="False" Content="Отчет" Click="Report_Click" Margin="0,3,96,4" Grid.Row="2" />
+            <Label Content="Статус:" Margin="0,3,0,0" Grid.Column="1" />
+            <Label x:Name="Status" Grid.Column="2" Margin="0,3,0,0" Content="Stopped" />
+            <Label Content="P&amp;L:" Margin="0,3,0,0" Grid.Column="4" HorizontalAlignment="Left" Width="35" />
+            <Label x:Name="PnL" Grid.Column="5" Margin="0,3,0,0" Content="0.000" />
+            <Label Content="Проскаль.:" Margin="0,3,0,0" Grid.Column="7" />
+            <Label x:Name="Slippage" Grid.Column="8" Margin="0,0,45,0" Height="26" VerticalAlignment="Bottom" Content="0.0" />
+            <Label x:Name="Position" Grid.Column="2" Grid.Row="1" Margin="0,0,0,3" Content="0" />
+            <Label Grid.Row="1" Content="Поза:" Margin="0,0,0,3" Grid.Column="1" />
+            <Label x:Name="Latency" Grid.Row="1" Margin="0,3,18,0" Grid.Column="8" Content="00:00:00.00" />
+            <Label Grid.Row="1" Content="Задержка:" Margin="0,3,0,0" Grid.Column="7" HorizontalAlignment="Left" Width="72" />
+            <Button x:Name="Report" Grid.Column="4" IsEnabled="False" Content="Отчет" Click="Report_Click" Margin="0,4,0,3" Grid.Row="1" Grid.ColumnSpan="2" />
         </Grid>
         <Grid Height="27" HorizontalAlignment="Left" Margin="141,4,0,0" Name="grid4" VerticalAlignment="Top" Grid.Column="1" Width="260">
             <Grid.ColumnDefinitions>
