@@ -243,7 +243,7 @@
                         // заполняем order'ы
                         _orders.Orders.Clear();
                         _orders.Orders.AddRange(strategy.Orders);
-                        this.GuiAsync(() => _chart.Orders.AddRange(strategy.Orders));
+                        //this.GuiAsync(() => _candleChart.Orders.AddRange(strategy.Orders));
 
                         // заполняем трейды
                         _trades.Trades.Clear();
@@ -534,16 +534,20 @@
                 //    Time = time,
                 //    Value = (double)strategy.FilterMA.LastValue
                 //});
-                _longMAGraph.Add(new CustomChartIndicator
-                {
-                    Time = time,
-                    Value = (double)strategy.LongMA.LastValue
-                });
-                _shortMAGraph.Add(new CustomChartIndicator
-                {
-                    Time = time,
-                    Value = (double)strategy.ShortMA.LastValue
-                });
+                //_longMAGraph.Add(new CustomChartIndicator
+                //{
+                //    Time = time,
+                //    Value = (double)strategy.LongMA.LastValue
+                //});
+                //_shortMAGraph.Add(new CustomChartIndicator
+                //{
+                //    Time = time,
+                //    Value = (double)strategy.ShortMA.LastValue
+                //});
+
+                _candleChart.AddFilterMA(time, (double)strategy.FilterMA.LastValue);
+                _candleChart.AddLongMA(time, (double)strategy.LongMA.LastValue);
+                _candleChart.AddShortMA(time, (double)strategy.ShortMA.LastValue);
             });
         }
 
