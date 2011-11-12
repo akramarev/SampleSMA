@@ -24,9 +24,9 @@ namespace SampleSMA
         private decimal _prevLongMAValue;
         private decimal _prevShortMAValue;
 
+        public CandleManager CandleManager { get; private set; }
         public TimeFrameCandle LastCandle { get; private set; }
 
-		private readonly CandleManager _candleManager;
 		private DateTime _nextTime;
 
         // all order made by strategy, but not by child strategies
@@ -37,14 +37,14 @@ namespace SampleSMA
 		{
             this.Name = "EmaStrategy";
 
-			this._candleManager = candleManager;
+			this.CandleManager = candleManager;
 
             this.FilterMA = filterMA;
 			this.LongMA = longMA;
 			this.ShortMA = shortMA;
 
-            this.TakeProfitUnit = 200;
-            this.StopLossUnit = 300;
+            this.TakeProfitUnit = 30;
+            this.StopLossUnit = 55;
 
             // subscribe to new trades (required for child strategies)
             base.NewMyTrades += ProtectMyNewTrades;
@@ -78,7 +78,7 @@ namespace SampleSMA
 			}
 
 			// получаем сформированную свечку
-            this.LastCandle = _candleManager.GetTimeFrameCandle(base.Security, base.TimeFrame, _nextTime - base.TimeFrame);
+            this.LastCandle = this.CandleManager.GetTimeFrameCandle(base.Security, base.TimeFrame, _nextTime - base.TimeFrame);
 
             // move internal time tracker to the next candle
             _nextTime += base.TimeFrame;
@@ -155,12 +155,13 @@ namespace SampleSMA
             // make order
             if (order != null)
             {
-                //MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
-                //base.ChildStrategies.Add(marketQuotingStrategy);
-
                 if (this.PositionManager.Position == 0)
                 {
-                    base.RegisterOrder(order);
+                    //base.RegisterOrder(order);
+
+                    MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
+                    base.ChildStrategies.Add(marketQuotingStrategy);
+
                     _primaryStrategyOrders.Add(order);
                 }
                 else
