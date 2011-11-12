@@ -368,11 +368,11 @@
                     // создаем шлюз
                     if (rbFightMode.IsChecked.Value)
                     {
-                        _trader = new RealTimeEmulationTrader<QuikTrader>(new QuikTrader(this.Path.Text));
+                        _trader = new QuikTrader(this.Path.Text);
                     }
                     else
                     {
-                        _trader = new QuikTrader(this.Path.Text);
+                        _trader = new RealTimeEmulationTrader<QuikTrader>(new QuikTrader(this.Path.Text));
                     }
 
                     // deactivate trading mode radio buttons
@@ -507,7 +507,7 @@
             if ((_lastCandleTime + _timeFrame) <= bounds.Min)
             {
                 // отступ с конца интервала, чтобы не захватить текущую свечку - 1 сек.
-                var endOffset = TimeSpan.Zero;//TimeSpan.FromSeconds(1);
+                var endOffset = TimeSpan.FromSeconds(1); //TimeSpan.Zero
 
                 bounds = new Range<DateTime>(_lastCandleTime + _timeFrame, bounds.Min - endOffset);
 
