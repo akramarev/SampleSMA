@@ -86,6 +86,8 @@
                     return;
                 }
 
+                this.ClearChart();
+
                 _strategy = new EmaStrategy(_candleManager,
                     new ExponentialMovingAverage { Length = this._filterMAPeriod },
                     new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod },
@@ -163,6 +165,8 @@
 
         private void btnHistoryStart_Click(object sender, RoutedEventArgs e)
         {
+            this.ClearChart();
+
             // создаем тестовый инструмент, на котором будет производится тестирование
             var security = new Security
             {
@@ -549,6 +553,11 @@
                 _candleChart.AddLongMA(time, (double)strategy.LongMA.LastValue);
                 _candleChart.AddShortMA(time, (double)strategy.ShortMA.LastValue);
             });
+        }
+
+        private void ClearChart()
+        {
+            _candleChart.Clear();
         }
 
         #endregion

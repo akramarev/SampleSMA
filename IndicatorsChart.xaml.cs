@@ -1,122 +1,18 @@
 ﻿namespace IndicatorsXaml
 {
+    using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Drawing;
     using System.Linq;
     using System.Text;
     using System.Windows.Forms.DataVisualization.Charting;
-
-    using Ecng.Common;
-
     using StockSharp.Algo.Candles;
-    using StockSharp.Algo.Indicators.Trend;
-using StockSharp.Xaml;
-using System;
 
     public partial class CandleChart
     {
-        private readonly ChartArea _chartAreaCandles;
-
-        private readonly Series _seriesCandles;
-
-        private readonly Series _seriesFilterMA;
-        private readonly Series _seriesLongMA;
-        private readonly Series _seriesShortMA;
-
-        /// <summary>
-        /// Графической компонент отображения индикаторов на Candle графике
-        /// </summary>
         public CandleChart()
         {
             InitializeComponent();
-
-            var chart = Chart;
-
-            chart.BackColor = System.Drawing.Color.FromArgb(211, 223, 240);
-            chart.BorderlineDashStyle = ChartDashStyle.Solid;
-
-            _chartAreaCandles = new ChartArea("ChartAreaCandles")
-            {
-                AxisX =
-                    {
-                        IsLabelAutoFit = false,
-                        LabelStyle =
-                            {
-                                Font = new System.Drawing.Font("Trebuchet MS", 8F, System.Drawing.FontStyle.Regular),
-                                IsEndLabelVisible = false,
-                                Format = "HH:mm"
-                            },
-                        LineColor = System.Drawing.Color.FromArgb(64, 64, 64, 64),
-                        MajorGrid =
-                            {
-                                LineColor = System.Drawing.Color.FromArgb(64, 64, 64, 64)
-                            },
-                        IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount,
-                        IntervalType = DateTimeIntervalType.Minutes
-                    },
-                AxisY =
-                    {
-                        IsLabelAutoFit = false,
-                        LabelStyle =
-                            {
-                                Font = new System.Drawing.Font("Trebuchet MS", 8F, System.Drawing.FontStyle.Bold)
-                            },
-                        LineColor = System.Drawing.Color.FromArgb(64, 64, 64, 64),
-                        MajorGrid =
-                            {
-                                LineColor = System.Drawing.Color.FromArgb(64, 64, 64, 64)
-                            },
-                        IsStartedFromZero = false
-                    },
-                BackColor = System.Drawing.Color.White,
-            };
-
-            chart.ChartAreas.Add(_chartAreaCandles);
-
-            chart.Palette = ChartColorPalette.SemiTransparent;
-
-            #region Create Chart Series (Candles and 3 MAs)
-
-            _seriesCandles = new Series("SeriesCandles")
-            {
-                ChartArea = "ChartAreaCandles",
-                ChartType = SeriesChartType.Candlestick,
-                XValueType = ChartValueType.DateTime,
-                IsXValueIndexed = true
-            };
-
-            _seriesFilterMA = new Series("SeriesFilterMA")
-            {
-                ChartArea = "ChartAreaCandles",
-                ChartType = SeriesChartType.Line,
-                XValueType = ChartValueType.DateTime,
-                IsXValueIndexed = true
-            };
-
-            _seriesLongMA = new Series("SeriesLongMA")
-            {
-                ChartArea = "ChartAreaCandles",
-                ChartType = SeriesChartType.Line,
-                XValueType = ChartValueType.DateTime,
-                IsXValueIndexed = true
-            };
-
-            _seriesShortMA = new Series("SeriesShortMA")
-            {
-                ChartArea = "ChartAreaCandles",
-                ChartType = SeriesChartType.Line,
-                XValueType = ChartValueType.DateTime,
-                IsXValueIndexed = true
-            };
-
-            #endregion
-
-            chart.Series.Add(_seriesCandles);
-
-            chart.Series.Add(_seriesFilterMA);
-            chart.Series.Add(_seriesLongMA);
-            chart.Series.Add(_seriesShortMA);
         }
 
         public void AddCandle(TimeFrameCandle candle)
@@ -169,60 +65,12 @@ using System;
             }
         }
 
-        //public void AddNewChartArea(string name, Chart chart)
-        //{
-        //    var chartArea = new ChartArea
-        //    {
-        //        Name = name,
-        //        AlignWithChartArea = "ChartAreaCandles",
-        //        Area3DStyle =
-        //        {
-        //            IsClustered = true,
-        //            Perspective = 10,
-        //            IsRightAngleAxes = false,
-        //            WallWidth = 0,
-        //            Inclination = 10,
-        //            Rotation = 10
-        //        },
-        //        AxisX =
-        //        {
-        //            IntervalType = DateTimeIntervalType.Minutes,
-        //            IsLabelAutoFit = false,
-        //            LabelStyle =
-        //            {
-        //                Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold),
-        //                IsEndLabelVisible = false,
-        //                Format = "HH:mm"
-        //            },
-        //            LineColor = System.Drawing.Color.FromArgb(64, 64, 64, 64),
-        //            MajorGrid =
-        //            {
-        //                LineColor = System.Drawing.Color.FromArgb(64, 64, 64, 64)
-        //            }
-        //        },
-        //        AxisY =
-        //        {
-        //            IsLabelAutoFit = false,
-        //            LabelStyle =
-        //            {
-        //                Font = new System.Drawing.Font("Trebuchet MS", 8.25F, System.Drawing.FontStyle.Bold)
-        //            },
-        //            LineColor = System.Drawing.Color.FromArgb(64, 64, 64, 64),
-        //            MajorGrid =
-        //            {
-        //                LineColor = System.Drawing.Color.FromArgb(64, 64, 64, 64)
-        //            },
-        //            IsStartedFromZero = false
-        //        },
-        //        BackColor = System.Drawing.Color.FromArgb(64, 165, 191, 228),
-        //        BackSecondaryColor = Color.White,
-        //        BackGradientStyle = GradientStyle.TopBottom,
-        //        BorderColor = System.Drawing.Color.FromArgb(64, 64, 64, 64),
-        //        BorderDashStyle = ChartDashStyle.Solid,
-        //        ShadowColor = System.Drawing.Color.Transparent
-        //    };
-
-        //    chart.ChartAreas.Add(chartArea);
-        //}
+        public void Clear()
+        {
+            _seriesCandles.Points.Clear();
+            _seriesFilterMA.Points.Clear();
+            _seriesLongMA.Points.Clear();
+            _seriesShortMA.Points.Clear();
+        }
     }
 }

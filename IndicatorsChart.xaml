@@ -5,11 +5,44 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
              xmlns:mschart="clr-namespace:System.Windows.Forms.DataVisualization.Charting;assembly=System.Windows.Forms.DataVisualization"
-             mc:Ignorable="d" 
-             d:DesignHeight="320" d:DesignWidth="480">
+             mc:Ignorable="d" d:DesignHeight="320" d:DesignWidth="480">
     <Grid>
         <wfi:WindowsFormsHost Name="Host">
-            <mschart:Chart x:Name="Chart" />
+            <mschart:Chart x:Name="_chart" BackColor="AliceBlue" BorderlineColor="MidnightBlue" BorderlineWidth="1" BorderlineDashStyle="Dash">
+                <mschart:Chart.ChartAreas>
+                    <mschart:ChartArea Name="ChartAreaCandles">
+                        <mschart:ChartArea.AxisX>
+                            <mschart:Axis IntervalType="Minutes" IntervalAutoMode="VariableCount" IsStartedFromZero="False">
+                                <mschart:Axis.MajorGrid>
+                                    <mschart:Grid LineColor="LightGray" />
+                                </mschart:Axis.MajorGrid>
+                                <mschart:Axis.LabelStyle>
+                                    <mschart:LabelStyle Format="HH:mm" />
+                                </mschart:Axis.LabelStyle>
+                            </mschart:Axis>
+                        </mschart:ChartArea.AxisX>
+                        <mschart:ChartArea.AxisY>
+                            <mschart:Axis Interval="50" IsStartedFromZero="False"> 
+                                <mschart:Axis.MajorGrid>
+                                    <mschart:Grid LineColor="LightGray" />
+                                </mschart:Axis.MajorGrid>
+                            </mschart:Axis>
+                        </mschart:ChartArea.AxisY>
+                        <mschart:ChartArea.CursorX>
+                            <mschart:Cursor LineWidth="1" LineColor="Black" LineDashStyle="Solid" SelectionColor="Highlight" IsUserEnabled="True" IsUserSelectionEnabled="True" IntervalType="Minutes" Interval="5"></mschart:Cursor>
+                        </mschart:ChartArea.CursorX>
+                        <!--<mschart:ChartArea.CursorY>
+                            <mschart:Cursor LineWidth="1" LineColor="Black" LineDashStyle="Solid" SelectionColor="Highlight" IsUserEnabled="True" IsUserSelectionEnabled="True"></mschart:Cursor>
+                        </mschart:ChartArea.CursorY>-->
+                    </mschart:ChartArea>
+                </mschart:Chart.ChartAreas>
+                <mschart:Chart.Series>
+                    <mschart:Series Name="SeriesCandles" x:Name="_seriesCandles" ChartType="Candlestick" ChartArea="ChartAreaCandles" XValueType="DateTime"/>
+                    <mschart:Series Name="SeriesFilterMA" x:Name="_seriesFilterMA" ChartType="Line" ChartArea="ChartAreaCandles" XValueType="DateTime" ToolTip="#VAL"/>
+                    <mschart:Series Name="SeriesLongMA" x:Name="_seriesLongMA" ChartType="Line" ChartArea="ChartAreaCandles" XValueType="DateTime" ToolTip="#VAL"/>
+                    <mschart:Series Name="SeriesShortMA" x:Name="_seriesShortMA" ChartType="Line" ChartArea="ChartAreaCandles" XValueType="DateTime" ToolTip="#VAL"/>
+                </mschart:Chart.Series>
+            </mschart:Chart>
         </wfi:WindowsFormsHost>
     </Grid>
 </UserControl>

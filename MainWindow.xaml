@@ -5,7 +5,7 @@
     xmlns:IndicatorsXaml="clr-namespace:IndicatorsXaml"
     Title="Скользящие Средние" Height="768" Width="1000">
 
-    <Grid Margin="0,0,0,29">
+    <Grid Margin="1,0,1,1">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="200" />
@@ -16,7 +16,7 @@
         </Grid.ColumnDefinitions>
 
         <!--<EcngTradingXaml:CandleChart x:Name="_chart" Margin="0,4,0,-4" />-->
-        <IndicatorsXaml:CandleChart x:Name="_candleChart" />
+        <IndicatorsXaml:CandleChart x:Name="_candleChart" Margin="0,0,5,5"/>
 
         <Grid Grid.Column="1" Margin="275,47,0,0" Height="165" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
@@ -54,7 +54,7 @@
             <RadioButton Content="Training Mode" Grid.Row="16" Height="16" HorizontalAlignment="Left" Margin="0,4,0,0" Name="rbTrainingMode" VerticalAlignment="Top" Width="100" IsChecked="True" GroupName="TradingModeRbGroup" />
             <RadioButton Content="Fight Mode" Grid.Row="16" Height="16" HorizontalAlignment="Left" Margin="106,4,0,0" Name="rbFightMode" VerticalAlignment="Top" Width="100" GroupName="TradingModeRbGroup" />
         </Grid>
-        <Grid Height="166" HorizontalAlignment="Left" Margin="0,46,0,0" Name="grid1" VerticalAlignment="Top" Grid.Column="1" Width="269">
+        <Grid Height="166" HorizontalAlignment="Left" Margin="0,46,0,0" Name="HistoryTestingGrid" VerticalAlignment="Top" Grid.Column="1" Width="269">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="22" />
@@ -97,10 +97,10 @@
             <Label Content="P&amp;L:" Margin="0,3,0,0" Grid.Column="4" HorizontalAlignment="Left" Width="35" />
             <Label x:Name="PnL" Grid.Column="5" Margin="0,3,0,0" Content="0.000" />
             <Label Content="Проскаль.:" Margin="0,3,0,0" Grid.Column="7" />
-            <Label x:Name="Slippage" Grid.Column="8" Margin="0,0,45,0" Height="26" VerticalAlignment="Bottom" Content="0.0" />
+            <Label x:Name="Slippage" Grid.Column="8" Height="26" VerticalAlignment="Bottom" Content="0.0" />
             <Label x:Name="Position" Grid.Column="2" Grid.Row="1" Margin="0,0,0,3" Content="0" />
             <Label Grid.Row="1" Content="Поза:" Margin="0,0,0,3" Grid.Column="1" />
-            <Label x:Name="Latency" Grid.Row="1" Margin="0,3,18,0" Grid.Column="8" Content="00:00:00.00" />
+            <Label x:Name="Latency" Grid.Row="1" Margin="0,3,0,0" Grid.Column="8" Content="00:00:00.00" />
             <Label Grid.Row="1" Content="Задержка:" Margin="0,3,0,0" Grid.Column="7" HorizontalAlignment="Left" Width="72" />
             <Button x:Name="Report" Grid.Column="4" IsEnabled="False" Content="Отчет" Click="Report_Click" Margin="0,4,0,3" Grid.Row="1" Grid.ColumnSpan="2" />
         </Grid>

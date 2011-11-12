@@ -204,9 +204,9 @@ namespace SampleSMA
 
             for (int a = 90; a <= 90; a += 10)
             {
-                for (int b = 13; b <= 13; b += 1)
+                for (int b = 12; b <= 15; b += 1)
                 {
-                    for (int c = 9; c <= 9; c += 1)
+                    for (int c = 9; c <= 11; c += 1)
                     {
                         result.Add(new OptVarItem(a, b, c));
                     }
