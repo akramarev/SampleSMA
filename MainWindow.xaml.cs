@@ -35,16 +35,10 @@
 		private ITrader _trader;
 		private EmaStrategy _strategy;
 		private bool _isDdeStarted;
-		private DateTime _lastCandleTime = DateTime.Now.Date.AddDays(-1);
-		private bool _isTodaySmaDrawn;
 		private CandleManager _candleManager;
-        private readonly ICollection<CustomChartIndicator> _filterMAGraph;
-		private readonly ICollection<CustomChartIndicator> _longMAGraph;
-		private readonly ICollection<CustomChartIndicator> _shortMAGraph;
 		private Security _security;
 
-        private DateTime _lastUpdateDate;
-        private DateTime _startEmulationTime;
+        private DateTime _startTime;
 
         private int _filterMAPeriod = 90;
         private int _longMAPeriod = 13;
@@ -60,10 +54,6 @@
 			// изменяет текущий формат, чтобы нецелое числа интерпритировалось как разделенное точкой.
 			var cci = new CultureInfo(Thread.CurrentThread.CurrentCulture.Name) { NumberFormat = { NumberDecimalSeparator = "." } };
 			Thread.CurrentThread.CurrentCulture = cci;
-
-			//_longMAGraph = _chart.CreateTrend("LongMA", GraphType.Line);
-			//_shortMAGraph = _chart.CreateTrend("ShortMA", GraphType.Line);
-            //_filterMAGraph = _chart.CreateTrend("FilterMA", GraphType.Line);
 
             SetDefaultHistoryRange();
 
@@ -86,8 +76,6 @@
                     return;
                 }
 
-                this.ClearChart();
-
                 _strategy = new EmaStrategy(_candleManager,
                     new ExponentialMovingAverage { Length = this._filterMAPeriod },
                     new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod },
@@ -102,21 +90,22 @@
                 _strategy.PropertyChanged += OnStrategyPropertyChanged;
                 _logManager.Sources.Add(_strategy);
 
-                IEnumerable<TimeFrameCandle> historyCandles = GetHistoryCandlesFromFile(_security);
+                // important, set the boundary between old and new candles
+                _startTime = _trader.MarketTime;
+
+                this.ClearChart();
+
+                // load & draw history candles
+                TimeFrameCandle[] historyCandles = GetHistoryCandlesFromFile(_security, _timeFrame);
                 if (historyCandles != null)
                 {
+                    // remove footprint
+                    _strategy.FilterMA.RemoveStartFootprint((DecimalIndicatorValue)historyCandles[0].ClosePrice);
+                    _strategy.LongMA.RemoveStartFootprint((DecimalIndicatorValue)historyCandles[0].ClosePrice);
+                    _strategy.ShortMA.RemoveStartFootprint((DecimalIndicatorValue)historyCandles[0].ClosePrice);
+
                     DrawCandles(historyCandles);
-
-                    foreach (var candle in historyCandles)
-                    {
-                        _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-                        _strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-                        _strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-
-                        DrawSmaLines(_strategy, candle.Time);
-
-                        _lastCandleTime = candle.Time;
-                    }
+                    DrawSma(historyCandles);
                 }
 
                 // регистрируем наш тайм-фрейм
@@ -124,26 +113,6 @@
 
                 // вычисляем временные отрезки текущей свечки
                 var bounds = _timeFrame.GetCandleBounds(_trader);
-
-                Thread.Sleep(1000);
-
-                IEnumerable<TimeFrameCandle> candles = _candleManager.GetTimeFrameCandles(_strategy.Security, _timeFrame, new Range<DateTime>(_lastCandleTime + _timeFrame, bounds.Min));
-
-                if (candles.Count() > 0)
-                {
-                    foreach (var candle in candles)
-                    {
-                        _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-                        _strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-                        _strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-
-                        DrawSmaLines(_strategy, candle.Time);
-
-                        _lastCandleTime = candle.Time;
-                    }
-                }
-
-                _isTodaySmaDrawn = true;
 
                 this.Report.IsEnabled = true;
             }
@@ -174,7 +143,7 @@
                 Code = this.txtSecurityCode.Text,
                 Name = this.txtSecurityCode.Text,
                 MinStepSize = 1,
-                MinStepPrice = 5,
+                MinStepPrice = 1,
                 Exchange = Exchange.Rts,
             };
 
@@ -297,7 +266,7 @@
                 Code = this.txtSecurityCode.Text,
                 Name = this.txtSecurityCode.Text,
                 MinStepSize = 1,
-                MinStepPrice = 5,
+                MinStepPrice = 1,
                 Exchange = Exchange.Rts,
             };
 
@@ -379,30 +348,24 @@
                         _trader = new RealTimeEmulationTrader<QuikTrader>(new QuikTrader(this.Path.Text));
                     }
 
-                    // deactivate trading mode radio buttons
-                    rbFightMode.IsEnabled = false;
-                    rbTrainingMode.IsEnabled = false;
-
-                    // connect trader with portoflio
+                    // Connect trader with portoflio
                     this.Portfolios.Trader = _trader;
 
                     _trader.Connected += () =>
                     {
+                        // Create main candle manager
                         _candleManager = new CandleManager(_trader);
 
                         _trader.NewSecurities += securities => this.GuiAsync(() =>
                         {
                             // находим нужную бумагу
-                            var sec = securities.FirstOrDefault(s => s.Code == this.txtSecurityCode.Text);
+                            var security = securities.FirstOrDefault(s => s.Code == this.txtSecurityCode.Text);
 
-                            if (sec != null)
+                            if (security != null)
                             {
-                                _security = sec;
+                                _security = security;
 
-                                this.GuiAsync(() =>
-                                {
-                                    this.Start.IsEnabled = true;
-                                });
+                                this.Start.IsEnabled = true;
                             }
                         });
 
@@ -417,17 +380,13 @@
                             }
                         });
 
-                        _candleManager.NewCandles += (token, candles) =>
+                        _candleManager.NewCandles += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
+                        _candleManager.CandlesChanged += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
+                        _candleManager.CandlesFinished += (token, candles) =>
                         {
                             DrawCandles(candles.Cast<TimeFrameCandle>());
-
-                            if (_isTodaySmaDrawn)
-                            {
-                                DrawSma();
-                            }
+                            DrawSma(candles.Cast<TimeFrameCandle>());
                         };
-
-                        _candleManager.CandlesChanged += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
 
                         _trader.ConnectionError += ex =>
                         {
@@ -439,41 +398,21 @@
 
                         this.GuiAsync(() =>
                         {
+                            rbFightMode.IsEnabled = false;
+                            rbTrainingMode.IsEnabled = false;
+
                             this.ConnectBtn.IsEnabled = false;
-                            this.ExportDde.IsEnabled = true;
                             this.Report.IsEnabled = true;
                         });
                     };
                 }
 
                 _trader.Connect();
+
+                this.StartDde();
             }
             else
                 _trader.Disconnect();
-        }
-
-        private void StartDde()
-        {
-            _trader.StartExport();
-            _isDdeStarted = true;
-        }
-
-        private void StopDde()
-        {
-            _trader.StopExport();
-            _isDdeStarted = false;
-        }
-
-        private void ExportDde_Click(object sender, RoutedEventArgs e)
-        {
-            if (_isDdeStarted)
-            {
-                StopDde();
-            }
-            else
-            {
-                StartDde();
-            }
         }
 
         private void CancelOrders_Click(object sender, RoutedEventArgs e)
@@ -496,36 +435,21 @@
 
         private void DrawCandles(IEnumerable<TimeFrameCandle> candles)
         {
-            //this.GuiAsync(() => _chart.Candles.AddRange(candles));
             this.GuiAsync(() => _candleChart.AddCandles(candles));
         }
 
-        private void DrawSma()
+        private void DrawSma(IEnumerable<TimeFrameCandle> candles)
         {
-            // нас не интересует текущая свечка, так как она еще не сформировалась
-            // и из нее нельзя брать цену закрытия
-
-            // вычисляем временные отрезки текущей свечки
-            var bounds = _timeFrame.GetCandleBounds(_trader);
-
-            // если появились новые полностью сформированные свечки
-            if ((_lastCandleTime + _timeFrame) <= bounds.Min)
+            foreach (var candle in candles)
             {
-                // отступ с конца интервала, чтобы не захватить текущую свечку - 1 сек.
-                var endOffset = TimeSpan.FromSeconds(1); //TimeSpan.Zero
-
-                bounds = new Range<DateTime>(_lastCandleTime + _timeFrame, bounds.Min - endOffset);
-
-                // получаем эти свечки
-                var candles = _candleManager.GetTimeFrameCandles(_strategy.Security, _timeFrame, bounds);
-
-                if (candles.Count() > 0)
+                if (candle.Time < _startTime)
                 {
-                    // получаем время самой последней свечки и запоминаем его как новое начало
-                    _lastCandleTime = candles.Max(c => c.Time);
-
-                    DrawSmaLines(_strategy, bounds.Min);
+                    _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                    _strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                    _strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
                 }
+
+                DrawSmaLines(_strategy, candle.Time);
             }
         }
 
@@ -533,22 +457,6 @@
         {
             this.GuiSync(() =>
             {
-                //_filterMAGraph.Add(new CustomChartIndicator
-                //{
-                //    Time = time,
-                //    Value = (double)strategy.FilterMA.LastValue
-                //});
-                //_longMAGraph.Add(new CustomChartIndicator
-                //{
-                //    Time = time,
-                //    Value = (double)strategy.LongMA.LastValue
-                //});
-                //_shortMAGraph.Add(new CustomChartIndicator
-                //{
-                //    Time = time,
-                //    Value = (double)strategy.ShortMA.LastValue
-                //});
-
                 _candleChart.AddFilterMA(time, (double)strategy.FilterMA.LastValue);
                 _candleChart.AddLongMA(time, (double)strategy.LongMA.LastValue);
                 _candleChart.AddShortMA(time, (double)strategy.ShortMA.LastValue);
@@ -639,6 +547,18 @@
 
         #region Helpers
 
+        private void StartDde()
+        {
+            _trader.StartExport();
+            _isDdeStarted = true;
+        }
+
+        private void StopDde()
+        {
+            _trader.StopExport();
+            _isDdeStarted = false;
+        }
+
         private void SetDefaultHistoryRange()
         {
             DateTime d = DateTime.Now.AddDays(-1);
@@ -650,7 +570,7 @@
             txtHistoryRangeEnd.Text = "20.10.2011 23:45";
         }
 
-        private IEnumerable<TimeFrameCandle> GetHistoryCandlesFromFile(Security security)
+        private static TimeFrameCandle[] GetHistoryCandlesFromFile(Security security, TimeSpan timeFrame)
         {
             var historyFilePath = String.Format("{0}.txt", security.Code);
 
@@ -666,12 +586,12 @@
                         HighPrice = parts[3].To<decimal>(),
                         LowPrice = parts[4].To<decimal>(),
                         ClosePrice = parts[5].To<decimal>(),
-                        TimeFrame = _timeFrame,
+                        TimeFrame = timeFrame,
                         Time = time,
                         TotalVolume = parts[6].To<int>()/100,
                         Security = security,
                     };
-                });
+                }).ToArray();
 
                 return candles;
             }

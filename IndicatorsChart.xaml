@@ -31,9 +31,9 @@
                         <mschart:ChartArea.CursorX>
                             <mschart:Cursor LineWidth="1" LineColor="Black" LineDashStyle="Solid" SelectionColor="Highlight" IsUserEnabled="True" IsUserSelectionEnabled="True" IntervalType="Minutes" Interval="5"></mschart:Cursor>
                         </mschart:ChartArea.CursorX>
-                        <!--<mschart:ChartArea.CursorY>
+                        <mschart:ChartArea.CursorY>
                             <mschart:Cursor LineWidth="1" LineColor="Black" LineDashStyle="Solid" SelectionColor="Highlight" IsUserEnabled="True" IsUserSelectionEnabled="True"></mschart:Cursor>
-                        </mschart:ChartArea.CursorY>-->
+                        </mschart:ChartArea.CursorY>
                     </mschart:ChartArea>
                 </mschart:Chart.ChartAreas>
                 <mschart:Chart.Series>

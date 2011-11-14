@@ -93,21 +93,18 @@ namespace SampleSMA
             if (this._prevFilterMAValue == 0) 
             { 
                 this._prevFilterMAValue = this.FilterMA.LastValue;
-                this.FilterMA.RemoveStartFootprint((DecimalIndicatorValue)this.LastCandle.ClosePrice);
-            }
-
-            this.ShortMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
-            if (this._prevShortMAValue == 0) 
-            { 
-                this._prevShortMAValue = this.ShortMA.LastValue;
-                this.ShortMA.RemoveStartFootprint((DecimalIndicatorValue)this.LastCandle.ClosePrice);
             }
 
             this.LongMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
             if (this._prevLongMAValue == 0)
             {
                 this._prevLongMAValue = this.LongMA.LastValue;
-                this.LongMA.RemoveStartFootprint((DecimalIndicatorValue)this.LastCandle.ClosePrice);
+            }
+
+            this.ShortMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
+            if (this._prevShortMAValue == 0)
+            {
+                this._prevShortMAValue = this.ShortMA.LastValue;
             }
 
 			// calculate MA X-ing cases 

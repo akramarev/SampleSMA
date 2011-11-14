@@ -17,6 +17,15 @@
 
         public void AddCandle(TimeFrameCandle candle)
         {
+            double candleTime = candle.Time.ToOADate();
+
+            // cleanup old candle at this time
+            var oldCandle = _seriesCandles.Points.FirstOrDefault(p => p.XValue == candleTime);
+            if (oldCandle != null)
+            {
+                _seriesCandles.Points.Remove(oldCandle);
+            }
+
             var candleSb = new StringBuilder();
             candleSb.Append(candle.LowPrice.ToString().Replace(',', '.')).Append(',');
             candleSb.Append(candle.HighPrice.ToString().Replace(',', '.')).Append(',');
@@ -29,14 +38,6 @@
             pointCandle.BorderColor = Color.DarkSlateGray;
 
             _seriesCandles.Points.Add(pointCandle);
-
-            //// get max/min y values in bounded set
-            //var maxY = _seriesCandles.Points.Max(x => x.YValues[1]);
-            //var minY = _seriesCandles.Points.Min(x => x.YValues[0]);
-
-            //// pad max/min y values
-            //_chartAreaCandles.AxisY.Maximum = maxY + ((maxY - minY) * 0.05);
-            //_chartAreaCandles.AxisY.Minimum = minY - ((maxY - minY) * 0.05);
         }
 
         public void AddFilterMA(DateTime time, double value)
@@ -47,13 +48,13 @@
 
         public void AddLongMA(DateTime time, double value)
         {
-            var point = new DataPoint(time.ToOADate(), value) { Color = Color.LightCoral };
+            var point = new DataPoint(time.ToOADate(), value) { Color = Color.LightBlue };
             _seriesLongMA.Points.Add(point);
         }
 
         public void AddShortMA(DateTime time, double value)
         {
-            var point = new DataPoint(time.ToOADate(), value) { Color = Color.LightBlue };
+            var point = new DataPoint(time.ToOADate(), value) { Color = Color.LightPink };
             _seriesShortMA.Points.Add(point);
         }
 
