@@ -43,8 +43,8 @@ namespace SampleSMA
 			this.LongMA = longMA;
 			this.ShortMA = shortMA;
 
-            this.TakeProfitUnit = 30;
-            this.StopLossUnit = 55;
+            this.TakeProfitUnit = 50;
+            this.StopLossUnit = 35;
 
             // subscribe to new trades (required for child strategies)
             base.NewMyTrades += ProtectMyNewTrades;
@@ -190,8 +190,20 @@ namespace SampleSMA
             {
                 var s = new BasketStrategy(BasketStrategyFinishModes.First) { Name = "ProtectStrategy" };
 
-                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) { Name = "TakeProfitStrategy" };
-                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { Name = "StopLossStrategy" };
+                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) 
+                { 
+                    Name = "TakeProfitStrategy",
+                    BestPriceOffset = 15,
+                    PriceOffset = 3,
+                    UseMarketQuoting = true
+ 
+                };
+
+                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) 
+                { 
+                    Name = "StopLossStrategy",
+                    PriceOffset = 3
+                };
 
                 s.ChildStrategies.Add(takeProfit);
                 s.ChildStrategies.Add(stopLoss);
