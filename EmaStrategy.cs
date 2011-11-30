@@ -20,6 +20,8 @@ namespace SampleSMA
         public Unit TakeProfitUnit { get; set; }
         public Unit StopLossUnit { get; set; }
 
+        public bool UseMarketQuoting { get; set; }
+
         private decimal _prevFilterMAValue;
         private decimal _prevLongMAValue;
         private decimal _prevShortMAValue;
@@ -45,6 +47,8 @@ namespace SampleSMA
 
             this.TakeProfitUnit = 50;
             this.StopLossUnit = 35;
+
+            this.UseMarketQuoting = true;
 
             // subscribe to new trades (required for child strategies)
             base.NewMyTrades += ProtectMyNewTrades;
@@ -154,10 +158,15 @@ namespace SampleSMA
             {
                 if (this.PositionManager.Position == 0)
                 {
-                    //base.RegisterOrder(order);
-
-                    MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
-                    base.ChildStrategies.Add(marketQuotingStrategy);
+                    if (this.UseMarketQuoting)
+                    {
+                        MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
+                        base.ChildStrategies.Add(marketQuotingStrategy);
+                    }
+                    else
+                    {
+                        base.RegisterOrder(order);
+                    }
 
                     _primaryStrategyOrders.Add(order);
                 }
@@ -195,7 +204,7 @@ namespace SampleSMA
                     Name = "TakeProfitStrategy",
                     BestPriceOffset = 15,
                     PriceOffset = 3,
-                    UseMarketQuoting = true
+                    UseMarketQuoting = this.UseMarketQuoting
  
                 };
 

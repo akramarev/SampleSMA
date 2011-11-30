@@ -40,6 +40,8 @@ namespace SampleSMA
         private TradingStorage _storage;
         private Portfolio _portfolio;
 
+        public decimal Volume { get; set; }
+
         public delegate void StateChangedHandler();
         public event StateChangedHandler StateChanged;
 
@@ -55,6 +57,8 @@ namespace SampleSMA
             _portfolio = portfolio;
 
             this.Strategies = new List<EmaStrategy>();
+
+            this.Volume = 1;
         }
 
         public void Optimize()
@@ -162,10 +166,11 @@ namespace SampleSMA
                 new ExponentialMovingAverage { Length = longOptPeriod }, new ExponentialMovingAverage { Length = shortOptPeriod },
                 _timeFrame)
             {
-                Volume = 1,
+                Volume = this.Volume,
                 Portfolio = portfolio,
                 Security = security,
-                Trader = trader
+                Trader = trader,
+                UseMarketQuoting = false
             };
 
             this.Strategies.Add(strategy);

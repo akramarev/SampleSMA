@@ -28,6 +28,7 @@
     using StockSharp.Quik;
     using StockSharp.Xaml;
     using MessageBox = System.Windows.MessageBox;
+    using System.Configuration;
 
 	public partial class MainWindow
 	{
@@ -81,7 +82,7 @@
                     new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod },
                     _timeFrame)
                 {
-                    Volume = 1,
+                    Volume = this.Volume,
                     Security = _security,
                     Portfolio = this.Portfolios.SelectedPortfolio,
                     Trader = _trader,
@@ -171,6 +172,7 @@
 
             EMAStrategyOptimizer optimizer = new EMAStrategyOptimizer(security, storage, portfolio, startTime, stopTime)
             {
+                Volume = this.Volume,
                 Log = _log
             };
 
@@ -296,6 +298,7 @@
 
             EMAStrategyOptimizer optimizer = new EMAStrategyOptimizer(security, storage, portfolio, startTime, stopTime)
                 {
+                    Volume = this.Volume,
                     Log = _log
                 };
 
@@ -600,5 +603,23 @@
         }
 
         #endregion
-	}
+
+        #region Config settings wrappers
+
+        public decimal Volume
+        {
+            get
+            {
+                decimal result;
+                if (!Decimal.TryParse(ConfigurationManager.AppSettings["Volume"], out result))
+                {
+                    result = 1;
+                }
+
+                return result;
+            }
+        }
+
+        #endregion
+    }
 }
