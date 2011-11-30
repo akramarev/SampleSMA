@@ -170,7 +170,7 @@ namespace SampleSMA
                 Portfolio = portfolio,
                 Security = security,
                 Trader = trader,
-                UseMarketQuoting = false
+                //UseMarketQuoting = false
             };
 
             this.Strategies.Add(strategy);
