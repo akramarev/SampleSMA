@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>StockSharp.Hydra.Server.Interfaces</name>
+    </assembly>
+    <members>
+        <member name="T:StockSharp.Hydra.Server.Interfaces.IHydraServer">
+            <summary>
+            Интерфейс серверной части Hydra.
+            </summary>
+        </member>
+        <member name="M:StockSharp.Hydra.Server.Interfaces.IHydraServer.GetSecurities">
+            <summary>
+            Получить все идентификаторы инструментов.
+            </summary>
+            <returns>Идентификаторы инструментов.</returns>
+        </member>
+        <member name="M:StockSharp.Hydra.Server.Interfaces.IHydraServer.GetSecurity(System.String)">
+            <summary>
+            Получить инструмент по идентификатору.
+            </summary>
+            <param name="securityId">Идентификатор инструмента.</param>
+            <returns>Инструмент.</returns>
+        </member>
+        <member name="M:StockSharp.Hydra.Server.Interfaces.IHydraServer.GetSecurityDataZip(System.String,System.DateTime)">
+            <summary>
+            Получить архив с историческими маркет-данными.
+            </summary>
+            <param name="securityId">Идентификатор инструмента.</param>
+            <param name="date">Дата, для которое необходимо получить маркет-данные.</param>
+            <returns>Маркет-данные.</returns>
+        </member>
+    </members>
+</doc>

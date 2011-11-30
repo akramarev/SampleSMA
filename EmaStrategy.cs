@@ -192,7 +192,8 @@ namespace SampleSMA
                 { 
                     Name = "TakeProfitStrategy",
                     BestPriceOffset = 15,
-                    PriceOffset = 3
+                    PriceOffset = 3,
+                    UseMarketQuoting = true
                 };
 
                 var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) 

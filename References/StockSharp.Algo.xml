@@ -1314,6 +1314,13 @@
       <param name="suspend">True - приостановить, false - возобновить.</param>
       <returns>Правило.</returns>
     </member>
+    <member name="M:StockSharp.Algo.Strategies.StrategyRule.Sync(System.Object)">
+      <summary>
+            Синхронизовать или рассинхронизовать реагирование правила с другими правилами.
+            </summary>
+      <param name="syncToken">Объект синхронизации. Если значение равно null, то правило рассинхронизовывается.</param>
+      <returns>Правило.</returns>
+    </member>
     <member name="M:StockSharp.Algo.Strategies.StrategyRule.Once">
       <summary>
             Сделать правило одноразовым (будет вызвано только один раз).
@@ -1396,6 +1403,11 @@
     <member name="P:StockSharp.Algo.Strategies.StrategyRule.IsSuspended">
       <summary>
             Приостановлено ли правило.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Algo.Strategies.StrategyRule.IsSynchronized">
+      <summary>
+            Сихнронизовано ли реагирование правила с другими правилами.
             </summary>
     </member>
     <member name="T:StockSharp.Algo.Strategies.StrategyRule`1">
