@@ -383,7 +383,7 @@
                             }
                         });
 
-                        _candleManager.NewCandles += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
+                        _candleManager.CandlesStarted += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
                         _candleManager.CandlesChanged += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
                         _candleManager.CandlesFinished += (token, candles) =>
                         {

@@ -20,6 +20,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -34,7 +35,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,37 +62,37 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AmCharts.Windows.Stock">
-      <HintPath>..\References\AmCharts.Windows.Stock.dll</HintPath>
+      <HintPath>References\AmCharts.Windows.Stock.dll</HintPath>
     </Reference>
     <Reference Include="Ecng.Collections">
-      <HintPath>..\References\Ecng.Collections.dll</HintPath>
+      <HintPath>References\Ecng.Collections.dll</HintPath>
     </Reference>
     <Reference Include="Ecng.Common">
-      <HintPath>..\References\Ecng.Common.dll</HintPath>
+      <HintPath>References\Ecng.Common.dll</HintPath>
     </Reference>
     <Reference Include="Ecng.ComponentModel">
-      <HintPath>..\References\Ecng.ComponentModel.dll</HintPath>
+      <HintPath>References\Ecng.ComponentModel.dll</HintPath>
     </Reference>
     <Reference Include="Ecng.Serialization">
-      <HintPath>..\References\Ecng.Serialization.dll</HintPath>
+      <HintPath>References\Ecng.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Ecng.Xaml">
-      <HintPath>..\References\Ecng.Xaml.dll</HintPath>
+      <HintPath>References\Ecng.Xaml.dll</HintPath>
     </Reference>
     <Reference Include="StockSharp.Algo">
-      <HintPath>..\References\StockSharp.Algo.dll</HintPath>
+      <HintPath>References\StockSharp.Algo.dll</HintPath>
     </Reference>
     <Reference Include="StockSharp.Algo.Indicators">
-      <HintPath>..\References\StockSharp.Algo.Indicators.dll</HintPath>
+      <HintPath>References\StockSharp.Algo.Indicators.dll</HintPath>
     </Reference>
     <Reference Include="StockSharp.BusinessEntities">
-      <HintPath>..\References\StockSharp.BusinessEntities.dll</HintPath>
+      <HintPath>References\StockSharp.BusinessEntities.dll</HintPath>
     </Reference>
     <Reference Include="StockSharp.Quik">
-      <HintPath>..\References\StockSharp.Quik.dll</HintPath>
+      <HintPath>References\StockSharp.Quik.dll</HintPath>
     </Reference>
     <Reference Include="StockSharp.Xaml">
-      <HintPath>..\References\StockSharp.Xaml.dll</HintPath>
+      <HintPath>References\StockSharp.Xaml.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -100,6 +100,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xaml" />
