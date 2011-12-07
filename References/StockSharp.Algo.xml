@@ -70,6 +70,13 @@
             </summary>
       <typeparam name="T">Тип торгового объекта (например, <see cref="T:StockSharp.BusinessEntities.Security" /> или <see cref="T:StockSharp.BusinessEntities.MyTrade" />).</typeparam>
     </member>
+    <member name="M:StockSharp.Algo.Storages.IStorageEntityList`1.ReadById(System.Object)">
+      <summary>
+            Загрузить торговый объект по идентификатору.
+            </summary>
+      <param name="id">Идентификатор.</param>
+      <returns>Торговый объект. Если по идентификатору объект не был найден, то будет возвращено null.</returns>
+    </member>
     <member name="M:StockSharp.Algo.Storages.IStorageEntityList`1.Save(`0)">
       <summary>
             Сохранить торговый объект.
@@ -87,6 +94,12 @@
             Сохранить торговый объект.
             </summary>
       <param name="entity">Торговый объект.</param>
+    </member>
+    <member name="P:StockSharp.Algo.Storages.BaseStorageEntityList`1.UseUpdateOnly">
+      <summary>
+            Использовать вызов Update для сохранения (если true). 
+            Использовать Add/Update для сохранения (ecли false).
+            </summary>
     </member>
     <member name="M:StockSharp.Algo.Storages.MyTradeList.#ctor(Ecng.Serialization.IStorage)">
       <summary>
@@ -1268,6 +1281,12 @@
       <remarks>
             Если директория не существует, она будет создана.
             </remarks>
+    </member>
+    <member name="P:StockSharp.Algo.Logging.FileLogListener.HierarchicalFileName">
+      <summary>
+            Делать имена файлов вложенными в зависимости, есть ли у <see cref="P:StockSharp.Algo.Logging.ILogSource.Parent" /> или нет. Название файла для дочернего источника будет по формату
+            НазваниеРодителя_НазваниеДочернего. По-умолчанию режим выключен.
+            </summary>
     </member>
     <member name="P:StockSharp.Algo.Logging.FileLogListener.Extension">
       <summary>
@@ -2505,6 +2524,14 @@
       <param name="rule">Правило.</param>
       <returns>Правило.</returns>
     </member>
+    <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.ClosePosition(StockSharp.Algo.Strategies.StrategyRule,System.Decimal)">
+      <summary>
+            Создать действие, закрывающее позицию.
+            </summary>
+      <param name="rule">Правило.</param>
+      <param name="slippage">Уровень проскальзывания, допустимый при регистрации заявки. Используется, если заявка регистрируется лимиткой.</param>
+      <returns>Правило.</returns>
+    </member>
     <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.OpenPosition(StockSharp.Algo.Strategies.StrategyRule,System.Decimal)">
       <summary>
             Создать действие, открывающее позицию.
@@ -2513,43 +2540,32 @@
       <param name="finishPosition">Значение позиции, которое необходимо достичь. Отрицательное значение означает короткую позицию.</param>
       <returns>Правило.</returns>
     </member>
+    <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.Protect(StockSharp.Algo.Strategies.StrategyRule{StockSharp.BusinessEntities.Order},StockSharp.BusinessEntities.Unit,StockSharp.BusinessEntities.Unit)">
+      <summary>
+            Создать действие, защищающее заявку стратегиями <see cref="T:StockSharp.Algo.Strategies.TakeProfitStrategy" /> и <see cref="T:StockSharp.Algo.Strategies.StopLossStrategy" />.
+            </summary>
+      <param name="rule">Правило, ассоциированное с заявкой.</param>
+      <param name="takePriceDelta">Дельта от цены защищаемой сделки, по которой должна быть выставлена защитная заявка тейк-профит.</param>
+      <param name="stopPriceDelta">Дельта от цены защищаемой сделки, по которой должна быть выставлена защитная заявка стоп-лосс.</param>
+      <returns>Правило.</returns>
+    </member>
     <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.Protect(StockSharp.Algo.Strategies.StrategyRule{System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade}},StockSharp.BusinessEntities.Unit,StockSharp.BusinessEntities.Unit)">
       <summary>
-            Создать действие, защищающее сделки одновременно стратегиями <see cref="T:StockSharp.Algo.Strategies.TakeProfitStrategy" /> и <see cref="T:StockSharp.Algo.Strategies.StopLossStrategy" />.
+            Создать действие, защищающее сделки стратегиями <see cref="T:StockSharp.Algo.Strategies.TakeProfitStrategy" /> и <see cref="T:StockSharp.Algo.Strategies.StopLossStrategy" />.
             </summary>
       <param name="rule">Правило на появление новых сделок.</param>
       <param name="takePriceDelta">Дельта от цены защищаемой сделки, по которой должна быть выставлена защитная заявка тейк-профит.</param>
       <param name="stopPriceDelta">Дельта от цены защищаемой сделки, по которой должна быть выставлена защитная заявка стоп-лосс.</param>
-      <returns>Пакетная стратегия, содержащая в себе дочерние стратегии защиты убытка и прибыли.</returns>
-    </member>
-    <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.Protect(StockSharp.Algo.Strategies.StrategyRule{System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade}},StockSharp.BusinessEntities.Unit,StockSharp.BusinessEntities.Unit,StockSharp.Algo.Strategies.StrategyRule{System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade}})">
-      <summary>
-            Создать действие, защищающее сделки одновременно стратегиями <see cref="T:StockSharp.Algo.Strategies.TakeProfitStrategy" /> и <see cref="T:StockSharp.Algo.Strategies.StopLossStrategy" />.
-            </summary>
-      <param name="rule">Правило на появление новых сделок.</param>
-      <param name="takePriceDelta">Дельта от цены защищаемой сделки, по которой должна быть выставлена защитная заявка тейк-профит.</param>
-      <param name="stopPriceDelta">Дельта от цены защищаемой сделки, по которой должна быть выставлена защитная заявка стоп-лосс.</param>
-      <param name="tradesRule">Правило, сделки от которого должны корректировать объем дочерних защитных стратегий.</param>
-      <returns>Пакетная стратегия, содержащая в себе дочерние стратегии защиты убытка и прибыли.</returns>
+      <returns>Правило.</returns>
     </member>
     <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.Protect(StockSharp.Algo.Strategies.StrategyRule{System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade}},System.Func{StockSharp.BusinessEntities.MyTrade,StockSharp.Algo.Strategies.TakeProfitStrategy},System.Func{StockSharp.BusinessEntities.MyTrade,StockSharp.Algo.Strategies.StopLossStrategy})">
       <summary>
-            Создать действие, защищающее сделки одновременно стратегиями <see cref="T:StockSharp.Algo.Strategies.TakeProfitStrategy" /> и <see cref="T:StockSharp.Algo.Strategies.StopLossStrategy" />.
+            Создать действие, защищающее сделки стратегиями <see cref="T:StockSharp.Algo.Strategies.TakeProfitStrategy" /> и <see cref="T:StockSharp.Algo.Strategies.StopLossStrategy" />.
             </summary>
       <param name="rule">Правило на появление новых сделок.</param>
       <param name="takeProfit">Функция, создающая по сделке стратегию <see cref="T:StockSharp.Algo.Strategies.TakeProfitStrategy" />.</param>
       <param name="stopLoss">Функция, создающая по сделке стратегию <see cref="T:StockSharp.Algo.Strategies.StopLossStrategy" />.</param>
-      <returns>Пакетная стратегия, содержащая в себе дочерние стратегии защиты убытка и прибыли.</returns>
-    </member>
-    <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.Protect(StockSharp.Algo.Strategies.StrategyRule{System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade}},System.Func{StockSharp.BusinessEntities.MyTrade,StockSharp.Algo.Strategies.TakeProfitStrategy},System.Func{StockSharp.BusinessEntities.MyTrade,StockSharp.Algo.Strategies.StopLossStrategy},StockSharp.Algo.Strategies.StrategyRule{System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade}})">
-      <summary>
-            Создать действие, защищающее сделки одновременно стратегиями <see cref="T:StockSharp.Algo.Strategies.TakeProfitStrategy" /> и <see cref="T:StockSharp.Algo.Strategies.StopLossStrategy" />.
-            </summary>
-      <param name="rule">Правило на появление новых сделок.</param>
-      <param name="takeProfit">Функция, создающая по сделке стратегию <see cref="T:StockSharp.Algo.Strategies.TakeProfitStrategy" />.</param>
-      <param name="stopLoss">Функция, создающая по сделке стратегию <see cref="T:StockSharp.Algo.Strategies.StopLossStrategy" />.</param>
-      <param name="tradesRule">Правило, сделки от которого должны корректировать объем дочерних защитных стратегий.</param>
-      <returns>Пакетная стратегия, содержащая в себе дочерние стратегии защиты убытка и прибыли.</returns>
+      <returns>Правило.</returns>
     </member>
     <member name="T:StockSharp.Algo.Slippage.ISlippageManager">
       <summary>
@@ -2710,6 +2726,26 @@
     <member name="T:StockSharp.Algo.Strategies.IStrategyRuleList">
       <summary>
             Коллекция зарегистрированных правил.
+            </summary>
+    </member>
+    <member name="T:StockSharp.Algo.Strategies.IProtectiveStrategy">
+      <summary>
+            Интерейс защитной стратегии.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Algo.Strategies.IProtectiveStrategy.ProtectiveVolume">
+      <summary>
+            Защищаемый объем.
+            </summary>
+    </member>
+    <member name="E:StockSharp.Algo.Strategies.IProtectiveStrategy.ProtectiveVolumeChanged">
+      <summary>
+            Событие об изменении защищаемого объема.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Algo.Strategies.IProtectiveStrategy.Trade">
+      <summary>
+            Защищаемая сделка.
             </summary>
     </member>
     <member name="T:StockSharp.Algo.Storages.IMarketDataStorage`1">
@@ -3764,12 +3800,21 @@
             Первая остановившаяся дочерняя стратегия. Свойство заполняется при <see cref="P:StockSharp.Algo.Strategies.BasketStrategy.FinishMode" /> равным <see cref="F:StockSharp.Algo.Strategies.BasketStrategyFinishModes.First" />.
             </summary>
     </member>
-    <member name="M:StockSharp.Algo.Strategies.TakeProfitStopLossStrategy.#ctor(StockSharp.BusinessEntities.MyTrade,System.Func{StockSharp.BusinessEntities.MyTrade,StockSharp.Algo.Strategies.TakeProfitStrategy},System.Func{StockSharp.BusinessEntities.MyTrade,StockSharp.Algo.Strategies.StopLossStrategy})">
+    <member name="M:StockSharp.Algo.Strategies.TakeProfitStopLossStrategy.#ctor(StockSharp.Algo.Strategies.TakeProfitStrategy,StockSharp.Algo.Strategies.StopLossStrategy)">
       <summary>
             Создать <see cref="T:StockSharp.Algo.Strategies.TakeProfitStopLossStrategy" /></summary>
-      <param name="trade">Сделка, позицию которой необходимо защитить.</param>
-      <param name="takeProfit">Функция, создающая по сделке стратегию <see cref="T:StockSharp.Algo.Strategies.TakeProfitStrategy" />.</param>
-      <param name="stopLoss">Функция, создающая по сделке стратегию <see cref="T:StockSharp.Algo.Strategies.StopLossStrategy" />.</param>
+      <param name="takeProfit">Стратегия защиты прибыли.</param>
+      <param name="stopLoss">Стратегия защиты убытка.</param>
+    </member>
+    <member name="P:StockSharp.Algo.Strategies.TakeProfitStopLossStrategy.ProtectiveVolume">
+      <summary>
+            Защищаемый объем.
+            </summary>
+    </member>
+    <member name="E:StockSharp.Algo.Strategies.TakeProfitStopLossStrategy.ProtectiveVolumeChanged">
+      <summary>
+            Событие об изменении защищаемого объема.
+            </summary>
     </member>
     <member name="P:StockSharp.Algo.Strategies.TakeProfitStopLossStrategy.Trade">
       <summary>
@@ -3940,6 +3985,16 @@
     <member name="M:StockSharp.Algo.Logging.UnhandledExceptionSource.#ctor">
       <summary>
             Создать <see cref="T:StockSharp.Algo.Logging.UnhandledExceptionSource" />.
+            </summary>
+    </member>
+    <member name="T:StockSharp.Algo.Logging.BaseLogReceiver">
+      <summary>
+            Базовая реализация <see cref="T:StockSharp.Algo.Logging.ILogReceiver" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Algo.Logging.BaseLogReceiver.#ctor">
+      <summary>
+            Инициализировать <see cref="T:StockSharp.Algo.Logging.BaseLogReceiver" />.
             </summary>
     </member>
     <member name="T:StockSharp.Algo.Candles.CandleBuilder">
@@ -4906,14 +4961,14 @@
     </member>
     <member name="T:StockSharp.Algo.Strategies.ProtectiveStrategy">
       <summary>
-            Базовая стратегия защиты сделок.
+            Базовая стратегия защиты позиции.
             </summary>
     </member>
     <member name="M:StockSharp.Algo.Strategies.ProtectiveStrategy.#ctor(StockSharp.BusinessEntities.MyTrade,StockSharp.BusinessEntities.Unit)">
       <summary>
             Инициализировать <see cref="T:StockSharp.Algo.Strategies.ProtectiveStrategy" />.
             </summary>
-      <param name="trade">Защищаемая позиция.</param>
+      <param name="trade">Защищаемая сделка.</param>
       <param name="protectiveLevel">
             Защитный уровень. Если тип <see cref="P:StockSharp.BusinessEntities.Unit.Type" /> равен <see cref="F:StockSharp.BusinessEntities.UnitTypes.Limit" />,
             то задается конкретная цена. Иначе, указывается величина сдвига от защищаемой сделки <paramref name="trade" />.
@@ -4939,12 +4994,6 @@
             </summary>
       <param name="order">Котируемая заявка.</param>
     </member>
-    <member name="M:StockSharp.Algo.Strategies.ProtectiveStrategy.GetTradePrice">
-      <summary>
-            Получить цену позиции, от которой необходимо выставлять защитные заявки.
-            </summary>
-      <returns>Цена позиции.</returns>
-    </member>
     <member name="M:StockSharp.Algo.Strategies.ProtectiveStrategy.CreateQuoting(StockSharp.BusinessEntities.Order)">
       <summary>
             Создать стратегию котирования для защитной заявки (гарантированно исполнить ее).
@@ -4952,15 +5001,25 @@
       <param name="order">Защитная заявка.</param>
       <returns>Стратегия котирования.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Strategies.ProtectiveStrategy.GetNewPrice">
+    <member name="M:StockSharp.Algo.Strategies.ProtectiveStrategy.NeedActivate">
       <summary>
-            Получить новую цену для заявки.
+            Нужно ли активировать защитную стратегию.
             </summary>
-      <returns>Новая цена заявки.</returns>
+      <returns>True, если требуется активация. Иначе, false.</returns>
+    </member>
+    <member name="P:StockSharp.Algo.Strategies.ProtectiveStrategy.ProtectiveVolume">
+      <summary>
+            Защищаемый объем.
+            </summary>
+    </member>
+    <member name="E:StockSharp.Algo.Strategies.ProtectiveStrategy.ProtectiveVolumeChanged">
+      <summary>
+            Событие об изменении защищаемого объема.
+            </summary>
     </member>
     <member name="P:StockSharp.Algo.Strategies.ProtectiveStrategy.Trade">
       <summary>
-            Защищаемая позиция.
+            Защищаемая сделка.
             </summary>
     </member>
     <member name="P:StockSharp.Algo.Strategies.ProtectiveStrategy.ProtectiveLevel">
@@ -4974,12 +5033,7 @@
             Абсолютное значение цены, при достижении которой автивизируется защитная стратегия.
             </summary>
     </member>
-    <member name="P:StockSharp.Algo.Strategies.ProtectiveStrategy.IsMarket">
-      <summary>
-            Выставить защитную заявку как рыночную или как лимитную. По-умолчанию, выставляется лимитная.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Algo.Strategies.ProtectiveStrategy.UseMarketQuoting">
+    <member name="P:StockSharp.Algo.Strategies.ProtectiveStrategy.UseQuoting">
       <summary>
             Котировать ли выставленную заявку по рыночной цене. По-умолчанию режим выключен.
             </summary>
@@ -4997,6 +5051,16 @@
     <member name="P:StockSharp.Algo.Strategies.ProtectiveStrategy.QuotingVolume">
       <summary>
             Объем, который необходимо скотировать.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Algo.Strategies.ProtectiveStrategy.ProtectiveDirection">
+      <summary>
+            Направление защищаемой позиции.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Algo.Strategies.ProtectiveStrategy.BasePrice">
+      <summary>
+            Базовая цена защищаемой позиции, от которой будет рассчитываться <see cref="P:StockSharp.Algo.Strategies.ProtectiveStrategy.ProtectiveLevel" /> для определения <see cref="P:StockSharp.Algo.Strategies.ProtectiveStrategy.ProtectivePrice" />.
             </summary>
     </member>
     <member name="T:StockSharp.Algo.Candles.CandleFactory`2">
@@ -6933,28 +6997,6 @@
             в виде одной транзакции.
             </summary>
     </member>
-    <member name="T:StockSharp.Algo.Strategies.ProtectiveBasketStrategy">
-      <summary>
-            Пакетная стратегия, содержащая в себе дочерние стратегии защиты убытка и прибыли.
-            </summary>
-    </member>
-    <member name="M:StockSharp.Algo.Strategies.ProtectiveBasketStrategy.#ctor">
-      <summary>
-            Создать <see cref="T:StockSharp.Algo.Strategies.ProtectiveBasketStrategy" />.
-            </summary>
-    </member>
-    <member name="M:StockSharp.Algo.Strategies.ProtectiveBasketStrategy.#ctor(StockSharp.Algo.Strategies.StrategyRule{System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade}})">
-      <summary>
-            Создать <see cref="T:StockSharp.Algo.Strategies.ProtectiveBasketStrategy" />.
-            </summary>
-      <param name="rule">Правило, реагирующее на появление новых сделок.</param>
-    </member>
-    <member name="M:StockSharp.Algo.Strategies.ProtectiveBasketStrategy.ProcessNewMyTrades(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade})">
-      <summary>
-            Обработать сделки для коррекции объема защитных стратегий.
-            </summary>
-      <param name="myTrades">Набор сделок.</param>
-    </member>
     <member name="T:StockSharp.Algo.MarketPriceTypes">
       <summary>
             Типы рыночных цен.
@@ -7981,7 +8023,7 @@
             Вспомогательный класс для работы с классом <see cref="T:StockSharp.Algo.Strategies.Strategy" />.
             </summary>
     </member>
-    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.BuyAt(StockSharp.Algo.Strategies.Strategy)">
+    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.BuyAtMarket(StockSharp.Algo.Strategies.Strategy,System.Decimal)">
       <summary>
             Создать инициализированный объект заявки на покупку по рыночной цене.
             </summary>
@@ -7989,9 +8031,10 @@
             Заявка не регистрируется, а только создается объект.
             </remarks>
       <param name="strategy">Стратегия.</param>
+      <param name="volume">Объем. Если передается значение 0, то используется значение <see cref="P:StockSharp.Algo.Strategies.Strategy.Volume" />.</param>
       <returns>Инициализированный объект заявки.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.SellAt(StockSharp.Algo.Strategies.Strategy)">
+    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.SellAtMarket(StockSharp.Algo.Strategies.Strategy,System.Decimal)">
       <summary>
             Создать инициализированный объект заявки на продажу по рыночной цене.
             </summary>
@@ -7999,9 +8042,10 @@
             Заявка не регистрируется, а только создается объект.
             </remarks>
       <param name="strategy">Стратегия.</param>
+      <param name="volume">Объем. Если передается значение 0, то используется значение <see cref="P:StockSharp.Algo.Strategies.Strategy.Volume" />.</param>
       <returns>Инициализированный объект заявки.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.BuyAt(StockSharp.Algo.Strategies.Strategy,System.Decimal)">
+    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.BuyAtLimit(StockSharp.Algo.Strategies.Strategy,System.Decimal,System.Decimal)">
       <summary>
             Создать инициализированный объект заявки на покупку.
             </summary>
@@ -8010,9 +8054,10 @@
             </remarks>
       <param name="strategy">Стратегия.</param>
       <param name="price">Цена.</param>
+      <param name="volume">Объем. Если передается значение 0, то используется значение <see cref="P:StockSharp.Algo.Strategies.Strategy.Volume" />.</param>
       <returns>Инициализированный объект заявки.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.SellAt(StockSharp.Algo.Strategies.Strategy,System.Decimal)">
+    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.SellAtLimit(StockSharp.Algo.Strategies.Strategy,System.Decimal,System.Decimal)">
       <summary>
             Создать инициализированный объект заявки на продажу.
             </summary>
@@ -8021,18 +8066,7 @@
             </remarks>
       <param name="strategy">Стратегия.</param>
       <param name="price">Цена.</param>
-      <returns>Инициализированный объект заявки.</returns>
-    </member>
-    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.CreateOrder(StockSharp.Algo.Strategies.Strategy,StockSharp.BusinessEntities.OrderDirections,System.Decimal)">
-      <summary>
-            Создать инициализированный объект заявки.
-            </summary>
-      <remarks>
-            Заявка не регистрируется, а только создается объект.
-            </remarks>
-      <param name="strategy">Стратегия.</param>
-      <param name="direction">Направление заявки.</param>
-      <param name="price">Цена.</param>
+      <param name="volume">Объем. Если передается значение 0, то используется значение <see cref="P:StockSharp.Algo.Strategies.Strategy.Volume" />.</param>
       <returns>Инициализированный объект заявки.</returns>
     </member>
     <member name="M:StockSharp.Algo.Strategies.StrategyHelper.CreateOrder(StockSharp.Algo.Strategies.Strategy,StockSharp.BusinessEntities.OrderDirections,System.Decimal,System.Decimal)">
@@ -8045,10 +8079,10 @@
       <param name="strategy">Стратегия.</param>
       <param name="direction">Направление заявки.</param>
       <param name="price">Цена.</param>
-      <param name="volume">Объем.</param>
+      <param name="volume">Объем. Если передается значение 0, то используется значение <see cref="P:StockSharp.Algo.Strategies.Strategy.Volume" />.</param>
       <returns>Инициализированный объект заявки.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.ClosePosition(StockSharp.Algo.Strategies.Strategy)">
+    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.ClosePosition(StockSharp.Algo.Strategies.Strategy,System.Decimal)">
       <summary>
             Закрыть открытую позицию по рынку (выставить заявку типа <see cref="F:StockSharp.BusinessEntities.OrderTypes.Market" />).
             </summary>
@@ -8056,6 +8090,7 @@
             Рыночная заявка не работает на всех биржах.
             </remarks>
       <param name="strategy">Стратегия.</param>
+      <param name="slippage">Уровень проскальзывания, допустимый при регистрации заявки. Используется, если заявка регистрируется лимиткой.</param>
     </member>
     <member name="T:StockSharp.Algo.Storages.TradingStorage">
       <summary>
@@ -8190,6 +8225,12 @@
             Директория, где будут сохранять тиковые сделки и стаканы.
             </summary>
       <remarks>По умолчанию указана текущая директория.</remarks>
+    </member>
+    <member name="P:StockSharp.Algo.Storages.TradingStorage.UseUpdateOnly">
+      <summary>
+            Использовать вызов Update для сохранения (если true). 
+            Использовать Add/Update для сохранения (ecли false).
+            </summary>
     </member>
     <member name="T:StockSharp.Algo.Logging.Log4NetLogger">
       <summary>
@@ -9142,11 +9183,11 @@
             то задается конкретная цена. Иначе, указывается величина сдвига от защищаемой сделки <paramref name="trade" />.
             </param>
     </member>
-    <member name="M:StockSharp.Algo.Strategies.StopLossStrategy.NeedRegister">
+    <member name="M:StockSharp.Algo.Strategies.StopLossStrategy.NeedActivate">
       <summary>
-            Нужно ли регистрировать заявку (например, когда она была передана на котирование не отосланной на биржу).
+            Нужно ли активировать защитную стратегию.
             </summary>
-      <returns>True, нужно, иначе, false.</returns>
+      <returns>True, если требуется активация. Иначе, false.</returns>
     </member>
     <member name="P:StockSharp.Algo.Strategies.StopLossStrategy.IsTrailing">
       <summary>
@@ -9666,6 +9707,22 @@
             Подобное событие сигнализирует о сбое передачи данных между роботом и торговой программой.
             </summary>
     </member>
+    <member name="T:StockSharp.Algo.Positions.RawPositionManager">
+      <summary>
+            Менеджер позиции, рассчитывающий позицию напрямую через коллекцию объектов <see cref="T:StockSharp.BusinessEntities.MyTrade" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Algo.Positions.RawPositionManager.AddNewTrades(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade})">
+      <summary>
+            Добавить новые сделки.
+            </summary>
+      <param name="trades">Новые сделки.</param>
+    </member>
+    <member name="P:StockSharp.Algo.Positions.RawPositionManager.Trades">
+      <summary>
+            Все сделки, по которым была посчитана позиция.
+            </summary>
+    </member>
     <member name="T:StockSharp.Algo.Derivatives.Synthetic">
       <summary>
             Построитель синтетических позиций.
@@ -9750,11 +9807,11 @@
             то задается конкретная цена. Иначе, указывается величина сдвига от защищаемой сделки <paramref name="trade" />.
             </param>
     </member>
-    <member name="M:StockSharp.Algo.Strategies.TakeProfitStrategy.NeedRegister">
+    <member name="M:StockSharp.Algo.Strategies.TakeProfitStrategy.NeedActivate">
       <summary>
-            Нужно ли регистрировать заявку (например, когда она была передана на котирование не отосланной на биржу).
+            Нужно ли активировать защитную стратегию.
             </summary>
-      <returns>True, нужно, иначе, false.</returns>
+      <returns>True, если требуется активация. Иначе, false.</returns>
     </member>
     <member name="P:StockSharp.Algo.Strategies.TakeProfitStrategy.ProtectivePrice">
       <summary>
@@ -9786,6 +9843,63 @@
     <member name="P:StockSharp.Algo.Positions.SecurityPositionManager.Security">
       <summary>
             Инструмент, для которого необходимо учитывать позицию.
+            </summary>
+    </member>
+    <member name="T:StockSharp.Algo.Strategies.AutoProtectiveStrategy">
+      <summary>
+            Cтратегия автоматической защиты позиции.
+            </summary>
+      <remarks>
+            Новые сделки в стратегию поступают через <see cref="M:StockSharp.Algo.Strategies.AutoProtectiveStrategy.ProcessNewMyTrades(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade})" /> или правило <see cref="P:StockSharp.Algo.Strategies.AutoProtectiveStrategy.MyTradesRule" />. Они автоматически защищаются
+            с помощью <see cref="T:StockSharp.Algo.Strategies.TakeProfitStopLossStrategy" />. Дополнительно, <see cref="T:StockSharp.Algo.Strategies.AutoProtectiveStrategy" /> переворачивает стопы в случае переворота позиции.
+            </remarks>
+    </member>
+    <member name="M:StockSharp.Algo.Strategies.AutoProtectiveStrategy.#ctor">
+      <summary>
+            Создать <see cref="T:StockSharp.Algo.Strategies.AutoProtectiveStrategy" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Algo.Strategies.AutoProtectiveStrategy.Protect(System.Collections.Generic.IDictionary{StockSharp.BusinessEntities.MyTrade,System.Decimal})">
+      <summary>
+            Защитить сделки.
+            </summary>
+      <param name="trades">Сделки. В значении указан объем, который необходимо защитить.</param>
+    </member>
+    <member name="M:StockSharp.Algo.Strategies.AutoProtectiveStrategy.Sort(System.Collections.Generic.IEnumerable{System.Linq.IGrouping{StockSharp.BusinessEntities.MyTrade,StockSharp.Algo.Strategies.IProtectiveStrategy}})">
+      <summary>
+            Отсортировать защитные стратегии для указания наиболее худшей и лучшей по рыночным ценам (при частичной закрытие позиции в первую очередь
+            снимаются наиболее худшие).
+            </summary>
+      <param name="strategies">Защитные стратегии в неотсортированном порядке.</param>
+      <returns>Отсортированные порядки.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Strategies.AutoProtectiveStrategy.GetProtectiveTrades(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade},System.Decimal)">
+      <summary>
+            Получить из всех сделок те, которые необходимо защитить.
+            </summary>
+      <param name="trades">Новые сделки.</param>
+      <param name="maxVolume">Максимальный объем, который необъодимо защитить.</param>
+      <returns>Сделки, которые необходимо защитить.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Strategies.AutoProtectiveStrategy.ProcessNewMyTrades(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade})">
+      <summary>
+            Обработать сделки для коррекции объема защитных стратегий.
+            </summary>
+      <param name="trades">Сделки.</param>
+    </member>
+    <member name="P:StockSharp.Algo.Strategies.AutoProtectiveStrategy.TakeProfitLevel">
+      <summary>
+            Защитный уровень для тейк-профита. По-умолчанию уровень равен 0, что означает отключено.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Algo.Strategies.AutoProtectiveStrategy.StopLossLevel">
+      <summary>
+            Защитный уровень для стоп-лосса. По-умолчанию уровень равен 0, что означает отключено.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Algo.Strategies.AutoProtectiveStrategy.MyTradesRule">
+      <summary>
+            Правило появления новых сделок. Сделки, которые появляются от данного правила, автоматически транслируются в <see cref="M:StockSharp.Algo.Strategies.AutoProtectiveStrategy.ProcessNewMyTrades(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade})" />.
             </summary>
     </member>
     <member name="T:StockSharp.Algo.Storages.TraderStorageMonitor">
@@ -10156,11 +10270,6 @@
       <param name="direction">Направление котирования.</param>
       <param name="volume">Объем котирования.</param>
       <returns>Стратегия котирования.</returns>
-    </member>
-    <member name="P:StockSharp.Algo.Strategies.DeltaHedgeStrategy.IsMarket">
-      <summary>
-            Выставить защитную заявку как рыночную или как лимитную. По-умолчанию, выставляется лимитная.
-            </summary>
     </member>
     <member name="P:StockSharp.Algo.Strategies.DeltaHedgeStrategy.MaxRegisterAttemptCount">
       <summary>

@@ -150,6 +150,11 @@
             в виде одной транзакции.
             </summary>
         </member>
+        <member name="P:StockSharp.BusinessEntities.Exchange.IsSupportMarketOrders">
+            <summary>
+            Поддерживается ли рыночный тип заявок <see cref="F:StockSharp.BusinessEntities.OrderTypes.Market"/>.
+            </summary>
+        </member>
         <member name="P:StockSharp.BusinessEntities.Exchange.Rts">
             <summary>
             Информация о бирже РТС.

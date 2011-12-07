@@ -11,24 +11,24 @@
         </member>
         <member name="M:StockSharp.Xaml.GuiLogListener.#ctor">
             <summary>
-            Создать логгер. Для каждой стратегии будет отдельно создаваться собственное окно <see cref="T:StockSharp.Xaml.LogWindow"/>.
+            Создать <see cref="T:StockSharp.Xaml.GuiLogListener"/>. Для каждой стратегии будет отдельно создаваться собственное окно <see cref="T:StockSharp.Xaml.LogWindow"/>.
             </summary>
         </member>
         <member name="M:StockSharp.Xaml.GuiLogListener.#ctor(StockSharp.Xaml.LogWindow)">
             <summary>
-            Создать логгер.
+            Создать <see cref="T:StockSharp.Xaml.GuiLogListener"/>.
             </summary>
             <param name="window">Визуальное окно, в которое будут записываться логи.</param>
         </member>
         <member name="M:StockSharp.Xaml.GuiLogListener.#ctor(StockSharp.Xaml.MonitorWindow)">
             <summary>
-            Создать логгер.
+            Создать <see cref="T:StockSharp.Xaml.GuiLogListener"/>.
             </summary>
             <param name="window">Окно для мониторинга работы торговых стратегий.</param>
         </member>
         <member name="M:StockSharp.Xaml.GuiLogListener.#ctor(StockSharp.Xaml.LogControl)">
             <summary>
-            Создать логгер.
+            Создать <see cref="T:StockSharp.Xaml.GuiLogListener"/>.
             </summary>
             <param name="control">Визуальный контрол, в который будут записываться логи.</param>
         </member>
@@ -41,21 +41,6 @@
         <member name="M:StockSharp.Xaml.GuiLogListener.DisposeManaged">
             <summary>
             Освободить ресурсы и закрыть созданные окна.
-            </summary>
-        </member>
-        <member name="P:StockSharp.Xaml.GuiLogListener.Control">
-            <summary>
-            Визуальный контрол, в который будут записываться логи.
-            </summary>
-        </member>
-        <member name="P:StockSharp.Xaml.GuiLogListener.Window">
-            <summary>
-            Визуальное окно, в которое будут записываться логи.
-            </summary>
-        </member>
-        <member name="P:StockSharp.Xaml.GuiLogListener.MonitorWindow">
-            <summary>
-            Окно для мониторинга работы торговых стратегий.
             </summary>
         </member>
         <member name="T:StockSharp.Xaml.SecurityPicker">
@@ -364,14 +349,7 @@
             </summary>
             <param name="message">Отладочное сообщение.</param>
         </member>
-        <member name="M:StockSharp.Xaml.Monitor.AddNode(StockSharp.Algo.Logging.ILogSource)">
-            <summary>
-            Добавить узел в дерево.
-            </summary>
-            <param name="source">Источник логов.</param>
-            <returns>Узел.</returns>
-        </member>
-        <member name="M:StockSharp.Xaml.Monitor.GetGroupNode(StockSharp.Algo.Logging.ILogSource)">
+        <member name="M:StockSharp.Xaml.Monitor.GetRootNode(StockSharp.Algo.Logging.ILogSource)">
             <summary>
             Получить корневой узел для источника.
             </summary>
@@ -984,6 +962,16 @@
         <member name="P:StockSharp.Xaml.LogSourceTree.CoreRootNode">
             <summary>
             Корневой узел логгера.
+            </summary>
+        </member>
+        <member name="E:StockSharp.Xaml.LogSourceTree.NodeAdded">
+            <summary>
+            Событие о добавлении нового узла в дерево.
+            </summary>
+        </member>
+        <member name="E:StockSharp.Xaml.LogSourceTree.NodeRemoved">
+            <summary>
+            Событие об удалении узла дерева.
             </summary>
         </member>
         <member name="T:StockSharp.Xaml.LogSourceTree.RootStrategy">
