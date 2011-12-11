@@ -28,8 +28,8 @@ namespace SampleSMA
             protected set;
         }
 
-        public EmaStrategy BestStrategy { get; protected set; }
-        public List<EmaStrategy> Strategies { get; protected set; }
+        public EMAEventModelStrategy BestStrategy { get; protected set; }
+        public List<EMAEventModelStrategy> Strategies { get; protected set; }
 
         private readonly TimeSpan _timeFrame = TimeSpan.FromMinutes(5);
 
@@ -56,7 +56,7 @@ namespace SampleSMA
             _storage = storage;
             _portfolio = portfolio;
 
-            this.Strategies = new List<EmaStrategy>();
+            this.Strategies = new List<EMAEventModelStrategy>();
 
             this.Volume = 1;
         }
@@ -145,13 +145,13 @@ namespace SampleSMA
 
                 // параметр влияет на занимаемую память.
                 // в случае достаточно количества памяти на компьютере рекомендуется его увеличить
-                DaysInMemory = 5,
+                DaysInMemory = 1,
             };
 
             trader.DepthGenerators[security] = new TrendMarketDepthGenerator(security)
             {
                 // стакан для инструмента в истории обновляется раз в 1 секунду
-                Interval = TimeSpan.FromSeconds(1),
+                Interval = TimeSpan.FromSeconds(10),
             };
 
             CandleManager candleManager = new CandleManager();
@@ -161,15 +161,16 @@ namespace SampleSMA
 
             candleManager.RegisterTimeFrameCandles(security, _timeFrame);
 
-            var strategy = new EmaStrategy(candleManager,
+            var strategy = new EMAEventModelStrategy(candleManager,
                 new ExponentialMovingAverage { Length = filterOptPeriod },
-                new ExponentialMovingAverage { Length = longOptPeriod }, new ExponentialMovingAverage { Length = shortOptPeriod },
-                _timeFrame)
+                new ExponentialMovingAverage { Length = longOptPeriod }, 
+                new ExponentialMovingAverage { Length = shortOptPeriod })
             {
                 Volume = this.Volume,
                 Portfolio = portfolio,
                 Security = security,
-                Trader = trader
+                Trader = trader,
+                //UseQuoting = false
             };
 
             this.Strategies.Add(strategy);

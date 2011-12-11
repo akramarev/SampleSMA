@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Linq;
 using StockSharp.Algo;
@@ -11,8 +11,8 @@ using StockSharp.BusinessEntities;
 
 namespace SampleSMA
 {
-    public class EmaStrategy : TimeFrameStrategy
-	{
+    public class EMAEventModelStrategy : Strategy
+    {
         public ExponentialMovingAverage FilterMA { get; private set; }
         public ExponentialMovingAverage LongMA { get; private set; }
         public ExponentialMovingAverage ShortMA { get; private set; }
@@ -20,72 +20,98 @@ namespace SampleSMA
         public Unit TakeProfitUnit { get; set; }
         public Unit StopLossUnit { get; set; }
 
+        private bool useQuoting;
+        public bool UseQuoting
+        {
+            get { return useQuoting; }
+            set 
+            {
+                if (!value)
+                {
+                    throw new NotImplementedException("Strategy doesn't work without quoting for now.");
+                }
+
+                useQuoting = value;
+            }
+        }
+
+        public CandleManager CandleManager { get; private set; }
+        public Candle LastCandle { get; private set; }
+
         private decimal _prevFilterMAValue;
         private decimal _prevLongMAValue;
         private decimal _prevShortMAValue;
 
-        public CandleManager CandleManager { get; private set; }
-        public TimeFrameCandle LastCandle { get; private set; }
+        private DateTime _strategyStartTime;
 
-		private DateTime _nextTime;
+        public delegate void CandleProcessedHandler(Candle candle);
+        public event CandleProcessedHandler CandleProcessed;
 
-        public EmaStrategy(CandleManager candleManager, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA, TimeSpan timeFrame)
-			: base(timeFrame)
+        public EMAEventModelStrategy(CandleManager candleManager, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA)
 		{
-            this.Name = "EmaStrategy";
-
-			this.CandleManager = candleManager;
+            this.Name = "EmaEventModelStrategy";
 
             this.FilterMA = filterMA;
 			this.LongMA = longMA;
 			this.ShortMA = shortMA;
 
+            this.CandleManager = candleManager;
+
             this.TakeProfitUnit = 50;
             this.StopLossUnit = 35;
+
+            this.UseQuoting = true;
 		}
 
-		protected override void OnStarting()
-		{
-			// вычисляем время окончания текущей пятиминутки
-			_nextTime = base.TimeFrame.GetCandleBounds(base.Trader).Max;
+        protected override void OnStarting()
+        {
+            this._strategyStartTime = Trader.MarketTime;
 
-			base.OnStarting();
-		}
+            if (!UseQuoting)
+            {
+                this.NewMyTrades += ProtectMyNewTrades;
+            }
+            
+            this.
+                When(this.CandleManager.Tokens.ElementAt(0).CandlesFinished())
+                .Do<IEnumerable<Candle>>(ProcessCandles);
 
-		protected override ProcessResults OnProcess()
-		{
-			// если наша стратегия в процессе остановки
-			if (base.ProcessState == ProcessStates.Stopping)
-			{
-				// отменяем активные заявки
-				base.CancelActiveOrders();
+            base.OnStarting();
+        }
 
-				// так как все активные заявки гарантированно были отменены, то возвращаем ProcessResults.Stop
-				return ProcessResults.Stop;
-			}
+        protected override void OnStopped()
+        {
+            if (!UseQuoting)
+            {
+                this.NewMyTrades -= ProtectMyNewTrades;
+            }
 
-			// событие обработки торговой стратегии вызвалось впервый раз, что раньше, чем окончания текущей 5-минутки.
-			if (base.Trader.MarketTime < _nextTime)
-			{
-				// возвращаем ProcessResults.Continue, так как наш алгоритм еще не закончил свою работу, а просто ожидает следующего вызова.
-				return ProcessResults.Continue;
-			}
+            base.OnStopped();
+        }
 
-			// получаем сформированную свечку
-            this.LastCandle = this.CandleManager.GetTimeFrameCandle(base.Security, base.TimeFrame, _nextTime - base.TimeFrame);
+        protected IEnumerable<Candle> ProcessCandles(IEnumerable<Candle> candles)
+        {
+            foreach (Candle candle in candles)
+            {
+                ProcessCandle(candle);
+            }
 
-            // move internal time tracker to the next candle
-            _nextTime += base.TimeFrame;
+            return candles;
+        }
+
+        protected void ProcessCandle(Candle candle)
+        {
+            this.LastCandle = candle;
 
             if (this.LastCandle == null)
             {
-                return ProcessResults.Continue;
+                return;
             }
 
             // processing Filer, Short and Long MA (also take care about "prev-" variables)
             this.FilterMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
-            if (this._prevFilterMAValue == 0) 
-            { 
+            if (this._prevFilterMAValue == 0)
+            {
                 this._prevFilterMAValue = this.FilterMA.LastValue;
             }
 
@@ -101,7 +127,22 @@ namespace SampleSMA
                 this._prevShortMAValue = this.ShortMA.LastValue;
             }
 
-			// calculate MA X-ing cases 
+            if (candle.Time > this._strategyStartTime)
+            {
+                this.AnalyseAndTrade();
+            }
+
+            // update "prev-" variables
+            this._prevFilterMAValue = this.FilterMA.LastValue;
+            this._prevShortMAValue = this.ShortMA.LastValue;
+            this._prevLongMAValue = this.LongMA.LastValue;
+
+            this.OnCandleProcessed(candle);
+        }
+
+        private void AnalyseAndTrade()
+        {
+            // calculate MA X-ing cases 
             bool xUp = this.ShortMA.LastValue > this.LongMA.LastValue && this._prevShortMAValue <= this._prevLongMAValue;
             bool xDown = this.ShortMA.LastValue < this.LongMA.LastValue && this._prevShortMAValue >= this._prevLongMAValue;
 
@@ -110,6 +151,7 @@ namespace SampleSMA
             bool downFilter = !upFilter;
 
             OrderDirections direction;
+            decimal price;
             Order order = null;
 
             // calculate order direction
@@ -118,7 +160,8 @@ namespace SampleSMA
                 if (upFilter)
                 {
                     direction = OrderDirections.Buy;
-                    order = this.CreateOrder(direction, base.Security.GetMarketPrice(direction), base.Volume);
+                    price = (UseQuoting) ? base.Security.GetMarketPrice(direction) : this.LastCandle.ClosePrice;
+                    order = this.CreateOrder(direction, price, base.Volume);
 
                     this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Up appeared (CandleTime: {0}), and filter allowed the deal.", this.LastCandle.Time));
                 }
@@ -128,12 +171,13 @@ namespace SampleSMA
                 }
             }
 
-			if (xDown)
-			{
+            if (xDown)
+            {
                 if (downFilter)
                 {
                     direction = OrderDirections.Sell;
-                    order = this.CreateOrder(direction, base.Security.GetMarketPrice(direction), base.Volume);
+                    price = (UseQuoting) ? base.Security.GetMarketPrice(direction) : this.LastCandle.ClosePrice;
+                    order = this.CreateOrder(direction, price, base.Volume);
 
                     this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Down appeared (CandleTime: {0}), and filter allowed the deal.", this.LastCandle.Time));
                 }
@@ -148,23 +192,31 @@ namespace SampleSMA
             {
                 if (this.PositionManager.Position == 0)
                 {
-                    MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
-                    marketQuotingStrategy.NewMyTrades += ProtectMyNewTrades;
-                    base.ChildStrategies.Add(marketQuotingStrategy);
+                    if (UseQuoting)
+                    {
+                        MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
+                        marketQuotingStrategy.NewMyTrades += ProtectMyNewTrades;
+                        base.ChildStrategies.Add(marketQuotingStrategy);
+                    }
+                    else
+                    {
+                        base.RegisterOrder(order);
+                    }
                 }
                 else
                 {
                     this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "PositionManager blocked the deal (CandleTime: {0}), we're already in position.", this.LastCandle.Time));
                 }
             }
+        }
 
-            // update "prev-" variables
-            this._prevFilterMAValue = this.FilterMA.LastValue;
-            this._prevShortMAValue = this.ShortMA.LastValue;
-            this._prevLongMAValue = this.LongMA.LastValue;
-
-			return ProcessResults.Continue;
-		}
+        protected void OnCandleProcessed(Candle candle)
+        {
+            if (CandleProcessed != null)
+            {
+                CandleProcessed(candle);
+            }
+        }
 
         private void ProtectMyNewTrades(IEnumerable<MyTrade> trades)
         {
@@ -174,16 +226,16 @@ namespace SampleSMA
             {
                 var s = new BasketStrategy(BasketStrategyFinishModes.First) { Name = "ProtectStrategy" };
 
-                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) 
-                { 
+                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit)
+                {
                     Name = "TakeProfitStrategy",
                     BestPriceOffset = 15,
                     PriceOffset = 3,
-                    UseQuoting = true
+                    UseQuoting = this.UseQuoting
                 };
 
-                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) 
-                { 
+                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit)
+                {
                     Name = "StopLossStrategy",
                     PriceOffset = 3
                 };
@@ -196,10 +248,5 @@ namespace SampleSMA
 
             base.ChildStrategies.Add(basket);
         }
-
-        protected override void DisposeManaged()
-        {
-            base.DisposeManaged();
-        }
-	}
+    }
 }

@@ -34,12 +34,10 @@
 	{
 		private readonly TimeSpan _timeFrame = TimeSpan.FromMinutes(5);
 		private ITrader _trader;
-		private EmaStrategy _strategy;
+        private EMAEventModelStrategy _strategy;
 		private bool _isDdeStarted;
 		private CandleManager _candleManager;
 		private Security _security;
-
-        private DateTime _startTime;
 
         private int _filterMAPeriod = 90;
         private int _longMAPeriod = 13;
@@ -77,22 +75,23 @@
                     return;
                 }
 
-                _strategy = new EmaStrategy(_candleManager,
+                _strategy = new EMAEventModelStrategy(_candleManager,
                     new ExponentialMovingAverage { Length = this._filterMAPeriod },
-                    new ExponentialMovingAverage { Length = this._longMAPeriod }, new ExponentialMovingAverage { Length = this._shortMAPeriod },
-                    _timeFrame)
+                    new ExponentialMovingAverage { Length = this._longMAPeriod }, 
+                    new ExponentialMovingAverage { Length = this._shortMAPeriod })
                 {
                     Volume = this.Volume,
                     Security = _security,
                     Portfolio = this.Portfolios.SelectedPortfolio,
                     Trader = _trader,
                 };
+
+                // draw MAs based on latest strategy data
+                _strategy.CandleProcessed += (candle) => DrawSmaLines(_strategy, candle.Time);
+
                 _strategy.NewOrder += OnNewOrder;
                 _strategy.PropertyChanged += OnStrategyPropertyChanged;
                 _logManager.Sources.Add(_strategy);
-
-                // important, set the boundary between old and new candles
-                _startTime = _trader.MarketTime;
 
                 this.ClearChart();
 
@@ -106,14 +105,11 @@
                     _strategy.ShortMA.RemoveStartFootprint((DecimalIndicatorValue)historyCandles[0].ClosePrice);
 
                     DrawCandles(historyCandles);
-                    DrawSma(historyCandles);
+                    CalculateAndDrawMAs(historyCandles);
                 }
 
                 // регистрируем наш тайм-фрейм
                 _candleManager.RegisterTimeFrameCandles(_security, _timeFrame);
-
-                // вычисляем временные отрезки текущей свечки
-                var bounds = _timeFrame.GetCandleBounds(_trader);
 
                 this.Report.IsEnabled = true;
             }
@@ -177,7 +173,7 @@
             };
 
             EmulationTrader trader = optimizer.GetOptTraderContext(this._filterMAPeriod, this._longMAPeriod, this._shortMAPeriod, new ManualResetEvent(false));
-            EmaStrategy strategy = optimizer.Strategies[0];
+            EMAEventModelStrategy strategy = optimizer.Strategies[0];
 
             _logManager.Sources.Add(strategy);
 
@@ -385,11 +381,7 @@
 
                         _candleManager.CandlesStarted += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
                         _candleManager.CandlesChanged += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
-                        _candleManager.CandlesFinished += (token, candles) =>
-                        {
-                            DrawCandles(candles.Cast<TimeFrameCandle>());
-                            DrawSma(candles.Cast<TimeFrameCandle>());
-                        };
+                        _candleManager.CandlesFinished += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
 
                         _trader.ConnectionError += ex =>
                         {
@@ -440,23 +432,7 @@
         {
             this.GuiAsync(() => _candleChart.AddCandles(candles));
         }
-
-        private void DrawSma(IEnumerable<TimeFrameCandle> candles)
-        {
-            foreach (var candle in candles)
-            {
-                if (candle.Time < _startTime)
-                {
-                    _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-                    _strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-                    _strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-                }
-
-                DrawSmaLines(_strategy, candle.Time);
-            }
-        }
-
-        private void DrawSmaLines(EmaStrategy strategy, DateTime time)
+        private void DrawSmaLines(EMAEventModelStrategy strategy, DateTime time)
         {
             this.GuiSync(() =>
             {
@@ -464,6 +440,18 @@
                 _candleChart.AddLongMA(time, (double)strategy.LongMA.LastValue);
                 _candleChart.AddShortMA(time, (double)strategy.ShortMA.LastValue);
             });
+        }
+
+        private void CalculateAndDrawMAs(IEnumerable<TimeFrameCandle> candles)
+        {
+            foreach (var candle in candles)
+            {
+                _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                _strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                _strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+
+                DrawSmaLines(_strategy, candle.Time);
+            }
         }
 
         private void ClearChart()
@@ -510,7 +498,7 @@
             UpdateStrategyStat(_strategy);
         }
 
-        private void UpdateStrategyStat(EmaStrategy strategy)
+        private void UpdateStrategyStat(EMAEventModelStrategy strategy)
         {
             this.GuiAsync(() =>
             {
@@ -525,7 +513,6 @@
         private void OnNewOrder(Order order)
         {
             _orders.Orders.Add(order);
-            //this.GuiAsync(() => _chart.Orders.Add(order));
         }
 
         private void _orders_OrderSelected(object sender, EventArgs e)
