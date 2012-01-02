@@ -39,8 +39,8 @@
                 <mschart:Chart.Series>
                     <mschart:Series Name="SeriesCandles" x:Name="_seriesCandles" ChartType="Candlestick" ChartArea="ChartAreaCandles" XValueType="DateTime"/>
                     <mschart:Series Name="SeriesFilterMA" x:Name="_seriesFilterMA" ChartType="Line" ChartArea="ChartAreaCandles" XValueType="DateTime" ToolTip="#VAL"/>
-                    <mschart:Series Name="SeriesLongMA" x:Name="_seriesLongMA" ChartType="Line" ChartArea="ChartAreaCandles" XValueType="DateTime" MarkerStyle="Circle" MarkerColor="White" MarkerBorderColor="Blue" MarkerSize="5" IsValueShownAsLabel="True" ToolTip="#VAL"/>
-                    <mschart:Series Name="SeriesShortMA" x:Name="_seriesShortMA" ChartType="Line" ChartArea="ChartAreaCandles" XValueType="DateTime" MarkerStyle="Circle" MarkerColor="White" MarkerBorderColor="Blue" MarkerSize="5" IsValueShownAsLabel="True" ToolTip="#VAL"/>
+                    <mschart:Series Name="SeriesLongMA" x:Name="_seriesLongMA" ChartType="Line" ChartArea="ChartAreaCandles" XValueType="DateTime" ToolTip="#VAL"/>
+                    <mschart:Series Name="SeriesShortMA" x:Name="_seriesShortMA" ChartType="Line" ChartArea="ChartAreaCandles" XValueType="DateTime" ToolTip="#VAL"/>
                     <!--<mschart:Series Name="SeriesShortMA" x:Name="_seriesShortMA" ChartType="Line" ChartArea="ChartAreaCandles" XValueType="DateTime" MarkerStyle="Circle" MarkerColor="White" MarkerBorderColor="Blue" MarkerSize="5" IsValueShownAsLabel="False" ToolTip="#VAL"/>-->
                 </mschart:Chart.Series>
             </mschart:Chart>

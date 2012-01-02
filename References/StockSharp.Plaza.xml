@@ -1201,13 +1201,13 @@
             Вызвать событие <see cref="E:StockSharp.Plaza.PlazaStream.Flushed"/>.
             </summary>
         </member>
-        <member name="M:StockSharp.Plaza.PlazaStream.RaiseDataInserted(StockSharp.Plaza.Wrappers.IRecordWrapper)">
+        <member name="M:StockSharp.Plaza.PlazaStream.RaiseDataInserted(StockSharp.Plaza.PlazaRecord)">
             <summary>
             Вызвать событие <see cref="E:StockSharp.Plaza.PlazaStream.Inserted"/>.
             </summary>
             <param name="record">Запись.</param>
         </member>
-        <member name="M:StockSharp.Plaza.PlazaStream.RaiseDataDeleted(System.Int64,StockSharp.Plaza.Wrappers.IRecordWrapper)">
+        <member name="M:StockSharp.Plaza.PlazaStream.RaiseDataDeleted(System.Int64,StockSharp.Plaza.PlazaRecord)">
             <summary>
             Вызвать событие <see cref="E:StockSharp.Plaza.PlazaStream.Deleted"/>.
             </summary>
@@ -4890,7 +4890,7 @@
             <param name="fieldName">Имя поля.</param>
             <returns></returns>
         </member>
-        <member name="M:StockSharp.Plaza.Wrappers.IRecordWrapper.GetObject(System.Int64)">
+        <member name="M:StockSharp.Plaza.Wrappers.IRecordWrapper.GetObject(System.UInt32)">
             <summary>
             Получение значения поля.
             </summary>

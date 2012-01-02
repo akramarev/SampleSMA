@@ -60,7 +60,7 @@
             this.Path.Text = QuikTerminal.GetDefaultPath();
 
             _logManager.Sources.Add(_log);
-            _logManager.Listeners.Add(_monitor);
+            _logManager.Listeners.Add(new GuiLogListener(_monitor));
 		}
 
         #region Main Event Handlers

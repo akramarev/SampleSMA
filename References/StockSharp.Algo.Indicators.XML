@@ -2113,6 +2113,48 @@
              Смещение для последнего значения индикатора
             </summary>
         </member>
+        <member name="T:StockSharp.Algo.Indicators.Trend.NickRypockTrailingReverse">
+            <summary>
+            NickRypockTrailingReverse (Nick Rypock Trailing _reverse).
+            </summary>
+        </member>
+        <member name="M:StockSharp.Algo.Indicators.Trend.NickRypockTrailingReverse.#ctor">
+            <summary>
+            Создать <see cref="T:StockSharp.Algo.Indicators.Trend.NickRypockTrailingReverse"/>.
+            </summary>
+        </member>
+        <member name="M:StockSharp.Algo.Indicators.Trend.NickRypockTrailingReverse.Initialize">
+            <summary>
+            Начальная инициализация переменных
+            </summary>
+        </member>
+        <member name="M:StockSharp.Algo.Indicators.Trend.NickRypockTrailingReverse.OnProcess(StockSharp.Algo.Indicators.IIndicatorValue)">
+            <summary>
+            Обработать входное значение.
+            </summary>
+            <param name="input">Входное значение.</param>
+            <returns>Результирующее значение.</returns>
+        </member>
+        <member name="M:StockSharp.Algo.Indicators.Trend.NickRypockTrailingReverse.Reset">
+            <summary>
+            Сбросить состояние индикатора на первоначальное. Метод вызывается каждый раз, когда меняются первоначальные настройки (например, длина периода).
+            </summary>
+        </member>
+        <member name="P:StockSharp.Algo.Indicators.Trend.NickRypockTrailingReverse.Мultiple">
+            <summary>
+            Множитель
+            </summary>
+        </member>
+        <member name="P:StockSharp.Algo.Indicators.Trend.NickRypockTrailingReverse.RoundDigits">
+            <summary>
+            Округление до знака после запятой
+            </summary>
+        </member>
+        <member name="P:StockSharp.Algo.Indicators.Trend.NickRypockTrailingReverse.Trend">
+            <summary>
+            Направление тренда
+            </summary>
+        </member>
         <member name="T:StockSharp.Algo.Indicators.ShiftedIndicatorValue">
             <summary>
              Смещенное значение индикатора.

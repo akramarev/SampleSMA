@@ -118,6 +118,12 @@
             <param name="other">Объект для сравнения.</param>
             <returns>true, если другой объект равен текущему, иначе false.</returns>
         </member>
+        <member name="M:StockSharp.BusinessEntities.Exchange.GetHashCode">
+            <summary>
+            Рассчитать хеш-код объекта <see cref="T:StockSharp.BusinessEntities.Exchange"/>.
+            </summary>
+            <returns>Хеш-код.</returns>
+        </member>
         <member name="M:StockSharp.BusinessEntities.Exchange.Clone">
             <summary>
              Создать копию объекта <see cref="T:StockSharp.BusinessEntities.Exchange"/>.
@@ -540,7 +546,7 @@
         </member>
         <member name="M:StockSharp.BusinessEntities.Currency.GetHashCode">
             <summary>
-            Рассчитать хеш-код валюты.
+            Рассчитать хеш-код объекта <see cref="T:StockSharp.BusinessEntities.Currency"/>.
             </summary>
             <returns>Хеш-код.</returns>
         </member>
@@ -639,7 +645,7 @@
         </member>
         <member name="M:StockSharp.BusinessEntities.Quote.GetHashCode">
             <summary>
-            Рассчитать хеш-код котировки.
+            Рассчитать хеш-код объекта <see cref="T:StockSharp.BusinessEntities.Quote"/>.
             </summary>
             <returns>Хеш-код.</returns>
         </member>
@@ -767,7 +773,7 @@
         </member>
         <member name="M:StockSharp.BusinessEntities.Security.GetHashCode">
             <summary>
-            Рассчитать хеш-код инструмента.
+            Рассчитать хеш-код объекта <see cref="T:StockSharp.BusinessEntities.Security"/>.
             </summary>
             <returns>Хеш-код.</returns>
         </member>
@@ -1064,6 +1070,11 @@
             Плечо маржи.
             </summary>
         </member>
+        <member name="P:StockSharp.BusinessEntities.Portfolio.VariationMargin">
+            <summary>
+            Вариационная маржа.
+            </summary>
+        </member>
         <member name="P:StockSharp.BusinessEntities.Portfolio.BeginAmount">
             <summary>
             Размер денежных средств на начало торговой сессии.
@@ -1124,6 +1135,12 @@
             Создать <see cref="T:StockSharp.BusinessEntities.WorkingTime"/>.
             </summary>
         </member>
+        <member name="M:StockSharp.BusinessEntities.WorkingTime.Clone">
+            <summary>
+            Создать копию объекта <see cref="T:StockSharp.BusinessEntities.WorkingTime"/>.
+            </summary>
+            <returns>Копия объекта.</returns>
+        </member>
         <member name="P:StockSharp.BusinessEntities.WorkingTime.Times">
             <summary>
             Время работы биржи.
@@ -1169,6 +1186,12 @@
             Получить строковое представление.
             </summary>
             <returns>Строковое представление.</returns>
+        </member>
+        <member name="M:StockSharp.BusinessEntities.MarketDepthPair.GetHashCode">
+            <summary>
+            Рассчитать хеш-код объекта <see cref="T:StockSharp.BusinessEntities.MarketDepthPair"/>.
+            </summary>
+            <returns>Хеш-код.</returns>
         </member>
         <member name="P:StockSharp.BusinessEntities.MarketDepthPair.Bid">
             <summary>
@@ -1332,9 +1355,9 @@
         </member>
         <member name="M:StockSharp.BusinessEntities.Unit.GetHashCode">
             <summary>
-            Для внутреннего использования.
+            Рассчитать хеш-код объекта <see cref="T:StockSharp.BusinessEntities.Unit"/>.
             </summary>
-            <returns></returns>
+            <returns>Хеш-код.</returns>
         </member>
         <member name="M:StockSharp.BusinessEntities.Unit.OnEquals(StockSharp.BusinessEntities.Unit)">
             <summary>
@@ -2680,7 +2703,7 @@
         </member>
         <member name="M:StockSharp.BusinessEntities.Trade.GetHashCode">
             <summary>
-            Рассчитать хеш-код сделки.
+            Рассчитать хеш-код объекта <see cref="T:StockSharp.BusinessEntities.Trade"/>.
             </summary>
             <returns>Хеш-код.</returns>
         </member>
@@ -2733,21 +2756,6 @@
             Создать стакан.
             </summary>
             <param name="security">Инструмент стакана.</param>
-        </member>
-        <member name="M:StockSharp.BusinessEntities.MarketDepth.#ctor(StockSharp.BusinessEntities.Security,System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Quote})">
-            <summary>
-            Создать стакан.
-            </summary>
-            <param name="security">Инструмент стакана.</param>
-            <param name="quotes">Котировки стакана.</param>
-        </member>
-        <member name="M:StockSharp.BusinessEntities.MarketDepth.#ctor(StockSharp.BusinessEntities.Security,System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Quote},System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Quote})">
-            <summary>
-            Создать стакан.
-            </summary>
-            <param name="security">Инструмент стакана.</param>
-            <param name="bids">Биды.</param>
-            <param name="asks">Оффера.</param>
         </member>
         <member name="M:StockSharp.BusinessEntities.MarketDepth.Decrease(System.Int32)">
             <summary>
@@ -2813,8 +2821,9 @@
             Старые котировки удаляются из стакана.
             </remarks>
             <param name="quotes">Новые котировки.</param>
+            <returns>Стакан.</returns>
         </member>
-        <member name="M:StockSharp.BusinessEntities.MarketDepth.Update(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Quote},System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Quote},System.Boolean)">
+        <member name="M:StockSharp.BusinessEntities.MarketDepth.Update(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Quote},System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Quote},System.Boolean,System.DateTime)">
             <summary>
             Обновить стакан новыми бидами и офферами.
             </summary>
@@ -2824,6 +2833,8 @@
             <param name="bids">Новые биды.</param>
             <param name="asks">Новые оффера.</param>
             <param name="isSorted">Отсортированы ли котировки. Параметр используется в целях оптимизации для предотвращения повторной сортировки.</param>
+            <param name="lastChangeTime">Время последнего изменения стакана.</param>
+            <returns>Стакан.</returns>
         </member>
         <member name="M:StockSharp.BusinessEntities.MarketDepth.UpdateQuote(StockSharp.BusinessEntities.Quote)">
             <summary>

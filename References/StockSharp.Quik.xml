@@ -1566,7 +1566,7 @@
     </member>
     <member name="M:StockSharp.Quik.DdeTableColumn.GetHashCode">
       <summary>
-            Рассчитать хеш-код колонки.
+            Рассчитать хеш-код объекта <see cref="T:StockSharp.Quik.DdeTableColumn" />.
             </summary>
       <returns>Хеш-код.</returns>
     </member>
@@ -2070,7 +2070,7 @@
     </member>
     <member name="M:StockSharp.Quik.DdeTable.GetHashCode">
       <summary>
-            Рассчитать хеш-код таблицы.
+            Рассчитать хеш-код объекта <see cref="T:StockSharp.Quik.DdeTable" />.
             </summary>
       <returns>Хеш-код.</returns>
     </member>

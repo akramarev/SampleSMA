@@ -362,5 +362,12 @@
             <param name="security">Инструмент.</param>
             <returns>Код площадки.</returns>
         </member>
+        <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetAlfaAveragePrice(StockSharp.BusinessEntities.Order)">
+            <summary>
+            Получить среднюю цену исполнения.
+            </summary>
+            <param name="order">Заявка.</param>
+            <returns>Средняя цену исполнения..</returns>
+        </member>
     </members>
 </doc>

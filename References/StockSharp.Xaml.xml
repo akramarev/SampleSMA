@@ -20,6 +20,12 @@
             </summary>
             <param name="window">Визуальное окно, в которое будут записываться логи.</param>
         </member>
+        <member name="M:StockSharp.Xaml.GuiLogListener.#ctor(StockSharp.Xaml.Monitor)">
+            <summary>
+            Создать <see cref="T:StockSharp.Xaml.GuiLogListener"/>.
+            </summary>
+            <param name="monitor">Компонент для мониторинга работы торговых стратегий.</param>
+        </member>
         <member name="M:StockSharp.Xaml.GuiLogListener.#ctor(StockSharp.Xaml.MonitorWindow)">
             <summary>
             Создать <see cref="T:StockSharp.Xaml.GuiLogListener"/>.
@@ -66,9 +72,24 @@
             События двойного нажатия мышкой на выбранный инструмент.
             </summary>
         </member>
+        <member name="E:StockSharp.Xaml.SecurityPicker.SecuritySelected">
+            <summary>
+            События изменения выбранного инструмента.
+            </summary>
+        </member>
         <member name="P:StockSharp.Xaml.SecurityPicker.SelectedSecurity">
             <summary>
-             Выбранный инструмент.
+            Выбранный инструмент.
+            </summary>
+        </member>
+        <member name="P:StockSharp.Xaml.SecurityPicker.SecurityType">
+            <summary>
+            Выбранный тип инструмента.
+            </summary>
+        </member>
+        <member name="P:StockSharp.Xaml.SecurityPicker.SecurityFilter">
+            <summary>
+            Текущий фильтр по инструменту.
             </summary>
         </member>
         <member name="P:StockSharp.Xaml.SecurityPicker.Securities">
@@ -359,6 +380,21 @@
         <member name="M:StockSharp.Xaml.Monitor.InitializeComponent">
             <summary>
             InitializeComponent
+            </summary>
+        </member>
+        <member name="T:StockSharp.Xaml.BaseApplication">
+            <summary>
+            Базовый класс для WPF приложений.
+            </summary>
+        </member>
+        <member name="M:StockSharp.Xaml.BaseApplication.#ctor">
+            <summary>
+            Инициализировать <see cref="T:StockSharp.Xaml.BaseApplication"/>.
+            </summary>
+        </member>
+        <member name="P:StockSharp.Xaml.BaseApplication.Name">
+            <summary>
+            Имя источника.
             </summary>
         </member>
         <member name="T:StockSharp.Xaml.UnitControl">
