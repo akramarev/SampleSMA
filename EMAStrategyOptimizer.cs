@@ -146,13 +146,13 @@ namespace SampleSMA
 
                 // параметр влияет на занимаемую память.
                 // в случае достаточно количества памяти на компьютере рекомендуется его увеличить
-                DaysInMemory = 1,
+                DaysInMemory = 3,
             };
 
             //trader.DepthGenerators[security] = new TrendMarketDepthGenerator(security)
             //{
             //    // стакан для инструмента в истории обновляется раз в 1 секунду
-            //    Interval = TimeSpan.FromSeconds(10),
+            //    Interval = TimeSpan.FromSeconds(1),
             //};
 
             CandleManager candleManager = new CandleManager();

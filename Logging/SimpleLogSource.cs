@@ -28,7 +28,10 @@ namespace SampleSMA.Logging
 
         public void AddLog(LogMessage message)
         {
-            this.Log(message);
+            if (this.Log != null)
+            {
+                this.Log(message);
+            }
         }
 
         public event Action<LogMessage> Log;

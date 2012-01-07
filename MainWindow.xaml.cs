@@ -132,6 +132,7 @@
         private void btnHistoryStart_Click(object sender, RoutedEventArgs e)
         {
             this.ClearChart();
+            this.ClearGrids();
 
             // создаем тестовый инструмент, на котором будет производится тестирование
             var security = new Security
@@ -181,7 +182,7 @@
             //strategy.PropertyChanged += OnStrategyPropertyChanged;
             trader.NewMyTrades += OnNewTrades;
 
-            //_logManager.Sources.Add(strategy);
+            _logManager.Sources.Add(strategy);
 
             int lastUpdateHour = 0;
 
@@ -432,11 +433,6 @@
             }
         }
 
-        private void ClearChart()
-        {
-            _candleChart.Clear();
-        }
-
         #endregion
 
         #region Interface Event Handlers
@@ -527,6 +523,17 @@
 
         #region Helpers
 
+        private void ClearChart()
+        {
+            _candleChart.Clear();
+        }
+
+        private void ClearGrids()
+        {
+            _orders.Orders.Clear();
+            _trades.Trades.Clear();
+        }
+
         private void StartDde()
         {
             _trader.StartExport();
@@ -546,8 +553,8 @@
             txtHistoryRangeBegin.Text = (d.Date + Exchange.Rts.WorkingTime.Times[0].Min).ToString("g");
             txtHistoryRangeEnd.Text = (d.Date + Exchange.Rts.WorkingTime.Times[2].Max).ToString("g");
 
-            txtHistoryRangeBegin.Text = "04.01.2012 10:00";
-            txtHistoryRangeEnd.Text = "04.01.2012 23:45";
+            txtHistoryRangeBegin.Text = "05.01.2012 10:00";
+            txtHistoryRangeEnd.Text = "05.01.2012 23:45";
         }
 
         private static TimeFrameCandle[] GetHistoryCandlesFromFile(Security security, TimeSpan timeFrame)
