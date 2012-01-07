@@ -102,10 +102,7 @@
                 TimeFrameCandle[] historyCandles = GetHistoryCandlesFromFile(_security, _timeFrame);
                 if (historyCandles != null)
                 {
-                    // remove footprint
-                    _strategy.FilterMA.RemoveStartFootprint((DecimalIndicatorValue)historyCandles[0].ClosePrice);
-                    _strategy.LongMA.RemoveStartFootprint((DecimalIndicatorValue)historyCandles[0].ClosePrice);
-                    _strategy.ShortMA.RemoveStartFootprint((DecimalIndicatorValue)historyCandles[0].ClosePrice);
+                    _strategy.RemoveStartFootprint(historyCandles[0]);
 
                     DrawCandles(historyCandles);
                     CalculateAndDrawMAs(historyCandles);
@@ -178,59 +175,52 @@
             EmulationTrader trader = optimizer.GetOptTraderContext(this._filterMAPeriod, this._longMAPeriod, this._shortMAPeriod, new ManualResetEvent(false));
             EMAEventModelStrategy strategy = optimizer.Strategies[0];
 
+            strategy.CandleProcessed += (candle) => DrawSmaLines(strategy, candle.Time);
+            strategy.NewOrder += OnNewOrder;
+            strategy.CandleManager.CandlesFinished += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
+            strategy.PropertyChanged += OnStrategyPropertyChanged;
+            trader.NewMyTrades += OnNewTrades;
+
             //_logManager.Sources.Add(strategy);
 
-            DateTime lastUpdateDate = DateTime.MinValue;
+            int lastUpdateHour = 0;
 
             // и подписываемся на событие изменения времени, чтобы обновить ProgressBar
             trader.MarketTimeChanged += () =>
             {
-                // в целях оптимизации обновляем ProgressBar только при начале нового дня
-                if (trader.MarketTime.Date != lastUpdateDate || trader.MarketTime >= stopTime)
+                // в целях оптимизации обновляем ProgressBar только при начале нового часа
+                if (trader.MarketTime.Hour != lastUpdateHour || trader.MarketTime >= stopTime)
                 {
-                    lastUpdateDate = trader.MarketTime.Date;
+                    lastUpdateHour = trader.MarketTime.Hour;
                     this.GuiAsync(() => this.pbHistoryTestProgress.Value = (trader.MarketTime - startTime).TotalMinutes);
                 }
             };
+
+            Stopwatch sw = new Stopwatch();
 
             trader.StateChanged += () =>
             {
                 if (trader.State == EmulationStates.Stopped)
                 {
+                    sw.Stop();
+
                     this.GuiAsync(() =>
                     {
                         btnHistoryStart.IsEnabled = true;
 
-                        // рисуем график
-                        var candles = strategy.CandleManager.GetTimeFrameCandles(security, _timeFrame);
-                        DrawCandles(candles);
-
-                        foreach (var candle in candles)
-                        {
-                            strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-                            strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-                            strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-
-                            DrawSmaLines(strategy, candle.Time);
-                        }
-
-                        // заполняем order'ы
-                        _orders.Orders.Clear();
-                        _orders.Orders.AddRange(strategy.Orders);
-
-                        // заполняем трейды
-                        _trades.Trades.Clear();
-                        _trades.Trades.AddRange(trader.MyTrades);
-
-                        // обновляем стату по стратегии
-                        UpdateStrategyStat(strategy);
-
                         _log.AddLog(new ExtendedLogMessage(_log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
-                            String.Format("Strategy History Result: {0}, {1}, {2}. PnL: {3} ", strategy.FilterMA.Length, strategy.LongMA.Length, strategy.ShortMA.Length, strategy.PnLManager.PnL)));
+                            String.Format("History testing done ({0}). Result: {1}, {2}, {3}. PnL: {4} ",
+                                sw.Elapsed,
+                                strategy.FilterMA.Length, 
+                                strategy.LongMA.Length, 
+                                strategy.ShortMA.Length, 
+                                strategy.PnLManager.PnL)));
                     });
                 }
                 else if (trader.State == EmulationStates.Started)
                 {
+                    sw.Start();
+
                     this.GuiAsync(() =>
                     {
                         btnHistoryStart.IsEnabled = false;
@@ -370,26 +360,7 @@
                             }
                         });
 
-                        _trader.NewMyTrades += trades => this.GuiAsync(() =>
-                        {
-                            //if (_strategy != null)
-                            //{
-                            //    // найти те сделки, которые совершила стратегия скользящей средней
-                            //    trades = trades.Where(t => _strategy.Orders.Any(o => o == t.Order));
-
-                            //    _trades.Trades.AddRange(trades);
-                            //}
-
-                            _trades.Trades.AddRange(trades);
-
-                            var newTradeLogMessage = "I've just made a deal: {0} {1} future contracts at {2}";
-                            trades.ForEach(t => this._log.AddLog(
-                                new ExtendedLogMessage(this._log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
-                                    newTradeLogMessage,
-                                    (t.Trade.OrderDirection.Value == OrderDirections.Buy) ? "bought" : "sold",
-                                    t.Trade.Volume,
-                                    t.Trade.Price)));
-                        });
+                        _trader.NewMyTrades += OnNewTrades;
 
                         _candleManager.CandlesStarted += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
                         _candleManager.CandlesChanged += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
@@ -498,7 +469,11 @@
 
         private void OnStrategyPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            UpdateStrategyStat(_strategy);
+            var strategy = sender as EMAEventModelStrategy;
+            if (strategy != null)
+            {
+                this.UpdateStrategyStat(strategy);
+            }
         }
 
         private void UpdateStrategyStat(EMAEventModelStrategy strategy)
@@ -516,6 +491,19 @@
         private void OnNewOrder(Order order)
         {
             _orders.Orders.Add(order);
+        }
+
+        private void OnNewTrades(IEnumerable<MyTrade> trades)
+        {
+            _trades.Trades.AddRange(trades);
+
+            var newTradeLogMessage = "I've just made a deal: {0} {1} future contracts at {2}";
+            trades.ForEach(t => this._log.AddLog(
+                new ExtendedLogMessage(this._log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
+                    newTradeLogMessage,
+                    (t.Trade.OrderDirection.Value == OrderDirections.Buy) ? "bought" : "sold",
+                    t.Trade.Volume,
+                    t.Trade.Price)));
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -554,8 +542,8 @@
             txtHistoryRangeBegin.Text = (d.Date + Exchange.Rts.WorkingTime.Times[0].Min).ToString("g");
             txtHistoryRangeEnd.Text = (d.Date + Exchange.Rts.WorkingTime.Times[2].Max).ToString("g");
 
-            txtHistoryRangeBegin.Text = "05.01.2012 10:00";
-            txtHistoryRangeEnd.Text = "05.01.2012 23:45";
+            txtHistoryRangeBegin.Text = "04.01.2012 10:00";
+            txtHistoryRangeEnd.Text = "04.01.2012 23:45";
         }
 
         private static TimeFrameCandle[] GetHistoryCandlesFromFile(Security security, TimeSpan timeFrame)

@@ -11,7 +11,9 @@ namespace SampleSMA
     {
         public static void RemoveStartFootprint(this ExponentialMovingAverage ema, DecimalIndicatorValue value)
         {
-            for (int i = 0; i < ema.Length * 3; i++)
+            ema.Reset();
+
+            for (int i = 0; i < ema.Length; i++)
             {
                 ema.Process((DecimalIndicatorValue)value);
             } 

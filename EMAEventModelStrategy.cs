@@ -97,12 +97,18 @@ namespace SampleSMA
 
         protected void ProcessCandle(Candle candle)
         {
-            this.LastCandle = candle;
-
-            if (this.LastCandle == null)
+            if (candle == null)
             {
                 return;
             }
+
+            if (this.LastCandle == null)
+            {
+                // it's a very first candle, we have to prepare indicators
+                this.RemoveStartFootprint(candle);
+            }
+
+            this.LastCandle = candle;
 
             // processing Filer, Short and Long MA (also take care about "prev-" variables)
             this.FilterMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
@@ -134,6 +140,13 @@ namespace SampleSMA
             this._prevLongMAValue = this.LongMA.LastValue;
 
             this.OnCandleProcessed(candle);
+        }
+
+        public void RemoveStartFootprint(Candle candle)
+        {
+            this.FilterMA.RemoveStartFootprint((DecimalIndicatorValue)candle.OpenPrice);
+            this.LongMA.RemoveStartFootprint((DecimalIndicatorValue)candle.OpenPrice);
+            this.ShortMA.RemoveStartFootprint((DecimalIndicatorValue)candle.OpenPrice);
         }
 
         private void AnalyseAndTrade()
