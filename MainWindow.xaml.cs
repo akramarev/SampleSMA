@@ -178,20 +178,21 @@
             strategy.CandleProcessed += (candle) => DrawSmaLines(strategy, candle.Time);
             strategy.NewOrder += OnNewOrder;
             strategy.CandleManager.CandlesFinished += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
-            strategy.PropertyChanged += OnStrategyPropertyChanged;
+            //strategy.PropertyChanged += OnStrategyPropertyChanged;
             trader.NewMyTrades += OnNewTrades;
 
             //_logManager.Sources.Add(strategy);
 
             int lastUpdateHour = 0;
 
-            // и подписываемся на событие изменения времени, чтобы обновить ProgressBar
             trader.MarketTimeChanged += () =>
             {
-                // в целях оптимизации обновляем ProgressBar только при начале нового часа
+                // в целях оптимизации обновляем ProgressBar и Stat только при начале нового часа
                 if (trader.MarketTime.Hour != lastUpdateHour || trader.MarketTime >= stopTime)
                 {
                     lastUpdateHour = trader.MarketTime.Hour;
+
+                    UpdateStrategyStat(strategy);
                     this.GuiAsync(() => this.pbHistoryTestProgress.Value = (trader.MarketTime - startTime).TotalMinutes);
                 }
             };
@@ -207,6 +208,9 @@
                     this.GuiAsync(() =>
                     {
                         btnHistoryStart.IsEnabled = true;
+
+                        // Update strategy stat panel
+                        this.UpdateStrategyStat(strategy);
 
                         _log.AddLog(new ExtendedLogMessage(_log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
                             String.Format("History testing done ({0}). Result: {1}, {2}, {3}. PnL: {4} ",

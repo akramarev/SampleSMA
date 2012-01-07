@@ -42,19 +42,19 @@
 
         public void AddFilterMA(DateTime time, double value)
         {
-            var point = new DataPoint(time.ToOADate(), value) { Color = Color.DarkGray };
+            var point = new DataPoint(time.ToOADate(), value);
             _seriesFilterMA.Points.Add(point);
         }
 
         public void AddLongMA(DateTime time, double value)
         {
-            var point = new DataPoint(time.ToOADate(), value) { Color = Color.LightBlue };
+            var point = new DataPoint(time.ToOADate(), value);
             _seriesLongMA.Points.Add(point);
         }
 
         public void AddShortMA(DateTime time, double value)
         {
-            var point = new DataPoint(time.ToOADate(), value) { Color = Color.LightPink };
+            var point = new DataPoint(time.ToOADate(), value);
             _seriesShortMA.Points.Add(point);
         }
 
