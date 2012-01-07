@@ -38,11 +38,12 @@
             Метод заканчивает работу при появлении окна с логином. Если окно не появилось в течении 6 минут, то будет выброшего исключение.
             </remarks>
     </member>
-    <member name="M:StockSharp.Quik.QuikTerminal.Login(System.String,System.Net.IPEndPoint)">
+    <member name="M:StockSharp.Quik.QuikTerminal.LoginWithCertificate(System.String,System.String,System.Net.IPEndPoint)">
       <summary>
-            Подключить Quik к серверу торгов.
+            Подключить Quik к серверу торгов с использованием сертификата.
             </summary>
       <param name="certPath">Путь к сертификату.</param>
+      <param name="password">Пароль.</param>
       <param name="address">Адрес сервера Quik. Если значение равно null, то используется адрес по умолчанию.</param>
     </member>
     <member name="M:StockSharp.Quik.QuikTerminal.Login(System.String,System.String,System.Net.IPEndPoint)">
@@ -2680,6 +2681,11 @@
     <member name="P:StockSharp.Quik.DdeEquityPositionColumns.BlockedPosition">
       <summary>
             Сумма средств, заблокированных под исполнение заявок клиента.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Quik.DdeEquityPositionColumns.BuyPrice">
+      <summary>
+            Средневзвешенная цена приобретения, рассчитанная по сделкам клиента.
             </summary>
     </member>
     <member name="T:StockSharp.Quik.QuikTrader">

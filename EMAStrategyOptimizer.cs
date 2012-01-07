@@ -10,6 +10,7 @@ using StockSharp.Algo.Testing;
 using StockSharp.BusinessEntities;
 using StockSharp.Algo;
 using StockSharp.Algo.Logging;
+using SampleSMA.Logging;
 
 namespace SampleSMA
 {
@@ -45,7 +46,7 @@ namespace SampleSMA
         public delegate void StateChangedHandler();
         public event StateChangedHandler StateChanged;
 
-        public SampleSMA.SimpleLogSource Log { get; set; }
+        public SimpleLogSource Log { get; set; }
 
         public EMAStrategyOptimizer(Security security, TradingStorage storage, Portfolio portfolio, DateTime startTime, DateTime stopTime)
         {
@@ -148,11 +149,11 @@ namespace SampleSMA
                 DaysInMemory = 1,
             };
 
-            trader.DepthGenerators[security] = new TrendMarketDepthGenerator(security)
-            {
-                // стакан для инструмента в истории обновляется раз в 1 секунду
-                Interval = TimeSpan.FromSeconds(10),
-            };
+            //trader.DepthGenerators[security] = new TrendMarketDepthGenerator(security)
+            //{
+            //    // стакан для инструмента в истории обновляется раз в 1 секунду
+            //    Interval = TimeSpan.FromSeconds(10),
+            //};
 
             CandleManager candleManager = new CandleManager();
 
@@ -170,7 +171,7 @@ namespace SampleSMA
                 Portfolio = portfolio,
                 Security = security,
                 Trader = trader,
-                //UseQuoting = false
+                UseQuoting = false
             };
 
             this.Strategies.Add(strategy);

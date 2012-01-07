@@ -49,7 +49,6 @@
             <EcngTradingXaml:PortfolioComboBox x:Name="Portfolios" Grid.Row="15" Margin="106,4,0,2" />
             <Button x:Name="ConnectBtn" Width="100" Content="Подключиться" Click="Connect_Click" Margin="0,4,152,2" Grid.Row="15" />
             <Button x:Name="Start" Width="100" IsEnabled="False" Content="Старт" Click="Start_Click" Margin="0,5,0,0" Height="33" VerticalAlignment="Top" Grid.Row="17" HorizontalAlignment="Left" />
-            <Button x:Name="CancelOrders" Width="100" IsEnabled="False" Content="Отменить заявки" Click="CancelOrders_Click" Margin="106,5,0,0" Grid.Row="17" HorizontalAlignment="Left" Height="33" VerticalAlignment="Top" />
             <RadioButton Content="Training Mode" Grid.Row="3" Height="16" HorizontalAlignment="Left" Name="rbTrainingMode" VerticalAlignment="Top" Width="100" IsChecked="True" GroupName="TradingModeRbGroup" Margin="1,3,0,0" />
             <RadioButton Content="Fight Mode" Grid.Row="3" Height="16" HorizontalAlignment="Left" Margin="106,3,0,0" Name="rbFightMode" VerticalAlignment="Top" Width="100" GroupName="TradingModeRbGroup" />
         </Grid>
@@ -111,7 +110,7 @@
             <TextBox Height="23" HorizontalAlignment="Left" Margin="8,4,0,0" Name="txtSecurityId" VerticalAlignment="Top" Width="120" Text="SRH2@RTS" />
             <TextBox Grid.Column="1" Height="23" HorizontalAlignment="Left" Name="txtSecurityCode" VerticalAlignment="Top" Width="120" Text="SRH2" Margin="0,4,0,0" />
         </Grid>
-        <EcngTradingXaml:OrderGrid x:Name="_orders" OrderSelected="_orders_OrderSelected" Margin="0,402,0,0" HorizontalAlignment="Left" Grid.Column="1" />
+        <EcngTradingXaml:OrderGrid x:Name="_orders" Margin="0,402,0,0" HorizontalAlignment="Left" Grid.Column="1" />
         <EcngTradingXaml:TradeGrid x:Name="_trades" Margin="0,282,0,0" HorizontalAlignment="Left" Width="552" Height="114" VerticalAlignment="Top" Grid.Column="1" />
         <EcngTradingXaml:Monitor x:Name="_monitor" Grid.ColumnSpan="2" Grid.Row="1" Height="200" VerticalAlignment="Bottom" />
     </Grid>

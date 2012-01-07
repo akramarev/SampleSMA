@@ -159,12 +159,6 @@
             Удалить столбец с именем стратегии.
             </summary>
         </member>
-        <member name="M:StockSharp.Xaml.LogControl.Enqueue(StockSharp.Algo.Logging.LogMessage)">
-            <summary>
-            Добавить запись в очередь. Метод может быть вызван из любого потока. 
-            </summary>
-            <param name="message">Лог-запись.</param>
-        </member>
         <member name="M:StockSharp.Xaml.LogControl.ResizeColumns">
             <summary>
             Выровнять ширину колонок по содержимому.
@@ -188,28 +182,6 @@
         <member name="P:StockSharp.Xaml.LogControl.Messages">
             <summary>
             Коллекция лог-записей.
-            </summary>
-        </member>
-        <member name="T:StockSharp.Xaml.LogControl.LogMessageCollection">
-            <summary>
-             Коллекция лог-записей.
-            </summary>
-        </member>
-        <member name="M:StockSharp.Xaml.LogControl.LogMessageCollection.#ctor">
-            <summary>
-             Создать <see cref="T:StockSharp.Xaml.LogControl.LogMessageCollection"/>.
-            </summary>
-        </member>
-        <member name="M:StockSharp.Xaml.LogControl.LogMessageCollection.InsertItem(System.Int32,StockSharp.Algo.Logging.LogMessage)">
-            <summary>
-             Добавить элемент.
-            </summary>
-            <param name="index">Позиция, куда добавить элемент.</param>
-            <param name="item">Элемент для добавления.</param>
-        </member>
-        <member name="P:StockSharp.Xaml.LogControl.LogMessageCollection.LimitCount">
-            <summary>
-             Ограничить число записей последними LimitCount.
             </summary>
         </member>
         <member name="T:StockSharp.Xaml.GuiCandleManager`1">

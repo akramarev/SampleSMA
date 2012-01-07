@@ -120,8 +120,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Logging\EmailUnitedLogListener.cs" />
     <Compile Include="EMAEventModelStrategy.cs" />
-    <Compile Include="SimpleLogSource.cs" />
+    <Compile Include="Logging\ExtendedLogMessage.cs" />
+    <Compile Include="Logging\SimpleLogSource.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -640,6 +640,11 @@
             Событие изменения позиций стратегии.
             </summary>
     </member>
+    <member name="E:StockSharp.Algo.Strategies.Strategy.Error">
+      <summary>
+            Событие возникновения ошибки в стратегии.
+            </summary>
+    </member>
     <member name="E:StockSharp.Algo.Strategies.Strategy.PropertyChanged">
       <summary>
             Событие изменения параметров стратегии.
@@ -996,21 +1001,21 @@
             Освободить ресурсы.
             </summary>
     </member>
+    <member name="P:StockSharp.Algo.BasketTrader.SupportUnique">
+      <summary>
+            Поддерживать ли уникальность данных в пределах всех вложенных шлюзов <see cref="P:StockSharp.Algo.BasketTrader.InnerTraders" />.
+            Например, если один и тот же инструмент транслируется из нескольких вложенных шлюзов <see cref="P:StockSharp.Algo.BasketTrader.InnerTraders" />,
+            то событие <see cref="E:StockSharp.Algo.BasketTrader.NewSecurities" /> будет вызвано только один раз. По-умолчанию режим выключен.
+            </summary>
+    </member>
     <member name="P:StockSharp.Algo.BasketTrader.SupportTradesUnique">
       <summary>
-            Поддерживать ли уникальность сделок в пределах всех вложенных шлюзов <see cref="P:StockSharp.Algo.BasketTrader.InnerTraders" />.
+            Поддерживать ли уникальность сделок в пределах всех вложенных шлюзов <see cref="P:StockSharp.Algo.BasketTrader.InnerTraders" />. По-умолчанию режим включен.
             </summary>
     </member>
     <member name="P:StockSharp.Algo.BasketTrader.InnerTraders">
       <summary>
             Шлюзы к торговым системам, с которыми оперирует агрегатор.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Algo.BasketTrader.Securities">
-      <summary>
-            Список всех загруженных инструментов.
-            Вызывать необходимо после того, как пришло событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewSecurities" />.
-            Иначе будет возвращено постое множество.
             </summary>
     </member>
     <member name="P:StockSharp.Algo.BasketTrader.MarketTimeOffset">
@@ -1022,6 +1027,13 @@
     <member name="P:StockSharp.Algo.BasketTrader.MarketTime">
       <summary>
             Получить биржевое время. Значение зависит от <see cref="P:StockSharp.BusinessEntities.ITrader.MarketTimeOffset" />.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Algo.BasketTrader.Securities">
+      <summary>
+            Список всех загруженных инструментов.
+            Вызывать необходимо после того, как пришло событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewSecurities" />.
+            Иначе будет возвращено постое множество.
             </summary>
     </member>
     <member name="P:StockSharp.Algo.BasketTrader.Orders">
@@ -1195,6 +1207,26 @@
             Событие, сигнализирующее об изменении биржевого времени.
             </summary>
     </member>
+    <member name="T:StockSharp.Algo.Logging.SeparateByDateModes">
+      <summary>
+            Режими разделения лог файлов по датам.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Algo.Logging.SeparateByDateModes.None">
+      <summary>
+            Не разделять. Разделение выключено.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Algo.Logging.SeparateByDateModes.FileName">
+      <summary>
+            Разделять через добавление к названию файла.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Algo.Logging.SeparateByDateModes.SubDirectories">
+      <summary>
+            Разделять через под директории.
+            </summary>
+    </member>
     <member name="T:StockSharp.Algo.Logging.FileLogListener">
       <summary>
             Логгер, записывающий данные в текстовый файл.
@@ -1308,7 +1340,7 @@
     </member>
     <member name="P:StockSharp.Algo.Logging.FileLogListener.SeparateByDates">
       <summary>
-            Разделять ли файлы по датам. По умолчанию режим выключен.
+            Режим разделения лог файлов по датам. По умолчанию режим равен <see cref="F:StockSharp.Algo.Logging.SeparateByDateModes.None" />.
             </summary>
     </member>
     <member name="T:StockSharp.Algo.Logging.DebugLogListener">
@@ -2086,7 +2118,7 @@
       <param name="stopOrder">Стоп-заявка, которую необходимо отслеживать на событие активации.</param>
       <returns>Правило.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.FilledPartially(StockSharp.BusinessEntities.Order)">
+    <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.PartiallyMatched(StockSharp.BusinessEntities.Order)">
       <summary>
             Создать правило на событие частичного исполнения заявки.
             </summary>
@@ -2416,6 +2448,22 @@
             Создать правило на событие окончания свечки.
             </summary>
       <param name="candle">Свечка, по которой будет ожидаться окончание.</param>
+      <returns>Правило.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.PartiallyFinished(StockSharp.Algo.Candles.Candle,System.Decimal)">
+      <summary>
+            Создать правило на событие частичного окончания свечки.
+            </summary>
+      <param name="candle">Свечка, по которой будет ожидаться частичное окончание.</param>
+      <param name="percent">Процент завершения свечки.</param>
+      <returns>Правило.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.PartiallyFinishedCandles(StockSharp.Algo.Candles.CandleToken,System.Decimal)">
+      <summary>
+            Создать правило на событие частичного окончания свечек.
+            </summary>
+      <param name="candleToken">Идентификатор регистрации создания свечек, по которому будут ожидаться частичное окончание свечки.</param>
+      <param name="percent">Процент завершения свечки.</param>
       <returns>Правило.</returns>
     </member>
     <member name="M:StockSharp.Algo.Strategies.StrategyRuleHelper.StrategyNewMyTrades(StockSharp.Algo.Strategies.Strategy)">
@@ -4051,11 +4099,6 @@
             </summary>
       <param name="security">Инструмент.</param>
     </member>
-    <member name="P:StockSharp.Algo.History.ISecurityStorage.Securities">
-      <summary>
-            Получить все инструменты.
-            </summary>
-    </member>
     <member name="T:StockSharp.Algo.Logging.UnhandledExceptionSource">
       <summary>
             Источник логов, отсылающий информацию о необработанных ошибках <see cref="E:System.AppDomain.UnhandledException" />.
@@ -4164,32 +4207,28 @@
             Событие ошибки формирования свечек.
             </summary>
     </member>
-    <member name="M:StockSharp.Algo.Candles.CandleBuilder.#ctor(StockSharp.Algo.Candles.NonTradingDealTypes)">
+    <member name="M:StockSharp.Algo.Candles.CandleBuilder.#ctor">
       <summary>
             Создать <see cref="T:StockSharp.Algo.Candles.CandleBuilder" />.
             </summary>
-      <param name="nonTradingDealType">Игнорировать ли сделки, заключенные в период пред- и после- торгов.</param>
     </member>
-    <member name="M:StockSharp.Algo.Candles.CandleBuilder.#ctor(StockSharp.Algo.Candles.ICandleBuilderContainer,StockSharp.Algo.Candles.NonTradingDealTypes)">
+    <member name="M:StockSharp.Algo.Candles.CandleBuilder.#ctor(StockSharp.Algo.Candles.ICandleBuilderContainer)">
       <summary>
             Создать <see cref="T:StockSharp.Algo.Candles.CandleManager" />.
             </summary>
       <param name="container">Контейнер данных.</param>
-      <param name="nonTradingDealType">Игнорировать ли сделки, заключенные в период пред- и после- торгов.</param>
     </member>
-    <member name="M:StockSharp.Algo.Candles.CandleBuilder.#ctor(StockSharp.BusinessEntities.ITrader,StockSharp.Algo.Candles.NonTradingDealTypes)">
+    <member name="M:StockSharp.Algo.Candles.CandleBuilder.#ctor(StockSharp.BusinessEntities.ITrader)">
       <summary>
             Создать <see cref="T:StockSharp.Algo.Candles.CandleManager" />.
             </summary>
       <param name="trader">Шлюз к торговой системе для создания источника тиковых сделок.</param>
-      <param name="nonTradingDealType">Игнорировать ли сделки, заключенные в период пред- и после- торгов.</param>
     </member>
-    <member name="M:StockSharp.Algo.Candles.CandleBuilder.#ctor(StockSharp.Algo.Candles.ICandleBuilderSource,StockSharp.Algo.Candles.NonTradingDealTypes)">
+    <member name="M:StockSharp.Algo.Candles.CandleBuilder.#ctor(StockSharp.Algo.Candles.ICandleBuilderSource)">
       <summary>
             Создать <see cref="T:StockSharp.Algo.Candles.CandleManager" />.
             </summary>
       <param name="source">Источник данных по-умолчанию.</param>
-      <param name="nonTradingDealType">Игнорировать ли сделки, заключенные в период пред- и после- торгов.</param>
     </member>
     <member name="M:StockSharp.Algo.Candles.CandleBuilder.GetToken(System.Type,StockSharp.BusinessEntities.Security,System.Object)">
       <summary>
@@ -4281,6 +4320,11 @@
             Выполнять ли формирование новых свечек в том же потоке, в котором вызван метод <see cref="M:StockSharp.Algo.Candles.CandleBuilder.Register(System.Type,StockSharp.BusinessEntities.Security,System.Object)" />.
             </summary>
       <remarks>По умолчанию значение установлено в false.</remarks>
+    </member>
+    <member name="P:StockSharp.Algo.Candles.CandleBuilder.NonTradingDealType">
+      <summary>
+            Игнорировать ли сделки, заключенные в период пред- и после- торгов.
+            </summary>
     </member>
     <member name="E:StockSharp.Algo.Candles.CandleBuilder.CandlesStarted">
       <summary>
@@ -5381,7 +5425,7 @@
             Фабрика для формирования свечек типа <see cref="T:StockSharp.Algo.Candles.VolumeCandle" />.
             </summary>
     </member>
-    <member name="M:StockSharp.Algo.Candles.VolumeCandleFactory.CreateToken(StockSharp.BusinessEntities.Security,System.Int32)">
+    <member name="M:StockSharp.Algo.Candles.VolumeCandleFactory.CreateToken(StockSharp.BusinessEntities.Security,System.Decimal)">
       <summary>
             Создать идентификатор группировки.
             </summary>
@@ -5389,7 +5433,7 @@
       <param name="arg">Значения группировки свечек.</param>
       <returns>Идентификатор группировки.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Candles.VolumeCandleFactory.CreateCandle(StockSharp.Algo.Candles.CandleToken{StockSharp.Algo.Candles.VolumeCandle,System.Int32},StockSharp.Algo.Candles.ICandleBuilderSourceValue)">
+    <member name="M:StockSharp.Algo.Candles.VolumeCandleFactory.CreateCandle(StockSharp.Algo.Candles.CandleToken{StockSharp.Algo.Candles.VolumeCandle,System.Decimal},StockSharp.Algo.Candles.ICandleBuilderSourceValue)">
       <summary>
             Создать новую свечку.
             </summary>
@@ -5397,7 +5441,7 @@
       <param name="value">Данные, с помощью которых необходимо создать новую свечку.</param>
       <returns>Созданная свечка.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Candles.VolumeCandleFactory.IsCandleFinishedBeforeChange(StockSharp.Algo.Candles.CandleToken{StockSharp.Algo.Candles.VolumeCandle,System.Int32},StockSharp.Algo.Candles.VolumeCandle,StockSharp.Algo.Candles.ICandleBuilderSourceValue)">
+    <member name="M:StockSharp.Algo.Candles.VolumeCandleFactory.IsCandleFinishedBeforeChange(StockSharp.Algo.Candles.CandleToken{StockSharp.Algo.Candles.VolumeCandle,System.Decimal},StockSharp.Algo.Candles.VolumeCandle,StockSharp.Algo.Candles.ICandleBuilderSourceValue)">
       <summary>
             Сформирована ли свечка до добавления данных.
             </summary>
@@ -5947,6 +5991,11 @@
             Освободить занятые ресурсы.
             </summary>
     </member>
+    <member name="P:StockSharp.Algo.Testing.MarketEmulator.EmulReason">
+      <summary>
+            Причина вызова эмуляции.
+            </summary>
+    </member>
     <member name="P:StockSharp.Algo.Testing.MarketEmulator.Settings">
       <summary>
             Настройки эмулятора биржи.
@@ -6010,6 +6059,26 @@
     <member name="P:StockSharp.Algo.Testing.MarketEmulator.ActiveOrderCount">
       <summary>
             Количество активных заявок.
+            </summary>
+    </member>
+    <member name="T:StockSharp.Algo.Testing.MarketEmulator.EmulationReason">
+      <summary>
+            Причина вызова эмуляции. 
+            </summary>
+    </member>
+    <member name="F:StockSharp.Algo.Testing.MarketEmulator.EmulationReason.ActiveOrderProcessing">
+      <summary>
+            Обработка нового или активного виртуального ордера.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Algo.Testing.MarketEmulator.EmulationReason.NewMarketDepths">
+      <summary>
+            Поступление нового реального стакана.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Algo.Testing.MarketEmulator.EmulationReason.NewTrades">
+      <summary>
+            Поступление новых сделок.
             </summary>
     </member>
     <member name="T:StockSharp.Algo.Testing.SyncMarketEmulator">
@@ -7787,25 +7856,6 @@
       <param name="newVolume">Объем новой заявки.</param>
       <returns>Новая заявка.</returns>
     </member>
-    <member name="M:StockSharp.Algo.TraderHelper.GuarantyCancelOrder(StockSharp.BusinessEntities.Order)">
-      <summary>
-            Гарантированно отменить заявку. На биржу посылается команда на отмену заявки.
-            Метод заканчивает работу когда заявка будет или отменена, или удовлетворена, или произойдет ошибка.
-            <remarks>
-            Если в течении 20 секунд заявка не изменила своего состояния, то метод сгенерирует ошибку.
-            </remarks></summary>
-      <param name="order">Заявка, которую необходимо отменить.</param>
-    </member>
-    <member name="M:StockSharp.Algo.TraderHelper.GuarantyCancelOrder(StockSharp.BusinessEntities.Order,System.TimeSpan)">
-      <summary>
-            Гарантированно отменить заявку. На биржу посылается команда на отмену заявки.
-            Метод заканчивает работу когда заявка будет или отменена, или удовлетворена, или произойдет ошибка.
-            <remarks>
-            Если в течении <paramref name="timeOut" /> заявка не изменила своего состояния, то метод сгенерирует ошибку.
-            </remarks></summary>
-      <param name="order">Заявка, которую необходимо отменить.</param>
-      <param name="timeOut">Максимальное время ожидания отмены заявки.</param>
-    </member>
     <member name="M:StockSharp.Algo.TraderHelper.Convert(StockSharp.BusinessEntities.Currency,StockSharp.BusinessEntities.CurrencyTypes)">
       <summary>
             Сконвертировать одну валюту в другую.
@@ -7831,7 +7881,7 @@
       <param name="date">Дата курса.</param>
       <returns>Курс.</returns>
     </member>
-    <member name="M:StockSharp.Algo.TraderHelper.Rare(StockSharp.BusinessEntities.MarketDepth)">
+    <member name="M:StockSharp.Algo.TraderHelper.Sparse(StockSharp.BusinessEntities.MarketDepth)">
       <summary>
             Создать из обычного стакана разреженный с минимальным шагом цены равный <see cref="P:StockSharp.BusinessEntities.Security.MinStepSize" />.
             <remarks>
@@ -7840,7 +7890,7 @@
       <param name="depth">Обычный стакан.</param>
       <returns>Разреженный стакан.</returns>
     </member>
-    <member name="M:StockSharp.Algo.TraderHelper.Rare(StockSharp.BusinessEntities.MarketDepth,System.Decimal)">
+    <member name="M:StockSharp.Algo.TraderHelper.Sparse(StockSharp.BusinessEntities.MarketDepth,System.Decimal)">
       <summary>
             Создать из обычного стакана разреженный.
             <remarks>
@@ -7850,7 +7900,7 @@
       <param name="minStepSize">Минимальный шаг цены.</param>
       <returns>Разреженный стакан.</returns>
     </member>
-    <member name="M:StockSharp.Algo.TraderHelper.Rare(StockSharp.BusinessEntities.MarketDepthPair,System.Decimal)">
+    <member name="M:StockSharp.Algo.TraderHelper.Sparse(StockSharp.BusinessEntities.MarketDepthPair,System.Decimal)">
       <summary>
             Создать из пары котировок разреженную коллекцию котировок, которая будет входить в диапазон между парой.
             <remarks>
@@ -7860,7 +7910,7 @@
       <param name="minStepSize">Минимальный шаг цены.</param>
       <returns>Разреженная коллекция котировок.</returns>
     </member>
-    <member name="M:StockSharp.Algo.TraderHelper.Rare(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Quote},System.Decimal)">
+    <member name="M:StockSharp.Algo.TraderHelper.Sparse(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Quote},System.Decimal)">
       <summary>
             Создать из обычных котировок разреженную коллекцию котировок.
             <remarks>
@@ -7931,14 +7981,14 @@
       <param name="order">Заявка, которую необходимо проверить.</param>
       <returns>True, если заявка полностью исполнена, иначе, false.</returns>
     </member>
-    <member name="M:StockSharp.Algo.TraderHelper.IsFilledPartially(StockSharp.BusinessEntities.Order)">
+    <member name="M:StockSharp.Algo.TraderHelper.IsMatchedPartially(StockSharp.BusinessEntities.Order)">
       <summary>
             Проверить, реализована ли часть объема в заявке.
             </summary>
       <param name="order">Заявка, которую необходимо проверить.</param>
       <returns>True, если часть объема реализована, иначе, false.</returns>
     </member>
-    <member name="M:StockSharp.Algo.TraderHelper.IsFilledEmpty(StockSharp.BusinessEntities.Order)">
+    <member name="M:StockSharp.Algo.TraderHelper.IsMatchedEmpty(StockSharp.BusinessEntities.Order)">
       <summary>
             Проверить, что не реализован ни один контракт в заявке.
             </summary>
@@ -8865,7 +8915,7 @@
       <param name="tradeCount">Максимальное количество сделок, по которому будут группироваться свечки.</param>
       <returns>Идентификатор группировки.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Candles.CandleHelper.RegisterVolumeCandles(StockSharp.Algo.Candles.ICandleSource,StockSharp.BusinessEntities.Security,System.Int32)">
+    <member name="M:StockSharp.Algo.Candles.CandleHelper.RegisterVolumeCandles(StockSharp.Algo.Candles.ICandleSource,StockSharp.BusinessEntities.Security,System.Decimal)">
       <summary>
             Зарегистрировать группировку свечек по признаку максимального количества контрактов. Через событие <see cref="E:StockSharp.Algo.Candles.ICandleSource.CandlesStarted" />
             будут приходить объекты класса <see cref="T:StockSharp.Algo.Candles.VolumeCandle" />.

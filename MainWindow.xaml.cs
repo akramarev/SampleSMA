@@ -29,6 +29,7 @@
     using StockSharp.Xaml;
     using MessageBox = System.Windows.MessageBox;
     using System.Configuration;
+    using SampleSMA.Logging;
 
 	public partial class MainWindow
 	{
@@ -91,7 +92,9 @@
 
                 _strategy.NewOrder += OnNewOrder;
                 _strategy.PropertyChanged += OnStrategyPropertyChanged;
+
                 _logManager.Sources.Add(_strategy);
+                _logManager.Listeners.Add(new EmailUnitedLogListener());
 
                 this.ClearChart();
 
@@ -175,7 +178,7 @@
             EmulationTrader trader = optimizer.GetOptTraderContext(this._filterMAPeriod, this._longMAPeriod, this._shortMAPeriod, new ManualResetEvent(false));
             EMAEventModelStrategy strategy = optimizer.Strategies[0];
 
-            _logManager.Sources.Add(strategy);
+            //_logManager.Sources.Add(strategy);
 
             DateTime lastUpdateDate = DateTime.MinValue;
 
@@ -214,7 +217,6 @@
                         // заполняем order'ы
                         _orders.Orders.Clear();
                         _orders.Orders.AddRange(strategy.Orders);
-                        //this.GuiAsync(() => _candleChart.Orders.AddRange(strategy.Orders));
 
                         // заполняем трейды
                         _trades.Trades.Clear();
@@ -223,7 +225,7 @@
                         // обновляем стату по стратегии
                         UpdateStrategyStat(strategy);
 
-                        _log.AddLog(new LogMessage(_log, DateTime.Now, ErrorTypes.Warning,
+                        _log.AddLog(new ExtendedLogMessage(_log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
                             String.Format("Strategy History Result: {0}, {1}, {2}. PnL: {3} ", strategy.FilterMA.Length, strategy.LongMA.Length, strategy.ShortMA.Length, strategy.PnLManager.PnL)));
                     });
                 }
@@ -370,13 +372,23 @@
 
                         _trader.NewMyTrades += trades => this.GuiAsync(() =>
                         {
-                            if (_strategy != null)
-                            {
-                                // найти те сделки, которые совершила стратегия скользящей средней
-                                trades = trades.Where(t => _strategy.Orders.Any(o => o == t.Order));
+                            //if (_strategy != null)
+                            //{
+                            //    // найти те сделки, которые совершила стратегия скользящей средней
+                            //    trades = trades.Where(t => _strategy.Orders.Any(o => o == t.Order));
 
-                                _trades.Trades.AddRange(trades);
-                            }
+                            //    _trades.Trades.AddRange(trades);
+                            //}
+
+                            _trades.Trades.AddRange(trades);
+
+                            var newTradeLogMessage = "I've just made a deal: {0} {1} future contracts at {2}";
+                            trades.ForEach(t => this._log.AddLog(
+                                new ExtendedLogMessage(this._log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
+                                    newTradeLogMessage,
+                                    (t.Trade.OrderDirection.Value == OrderDirections.Buy) ? "bought" : "sold",
+                                    t.Trade.Volume,
+                                    t.Trade.Price)));
                         });
 
                         _candleManager.CandlesStarted += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
@@ -410,18 +422,9 @@
                 _trader.Disconnect();
         }
 
-        private void CancelOrders_Click(object sender, RoutedEventArgs e)
-        {
-            _orders.SelectedOrders.ForEach(_trader.CancelOrder);
-        }
-
         private void Report_Click(object sender, RoutedEventArgs e)
         {
-            // сгерерировать отчет по прошедшему тестированию
             new ExcelStrategyReport(_strategy, "sma.xlsx").Generate();
-
-            // открыть отчет
-            //Process.Start("sma.xlsx");
         }
 
         #endregion
@@ -515,11 +518,6 @@
             _orders.Orders.Add(order);
         }
 
-        private void _orders_OrderSelected(object sender, EventArgs e)
-        {
-            this.CancelOrders.IsEnabled = _orders.SelectedOrders.Count() > 0;
-        }
-
         protected override void OnClosing(CancelEventArgs e)
         {
             if (_trader != null)
@@ -556,8 +554,8 @@
             txtHistoryRangeBegin.Text = (d.Date + Exchange.Rts.WorkingTime.Times[0].Min).ToString("g");
             txtHistoryRangeEnd.Text = (d.Date + Exchange.Rts.WorkingTime.Times[2].Max).ToString("g");
 
-            txtHistoryRangeBegin.Text = "20.10.2011 10:00";
-            txtHistoryRangeEnd.Text = "20.10.2011 23:45";
+            txtHistoryRangeBegin.Text = "05.01.2012 10:00";
+            txtHistoryRangeEnd.Text = "05.01.2012 23:45";
         }
 
         private static TimeFrameCandle[] GetHistoryCandlesFromFile(Security security, TimeSpan timeFrame)

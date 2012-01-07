@@ -299,7 +299,7 @@
             Поставить в очередь.
             </summary>
         </member>
-        <member name="F:StockSharp.BusinessEntities.OrderExecutionConditions.FillOrCancel">
+        <member name="F:StockSharp.BusinessEntities.OrderExecutionConditions.MatchOrCancel">
             <summary>
             Немедленно или отклонить.
             </summary>
@@ -622,7 +622,7 @@
         </member>
         <member name="T:StockSharp.BusinessEntities.Quote">
             <summary>
-            Котировка.
+            Котировка стакана, представляющая бид или оффер.
             </summary>
         </member>
         <member name="M:StockSharp.BusinessEntities.Quote.#ctor">
@@ -757,7 +757,7 @@
         </member>
         <member name="T:StockSharp.BusinessEntities.Security">
             <summary>
-            Инструмент (акция, фьючерс, опцион).
+            Инструмент (акция, фьючерс, опцион и т.д.).
             </summary>
         </member>
         <member name="M:StockSharp.BusinessEntities.Security.#ctor">
@@ -852,22 +852,22 @@
         </member>
         <member name="P:StockSharp.BusinessEntities.Security.LowPrice">
             <summary>
-            Минимальная цена сделки за сессию.
+            Наинизшая цена сделки за сессию.
             </summary>
         </member>
         <member name="P:StockSharp.BusinessEntities.Security.HighPrice">
             <summary>
-            Максимальная цена сделки за сессию.
+            Наивысшая цена сделки за сессию.
             </summary>
         </member>
         <member name="P:StockSharp.BusinessEntities.Security.BestBid">
             <summary>
-            Цена лучшей покупки в стакане.
+            Лучшая покупка в стакане.
             </summary>
         </member>
         <member name="P:StockSharp.BusinessEntities.Security.BestAsk">
             <summary>
-            Цена лучшей продажи в стакане.
+            Лучшая продажа в стакане.
             </summary>
         </member>
         <member name="P:StockSharp.BusinessEntities.Security.BestPair">
@@ -931,17 +931,17 @@
         </member>
         <member name="P:StockSharp.BusinessEntities.Security.Exchange">
             <summary>
-            Биржа.
+            Биржа, на которой торгуется инструмент.
             </summary>
         </member>
         <member name="P:StockSharp.BusinessEntities.Security.UnderlyingSecurityId">
             <summary>
-            Базовый фьючерсный инструмент, на основе которого построен опцион.
+            Базовый актив, на основе которого построен данный инструмент.
             </summary>
         </member>
         <member name="P:StockSharp.BusinessEntities.Security.Strike">
             <summary>
-            Страйк.
+            Страйк цена опциона.
             </summary>
         </member>
         <member name="P:StockSharp.BusinessEntities.Security.OptionType">
@@ -1046,7 +1046,7 @@
         </member>
         <member name="T:StockSharp.BusinessEntities.Portfolio">
             <summary>
-            Портфель.
+            Портфель, описывающий торговый счет и размер сгенерированной комиссии по нему.
             </summary>
         </member>
         <member name="M:StockSharp.BusinessEntities.Portfolio.#ctor">
@@ -1082,7 +1082,7 @@
         </member>
         <member name="P:StockSharp.BusinessEntities.Portfolio.CurrentAmount">
             <summary>
-            Размер денежных средств на счету.
+            Размер денежных средств на счету на текущий момент.
             </summary>
         </member>
         <member name="P:StockSharp.BusinessEntities.Portfolio.Commission">
@@ -1105,7 +1105,7 @@
         </member>
         <member name="P:StockSharp.BusinessEntities.Portfolio.Exchange">
             <summary>
-            Биржа.
+            Биржа, для которой действует данный портфель.
             </summary>
         </member>
         <member name="M:StockSharp.BusinessEntities.BasketPortfolio.#ctor(StockSharp.BusinessEntities.Portfolio[])">
@@ -2680,7 +2680,7 @@
         </member>
         <member name="T:StockSharp.BusinessEntities.Trade">
             <summary>
-            Сделка.
+            Тиковая сделка.
             </summary>
         </member>
         <member name="M:StockSharp.BusinessEntities.Trade.#ctor">
@@ -2706,6 +2706,12 @@
             Рассчитать хеш-код объекта <see cref="T:StockSharp.BusinessEntities.Trade"/>.
             </summary>
             <returns>Хеш-код.</returns>
+        </member>
+        <member name="M:StockSharp.BusinessEntities.Trade.ToString">
+            <summary>
+            Получить строковое представление.
+            </summary>
+            <returns>Строковое представление.</returns>
         </member>
         <member name="P:StockSharp.BusinessEntities.Trade.Id">
             <summary>
@@ -3061,12 +3067,12 @@
         </member>
         <member name="P:StockSharp.BusinessEntities.Position.CurrentValue">
             <summary>
-            Размер текущей позиции.
+            Размер позиции на текущий момент.
             </summary>
         </member>
         <member name="P:StockSharp.BusinessEntities.Position.BlockedValue">
             <summary>
-            Размер позиции, зарезервированная под активные заявки.
+            Размер позиции, зарезервированной под активные заявки.
             </summary>
         </member>
         <member name="P:StockSharp.BusinessEntities.Position.ExtensionInfo">

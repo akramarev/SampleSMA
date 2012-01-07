@@ -5,7 +5,7 @@ using System.Text;
 using StockSharp.Algo.Logging;
 using Ecng.Collections;
 
-namespace SampleSMA
+namespace SampleSMA.Logging
 {
     public class SimpleLogSource : ILogSource
     {
