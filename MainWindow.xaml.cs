@@ -497,7 +497,7 @@
         {
             _trades.Trades.AddRange(trades);
 
-            var newTradeLogMessage = "I've just made a deal: {0} {1} future contracts at {2}";
+            var newTradeLogMessage = "I've {0} {1} future contracts at {2}";
             trades.ForEach(t => this._log.AddLog(
                 new ExtendedLogMessage(this._log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
                     newTradeLogMessage,
