@@ -20,6 +20,7 @@ namespace SampleSMA
 
         public Unit TakeProfitUnit { get; set; }
         public Unit StopLossUnit { get; set; }
+        public Unit StopTradingUnit { get; set; }
 
         private bool useQuoting;
         public bool UseQuoting
@@ -56,6 +57,8 @@ namespace SampleSMA
             this.TakeProfitUnit = 50;
             this.StopLossUnit = 35;
 
+            this.StopTradingUnit = this.StopLossUnit * 3;
+
             this.UseQuoting = true;
 		}
 
@@ -68,7 +71,7 @@ namespace SampleSMA
                 .Do<IEnumerable<Candle>>(ProcessCandles);
 
             this
-                .When(PnLManager.Less(StopLossUnit * 1))
+                .When(PnLManager.Less(this.StopTradingUnit))
                 .Do(StopTradingOnNotBeckhamsDay)
                 .Once();
 
@@ -100,9 +103,12 @@ namespace SampleSMA
                 return;
             }
 
-            if (this.LastCandle == null)
+            if (this.LastCandle == null
+                && !this.FilterMA.IsFormed
+                && !this.ShortMA.IsFormed
+                && !this.LongMA.IsFormed)
             {
-                // it's a very first candle, we have to prepare indicators
+                // it's a very first candle and indicators are not formed yet
                 this.RemoveStartFootprint(candle);
             }
 
