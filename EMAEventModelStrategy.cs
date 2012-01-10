@@ -46,6 +46,8 @@ namespace SampleSMA
 
         public EMAEventModelStrategy(CandleManager candleManager, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA)
 		{
+            this.RemoveChildStrategies = false;
+
             this.Name = "EmaEventModelStrategy";
 
             this.FilterMA = filterMA;
@@ -208,13 +210,16 @@ namespace SampleSMA
                     if (UseQuoting)
                     {
                         MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
-                        marketQuotingStrategy.NewMyTrades += ProtectMyNewTrades;
                         base.ChildStrategies.Add(marketQuotingStrategy);
+
+                        this
+                            .When(marketQuotingStrategy.StrategyNewMyTrades())
+                            .Do(ProtectMyNewTrades);
                     }
                     else
                     {
                         RegisterOrder(order);
-
+                        
                         this
                             .When(order.NewTrades())
                             .Do(ProtectMyNewTrades)
@@ -238,45 +243,15 @@ namespace SampleSMA
 
         private void ProtectMyNewTrades(IEnumerable<MyTrade> trades)
         {
-            //var basket = new BasketStrategy(BasketStrategyFinishModes.All);
-
-            //foreach (MyTrade trade in trades)
-            //{
-            //    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Hurrah, we have new trade (#{0}). Let's protect it.", trade.Trade.Id));
-
-            //    var s = new BasketStrategy(BasketStrategyFinishModes.First) { Name = "ProtectStrategy" };
-
-            //    var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit)
-            //    {
-            //        Name = "TakeProfitStrategy",
-            //        BestPriceOffset = 15,
-            //        PriceOffset = 3,
-            //        UseQuoting = false//this.UseQuoting
-            //    };
-
-            //    var stopLoss = new StopLossStrategy(trade, this.StopLossUnit)
-            //    {
-            //        Name = "StopLossStrategy",
-            //        PriceOffset = 3,
-            //        UseQuoting = false//this.UseQuoting
-            //    };
-
-            //    s.ChildStrategies.Add(takeProfit);
-            //    s.ChildStrategies.Add(stopLoss);
-
-            //    basket.ChildStrategies.Add(s);
-            //}
-
-            //base.ChildStrategies.Add(basket);
-
             foreach (MyTrade trade in trades)
             {
-                this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Hurrah, we have new trade (#{0}). Let's protect it.", trade.Trade.Id));
-
                 var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit);
                 var stopLoss = new StopLossStrategy(trade, StopLossUnit) { PriceOffset = 3 };
 
                 ChildStrategies.Add(new TakeProfitStopLossStrategy(takeProfit, stopLoss));
+
+                this.AddLog(new ExtendedLogMessage(this, base.Trader.MarketTime, ErrorTypes.None, ExtendedLogMessage.ImportanceLevel.High,
+                    "Hurrah, we have new trade (#{0}) and I've protected it.", trade.Trade.Id));
             };
         }
 
