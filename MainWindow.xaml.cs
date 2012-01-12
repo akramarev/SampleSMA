@@ -92,6 +92,7 @@
 
                 _strategy.NewOrder += OnNewOrder;
                 _strategy.PropertyChanged += OnStrategyPropertyChanged;
+                _strategy.NewMyTrades += OnNewTrades;
 
                 _logManager.Sources.Add(_strategy);
                 _logManager.Listeners.Add(new EmailUnitedLogListener());
@@ -180,7 +181,7 @@
             strategy.NewOrder += OnNewOrder;
             strategy.CandleManager.CandlesFinished += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
             //strategy.PropertyChanged += OnStrategyPropertyChanged;
-            trader.NewMyTrades += OnNewTrades;
+            strategy.NewMyTrades += OnNewTrades;
 
             _logManager.Sources.Add(strategy);
 
@@ -213,7 +214,7 @@
                         // Update strategy stat panel
                         this.UpdateStrategyStat(strategy);
 
-                        _log.AddLog(new ExtendedLogMessage(_log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
+                        _log.AddLog(new LogMessage(_log, DateTime.Now, ErrorTypes.Warning,
                             String.Format("History testing done ({0}). Result: {1}, {2}, {3}. PnL: {4} ",
                                 sw.Elapsed,
                                 strategy.FilterMA.Length, 
@@ -365,8 +366,6 @@
                             }
                         });
 
-                        _trader.NewMyTrades += OnNewTrades;
-
                         _candleManager.CandlesStarted += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
                         _candleManager.CandlesChanged += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
                         _candleManager.CandlesFinished += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
@@ -490,18 +489,20 @@
 
         private void OnNewOrder(Order order)
         {
-            _orders.Orders.Add(order);
+            OrdersGrid.Orders.Add(order);
         }
 
         private void OnNewTrades(IEnumerable<MyTrade> trades)
         {
-            _trades.Trades.AddRange(trades);
+            TradesGrid.Trades.AddRange(trades);
 
             var newTradeLogMessage = "I've {0} {1} future contracts at {2}";
             trades.ForEach(t => this._log.AddLog(
                 new ExtendedLogMessage(this._log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
                     newTradeLogMessage,
-                    (t.Trade.OrderDirection.Value == OrderDirections.Buy) ? "bought" : "sold",
+                    (t.Trade.OrderDirection.HasValue)
+                        ? (t.Trade.OrderDirection.Value == OrderDirections.Buy) ? "bought" : "sold"
+                        : "<unkown order direction>",
                     t.Trade.Volume,
                     t.Trade.Price)));
         }
@@ -530,8 +531,8 @@
 
         private void ClearGrids()
         {
-            _orders.Orders.Clear();
-            _trades.Trades.Clear();
+            OrdersGrid.Orders.Clear();
+            TradesGrid.Trades.Clear();
         }
 
         private void StartDde()

@@ -46,8 +46,6 @@ namespace SampleSMA
 
         public EMAEventModelStrategy(CandleManager candleManager, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA)
 		{
-            this.RemoveChildStrategies = false;
-
             this.Name = "EmaEventModelStrategy";
 
             this.FilterMA = filterMA;
@@ -66,6 +64,9 @@ namespace SampleSMA
 
         protected override void OnStarting()
         {
+            this.AddLog(new ExtendedLogMessage(this, base.Trader.MarketTime, ErrorTypes.None, ExtendedLogMessage.ImportanceLevel.High,
+                    "Core strategy {0} has been started.", this.Name));
+
             this._strategyStartTime = Trader.MarketTime;
             
             this
@@ -82,7 +83,7 @@ namespace SampleSMA
 
         protected override void OnStopped()
         {
-            this.AddLog(new ExtendedLogMessage(this, base.Trader.MarketTime, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
+            this.AddLog(new ExtendedLogMessage(this, base.Trader.MarketTime, ErrorTypes.None, ExtendedLogMessage.ImportanceLevel.High,
                     "Core strategy {0} has been stopped.", this.Name));
 
             base.OnStopped();
@@ -213,13 +214,19 @@ namespace SampleSMA
                         base.ChildStrategies.Add(marketQuotingStrategy);
 
                         this
-                            .When(marketQuotingStrategy.StrategyNewMyTrades())
-                            .Do(ProtectMyNewTrades);
+                            .When(marketQuotingStrategy.StrategyNewOrder())
+                            .Do((qOrder) =>
+                            {
+                                this
+                                    .When(qOrder.NewTrades())
+                                    .Do(ProtectMyNewTrades)
+                                    .Periodical(() => qOrder.IsMatched());
+                            });
                     }
                     else
                     {
                         RegisterOrder(order);
-                        
+
                         this
                             .When(order.NewTrades())
                             .Do(ProtectMyNewTrades)

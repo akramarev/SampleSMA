@@ -149,11 +149,11 @@ namespace SampleSMA
                 DaysInMemory = 3,
             };
 
-            //trader.DepthGenerators[security] = new TrendMarketDepthGenerator(security)
-            //{
-            //    // стакан для инструмента в истории обновляется раз в 1 секунду
-            //    Interval = TimeSpan.FromSeconds(1),
-            //};
+            trader.DepthGenerators[security] = new TrendMarketDepthGenerator(security)
+            {
+                // стакан для инструмента в истории обновляется раз в 1 секунду
+                Interval = TimeSpan.FromSeconds(1),
+            };
 
             CandleManager candleManager = new CandleManager();
 
@@ -171,7 +171,7 @@ namespace SampleSMA
                 Portfolio = portfolio,
                 Security = security,
                 Trader = trader,
-                UseQuoting = false
+                UseQuoting = true
             };
 
             this.Strategies.Add(strategy);
