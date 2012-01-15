@@ -62,6 +62,8 @@
 
             _logManager.Sources.Add(_log);
             _logManager.Listeners.Add(new GuiLogListener(_monitor));
+            _logManager.Listeners.Add(new EmailUnitedLogListener());
+            _logManager.Listeners.Add(new JabberLogListener());
 		}
 
         #region Main Event Handlers
@@ -95,7 +97,6 @@
                 _strategy.NewMyTrades += OnNewTrades;
 
                 _logManager.Sources.Add(_strategy);
-                _logManager.Listeners.Add(new EmailUnitedLogListener());
 
                 this.ClearChart();
 
@@ -186,7 +187,6 @@
             _logManager.Sources.Add(strategy);
 
             int lastUpdateHour = 0;
-
             trader.MarketTimeChanged += () =>
             {
                 // в целях оптимизации обновляем ProgressBar и Stat только при начале нового часа

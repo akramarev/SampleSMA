@@ -79,6 +79,12 @@
     <Reference Include="Ecng.Xaml">
       <HintPath>References\Ecng.Xaml.dll</HintPath>
     </Reference>
+    <Reference Include="jabber-net">
+      <HintPath>References\Jabber-Net\jabber-net.dll</HintPath>
+    </Reference>
+    <Reference Include="netlib.Dns">
+      <HintPath>References\Jabber-Net\netlib.Dns.dll</HintPath>
+    </Reference>
     <Reference Include="StockSharp.Algo">
       <HintPath>References\StockSharp.Algo.dll</HintPath>
     </Reference>
@@ -108,6 +114,9 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="zlib.net">
+      <HintPath>References\Jabber-Net\zlib.net.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -120,6 +129,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Logging\JabberLogListener.cs" />
     <Compile Include="Logging\EmailUnitedLogListener.cs" />
     <Compile Include="EMAEventModelStrategy.cs" />
     <Compile Include="Logging\ExtendedLogMessage.cs" />

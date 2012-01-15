@@ -6,23 +6,36 @@ using StockSharp.Algo.Logging;
 using System.Net.Mail;
 using System.Configuration;
 using System.Net;
+using jabber.client;
 using System.Timers;
 
 namespace SampleSMA.Logging
 {
-    public class EmailUnitedLogListener : LogListener
+    public class JabberLogListener : LogListener
     {
-        protected SmtpClient Client { get; set; }
+        protected JabberClient Client { get; set; }
 
         protected Queue<LogMessage> MessageQueue = new Queue<LogMessage>();
-        protected Timer CheckTimer = new Timer(30000);
+        protected Timer CheckTimer = new Timer(10000);
 
-        public EmailUnitedLogListener()
+        public JabberLogListener()
         {
-            this.Client = new SmtpClient();
+            this.Client = new JabberClient()
+            {
+                User = ConfigurationManager.AppSettings["JabberUser"],
+                Password = ConfigurationManager.AppSettings["JabberPassword"],
+                Server = ConfigurationManager.AppSettings["JabberServer"]
+            };
 
+            this.Client.OnAuthenticate += new bedrock.ObjectHandler(Client_OnAuthenticate);
             this.CheckTimer.Elapsed += new ElapsedEventHandler(CheckTimer_Elapsed);
-            this.CheckTimer.Enabled = true;
+
+            this.Client.Connect();
+        }
+
+        void Client_OnAuthenticate(object sender)
+        {
+            CheckTimer.Enabled = true;
         }
 
         void CheckTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -41,21 +54,7 @@ namespace SampleSMA.Logging
 
             if (builder.Length != 0)
             {
-                MailMessage mailMessage = new MailMessage(
-                new MailAddress("ak.robot.k1@gmail.com"),
-                new MailAddress(this.EmailLogTo));
-
-                try
-                {
-                    mailMessage.Subject = String.Format ("K1 Robot Email Report on {0}", DateTime.Now);
-                    mailMessage.Body = builder.ToString();
-
-                    this.Client.SendAsync(mailMessage, null);
-                }
-                catch (Exception ex)
-                {
-
-                }
+                this.Client.Message(JabberLogTo, builder.ToString());
             }
         }
 
@@ -64,11 +63,11 @@ namespace SampleSMA.Logging
             MessageQueue.Enqueue(message);
         }
 
-        public string EmailLogTo
+        public static string JabberLogTo
         {
             get
             {
-                string email = ConfigurationManager.AppSettings["EmailLogTo"];
+                string email = ConfigurationManager.AppSettings["JabberLogTo"];
                 if (String.IsNullOrEmpty(email))
                 {
                     email = "ak.robot.k1@gmail.com";
