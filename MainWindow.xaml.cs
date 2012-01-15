@@ -500,9 +500,7 @@
             trades.ForEach(t => this._log.AddLog(
                 new ExtendedLogMessage(this._log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
                     newTradeLogMessage,
-                    (t.Trade.OrderDirection.HasValue)
-                        ? (t.Trade.OrderDirection.Value == OrderDirections.Buy) ? "bought" : "sold"
-                        : "<unkown order direction>",
+                    (t.Order.Direction == OrderDirections.Buy) ? "bought" : "sold",
                     t.Trade.Volume,
                     t.Trade.Price)));
         }
