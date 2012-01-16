@@ -48,9 +48,19 @@ namespace SampleSMA.Logging
 
             while (this.MessageQueue.Count != 0 && !isLimitExceeded)
             {
-                var message = this.MessageQueue.Dequeue();
+                LogMessage message = this.MessageQueue.Dequeue();
 
-                builder.AppendLine(String.Format("{0} | {1} || {2}",
+                string messageType = String.Empty;
+                if (message is ExtendedLogMessage)
+                {
+                    if (((ExtendedLogMessage)message).Importance >= ExtendedLogMessage.ImportanceLevel.High)
+                    {
+                        messageType = @"+/'\ ";
+                    }
+                }
+
+                builder.AppendLine(String.Format("{0}{1} | {2} || {3}",
+                    messageType,
                     message.Source.Name,
                     message.Time.ToLongTimeString(),
                     message.Message));

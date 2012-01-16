@@ -485,6 +485,16 @@
                 this.Position.Content = strategy.PositionManager.Position;
                 this.Latency.Content = strategy.LatencyManager.Latency;
             });
+
+            this._log.AddLog(
+                new ExtendedLogMessage(this._log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
+                    "Stat Changed. State: {0}, PnL: {1} {2}, Slippage: {3}, Position: {4}, Latency: {5}",
+                    strategy.ProcessState,
+                    strategy.PnLManager.PnL,
+                    (strategy.PnLManager.PnL < 0) ? ":(" : ":)",
+                    strategy.SlippageManager.Slippage,
+                    strategy.PositionManager.Position,
+                    strategy.LatencyManager.Latency));
         }
 
         private void OnNewOrder(Order order)
@@ -496,7 +506,7 @@
         {
             TradesGrid.Trades.AddRange(trades);
 
-            var newTradeLogMessage = "I've {0} {1} future contracts at {2}";
+            var newTradeLogMessage = "I've {0} {1} futures contracts at {2}";
             trades.ForEach(t => this._log.AddLog(
                 new ExtendedLogMessage(this._log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
                     newTradeLogMessage,
