@@ -27,6 +27,8 @@ namespace SampleSMA.Logging
 
         void CheckTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            CheckTimer.Stop();
+
             StringBuilder builder = new StringBuilder();
 
             while (this.MessageQueue.Count != 0)
@@ -57,6 +59,8 @@ namespace SampleSMA.Logging
 
                 }
             }
+
+            CheckTimer.Start();
         }
 
         protected override void OnWriteMessage(LogMessage message)

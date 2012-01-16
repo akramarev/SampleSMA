@@ -46,7 +46,7 @@ namespace SampleSMA
 
         public EMAEventModelStrategy(CandleManager candleManager, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA)
 		{
-            this.Name = "EmaEventModelStrategy";
+            this.Name = "EmaCore";
 
             this.FilterMA = filterMA;
 			this.LongMA = longMA;

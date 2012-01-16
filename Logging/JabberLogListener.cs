@@ -13,10 +13,11 @@ namespace SampleSMA.Logging
 {
     public class JabberLogListener : LogListener
     {
+        protected const int JABBER_MESSAGE_LENGTH_LIMIT = 1500;
         protected JabberClient Client { get; set; }
 
         protected Queue<LogMessage> MessageQueue = new Queue<LogMessage>();
-        protected Timer CheckTimer = new Timer(10000);
+        protected Timer CheckTimer = new Timer(5000);
 
         public JabberLogListener()
         {
@@ -35,27 +36,37 @@ namespace SampleSMA.Logging
 
         void Client_OnAuthenticate(object sender)
         {
-            CheckTimer.Enabled = true;
+            CheckTimer.Start();
         }
 
         void CheckTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            StringBuilder builder = new StringBuilder();
+            CheckTimer.Stop();
 
-            while (this.MessageQueue.Count != 0)
+            StringBuilder builder = new StringBuilder();
+            bool isLimitExceeded = false;
+
+            while (this.MessageQueue.Count != 0 && !isLimitExceeded)
             {
                 var message = this.MessageQueue.Dequeue();
 
                 builder.AppendLine(String.Format("{0} | {1} || {2}",
                     message.Source.Name,
-                    message.Time,
+                    message.Time.ToLongTimeString(),
                     message.Message));
+
+                if (builder.Length > JABBER_MESSAGE_LENGTH_LIMIT)
+                {
+                    isLimitExceeded = true;
+                }
             }
 
             if (builder.Length != 0)
             {
                 this.Client.Message(JabberLogTo, builder.ToString());
             }
+
+            CheckTimer.Start();
         }
 
         protected override void OnWriteMessage(LogMessage message)
@@ -78,3 +89,4 @@ namespace SampleSMA.Logging
         }
     }
 }
+
