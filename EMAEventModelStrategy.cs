@@ -206,36 +206,53 @@ namespace SampleSMA
             // make order
             if (order != null)
             {
-                if (this.PositionManager.Position == 0)
+                //var position = this.PositionManager.Position;
+                //if (position != 0)
+                //{
+                //    // if new order is opposite to already exists
+                //    if ((order.Direction == OrderDirections.Buy && position < 0)
+                //        || (order.Direction == OrderDirections.Sell && position > 0))
+                //    {
+                //        // remove protective strategies
+                //        foreach (Strategy s in this.ChildStrategies.ToList().OfType<TakeProfitStopLossStrategy>())//s => s is TakeProfitStopLossStrategy))
+                //        {
+                //            s.Stop();
+                //        }
+
+                //        // go out from position
+                //        this.ClosePosition();
+
+                //        this.AddLog(new ExtendedLogMessage(this, base.Trader.MarketTime, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
+                //            "PositionManager blocked the deal (CandleTime: {0}), we're already in opposite position ({1}). Close it right now.",
+                //            this.LastCandle.Time, position));
+
+                //        return;
+                //    }
+                //}
+
+                if (UseQuoting)
                 {
-                    if (UseQuoting)
-                    {
-                        MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
-                        base.ChildStrategies.Add(marketQuotingStrategy);
+                    MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
+                    base.ChildStrategies.Add(marketQuotingStrategy);
 
-                        this
-                            .When(marketQuotingStrategy.StrategyNewOrder())
-                            .Do((qOrder) =>
-                            {
-                                this
-                                    .When(qOrder.NewTrades())
-                                    .Do(ProtectMyNewTrades)
-                                    .Periodical(() => qOrder.IsMatched());
-                            });
-                    }
-                    else
-                    {
-                        RegisterOrder(order);
-
-                        this
-                            .When(order.NewTrades())
-                            .Do(ProtectMyNewTrades)
-                            .Periodical(() => order.IsMatched());
-                    }
+                    this
+                        .When(marketQuotingStrategy.StrategyNewOrder())
+                        .Do((qOrder) =>
+                        {
+                            this
+                                .When(qOrder.NewTrades())
+                                .Do(ProtectMyNewTrades)
+                                .Periodical(() => qOrder.IsMatched());
+                        });
                 }
                 else
                 {
-                    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "PositionManager blocked the deal (CandleTime: {0}), we're already in position.", this.LastCandle.Time));
+                    RegisterOrder(order);
+
+                    this
+                        .When(order.NewTrades())
+                        .Do(ProtectMyNewTrades)
+                        .Periodical(() => order.IsMatched());
                 }
             }
         }
@@ -267,7 +284,7 @@ namespace SampleSMA
             this.AddLog(new ExtendedLogMessage(this, base.Trader.MarketTime, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
                 "It's not Beckham's day. PnL reduction is detected. ({0}).", PnLManager.PnL));
 
-            var position = PositionManager.Position;
+            var position = this.PositionManager.Position;
 
             // Is it possible to stop the strategy right now?
             if (position == 0)
