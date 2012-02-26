@@ -1361,10 +1361,33 @@
         </member>
         <member name="M:StockSharp.BusinessEntities.Unit.OnEquals(StockSharp.BusinessEntities.Unit)">
             <summary>
-            Сравнить две величины на эквивалентность.
+            Сравнить величину на эквивалентность с другой.
             </summary>
             <param name="other">Другая величина, с которой необходимо сравнивать.</param>
             <returns>true, если другая величина равна текущей, иначе false.</returns>
+        </member>
+        <member name="M:StockSharp.BusinessEntities.Unit.Equals(System.Object)">
+            <summary>
+            Сравнить величину на эквивалентность с другой.
+            </summary>
+            <param name="obj">Другая величина, с которой необходимо сравнивать.</param>
+            <returns>true, если другая величина равна текущей, иначе false.</returns>
+        </member>
+        <member name="M:StockSharp.BusinessEntities.Unit.op_Inequality(StockSharp.BusinessEntities.Unit,StockSharp.BusinessEntities.Unit)">
+            <summary>
+            Сравнить две величины на неравенство (если величины разных типов, то для сравнения будет применена конвертация).
+            </summary>
+            <param name="u1">Первая величина.</param>
+            <param name="u2">Вторая величина.</param>
+            <returns>true, если величины не равны, иначе false.</returns>
+        </member>
+        <member name="M:StockSharp.BusinessEntities.Unit.op_Equality(StockSharp.BusinessEntities.Unit,StockSharp.BusinessEntities.Unit)">
+            <summary>
+            Сравнить две величины на равенство (если величины разных типов, то для сравнения будет применена конвертация).
+            </summary>
+            <param name="u1">Первая величина.</param>
+            <param name="u2">Вторая величина.</param>
+            <returns>true, если величины равны, иначе false.</returns>
         </member>
         <member name="M:StockSharp.BusinessEntities.Unit.ToString">
             <summary>

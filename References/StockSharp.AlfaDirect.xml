@@ -32,19 +32,6 @@
             <param name="step">Минимальный шаг цены.</param>
             <param name="cost">Стоимость шага цены.</param>
         </member>
-        <member name="T:StockSharp.AlfaDirect.RngCryptoTransactionIdGenerator">
-            <summary>
-            Класс для генерации уникальных transaction id.
-            </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.RngCryptoTransactionIdGenerator.GetNextId">
-            <summary>
-            Получить следующий transaction id.
-            </summary>
-            <returns>
-            Следующий transaction id.
-            </returns>
-        </member>
         <member name="T:StockSharp.AlfaDirect.AlfaTrader">
             <summary>
             Реализация интерфейса <see cref="T:StockSharp.BusinessEntities.ITrader"/>, предоставляющая шлюз взаимодействия с системой AlfaDirect.
@@ -61,6 +48,11 @@
             </summary>
             <param name="data">AD raw data</param>
             <param name="create">Indicates if it's creation or update of the securitites</param>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.AlfaTrader.UpdatePositions">
+            <summary>
+            Перечитать текущиие позиции.
+            </summary>
         </member>
         <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnProcessPositions(System.String)">
             <summary>
@@ -181,6 +173,56 @@
             <param name="range">Диапазон времени, для которого нужно получить данные.</param>
             <returns>Исторические данные.</returns>
         </member>
+        <member name="M:StockSharp.AlfaDirect.AlfaTrader.GetLocalHistoryData(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames,Ecng.ComponentModel.Range{System.DateTime})">
+            <summary>
+            Получить исторические данные (тайм-фрейм свечки) из локальной базы Альфа-Директ.
+            </summary>
+            <param name="security">Инструмент, для которого необходимо получить исторические данные.</param>
+            <param name="timeFrame">Тайм-фрейм.</param>
+            <param name="range">Диапазон времени, для которого нужно получить данные.</param>
+            <returns>Исторические данные.</returns>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.AlfaTrader.RegisterCandles(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames)">
+            <summary>
+            Начать получать тайм-фрейм свечки реального времени от Альфа-Директ.
+            </summary>
+            <remarks>
+            После окончания получения исторических свечек возвращаются свечки реального времени.
+            </remarks>
+            <param name="security">Инструмент, для которого необходимо начать получать исторические свечки.</param>
+            <param name="timeFrame">Тайм-фрейм.</param>
+            <returns>Идентификатор непрерывного получения свечек. Необходим для отмены через метод <see cref="M:StockSharp.AlfaDirect.AlfaTrader.UnRegisterCandles(StockSharp.Algo.Candles.CandleToken)"/>.</returns>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.AlfaTrader.RegisterCandles(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames,System.DateTime)">
+            <summary>
+            Начать получать непрерывно исторические тайм-фрейм свечки от сервера AlfaDirect, а так же свечки реального времени.
+            </summary>
+            <remarks>
+            После окончания получения исторических свечек возвращаются свечки реального времени.
+            </remarks>
+            <param name="security">Инструмент, для которого необходимо начать получать исторические свечки.</param>
+            <param name="timeFrame">Тайм-фрейм.</param>
+            <param name="from">Временная точка отсчета, с которой необходимо начать получать свечки.</param>
+            <returns>Идентификатор непрерывного получения свечек. Необходим для отмены через метод <see cref="M:StockSharp.AlfaDirect.AlfaTrader.UnRegisterCandles(StockSharp.Algo.Candles.CandleToken)"/>.</returns>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.AlfaTrader.UnRegisterCandles(StockSharp.Algo.Candles.CandleToken)">
+            <summary>
+            Отменить получение исторических свечек, зарегистрированные через
+            <see cref="M:StockSharp.AlfaDirect.AlfaTrader.RegisterCandles(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames)"/>.
+            </summary>
+            <param name="token">Идентификатор группировки свечек.</param>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.AlfaTrader.ProcessHistoryCandles(StockSharp.Algo.Candles.CandleToken,StockSharp.AlfaDirect.AlfaTimeFrames,Ecng.ComponentModel.Range{System.DateTime},System.Boolean,StockSharp.AlfaDirect.CandleTimeInfo@)">
+            <summary>
+            Получить исторические тайм-фрейм свечки из локальной базы AlfaDirect.
+            </summary>
+            <param name="token">Токен, для которого необходимо начать получать исторические свечки.</param>
+            <param name="timeFrame">Тайм-фрейм.</param>
+            <param name="range">Диапазон времени, для которого нужно получить свечки.</param>
+            <param name="isHistory">True для исторических свечек, false для реал-тайм.</param>
+            <param name="timeInfo"></param>
+            <returns>Идентификатор получения исторических свечек.</returns>
+        </member>
         <member name="P:StockSharp.AlfaDirect.AlfaTrader.Login">
             <summary>
             Имя пользователя в терминале Альфа-Директ
@@ -196,14 +238,55 @@
             Отложенная инициализация AlfaWrapper
             </summary>
         </member>
+        <member name="E:StockSharp.AlfaDirect.AlfaTrader.CandlesStarted">
+            <summary>
+            Событие появления исторических тайм-фрейм свечек от Альфа-Директ.
+            </summary>
+        </member>
+        <member name="E:StockSharp.AlfaDirect.AlfaTrader.CandlesChanged">
+            <summary>
+            Событие появления исторических тайм-фрейм свечек от Альфа-Директ.
+            </summary>
+        </member>
+        <member name="E:StockSharp.AlfaDirect.AlfaTrader.CandlesFinished">
+            <summary>
+            Событие появления исторических тайм-фрейм свечек от Альфа-Директ.
+            </summary>
+        </member>
         <member name="P:StockSharp.AlfaDirect.AlfaTrader.MarketTime">
             <summary>
             Получить биржевое время. Значение зависит от <see cref="P:StockSharp.Algo.BaseTrader.MarketTimeOffset"/>.
             </summary>
         </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTrader.IsConnected">
+        <member name="T:StockSharp.AlfaDirect.AlfaStopCondition">
             <summary>
-            Проверить соединение.
+            Условие для формирования стоп-заявок, специфичных для <see cref="T:StockSharp.AlfaDirect.AlfaTrader"/>.
+            </summary>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.AlfaStopCondition.Clone">
+            <summary>
+            Создать копию условия (копирование параметров условия).
+            </summary>
+            <returns>Копия условия.</returns>
+        </member>
+        <member name="P:StockSharp.AlfaDirect.AlfaStopCondition.Slippage">
+            <summary>
+            Slippage parameter.
+            </summary>
+        </member>
+        <member name="P:StockSharp.AlfaDirect.AlfaStopCondition.TakeProfit">
+            <summary>
+            TakeProfit parameter.
+            </summary>
+        </member>
+        <member name="T:StockSharp.AlfaDirect.AlfaException">
+            <summary>
+            Исключение, содержащее код и текст ошибки.
+            </summary>
+        </member>
+        <member name="P:StockSharp.AlfaDirect.AlfaException.Code">
+            <summary>
+            Код ошибки.
             </summary>
         </member>
         <member name="T:StockSharp.AlfaDirect.AlfaTimeFrames">
@@ -275,37 +358,6 @@
             Годовой тайм-фрейм.
             </summary>
         </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaException">
-            <summary>
-            Исключение, содержащее код и текст ошибки.
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaException.Code">
-            <summary>
-            Код ошибки.
-            </summary>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaStopCondition">
-            <summary>
-            Условие для формирования стоп-заявок, специфичных для <see cref="T:StockSharp.AlfaDirect.AlfaTrader"/>.
-            </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaStopCondition.Clone">
-            <summary>
-            Создать копию условия (копирование параметров условия).
-            </summary>
-            <returns>Копия условия.</returns>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaStopCondition.Slippage">
-            <summary>
-            Slippage parameter.
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaStopCondition.TakeProfit">
-            <summary>
-            TakeProfit parameter.
-            </summary>
-        </member>
         <member name="T:StockSharp.AlfaDirect.Properties.Resources">
             <summary>
               A strongly-typed resource class, for looking up localized strings, etc.
@@ -321,13 +373,6 @@
               Overrides the current thread's CurrentUICulture property for all
               resource lookups using this strongly typed resource class.
             </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaUtils.BoardCodeToSecurityType(System.String)">
-            <summary>
-            Converts a board code to the security type
-            </summary>
-            <param name="boardCode">Код торгового раздела: FUTURES, MOPTIONS, MCX_SHR_LSTB, MCX_SHR_NLST...</param>
-            <returns>Security type</returns>
         </member>
         <member name="T:StockSharp.AlfaDirect.AlfaExtensions">
             <summary>
@@ -368,6 +413,26 @@
             </summary>
             <param name="order">Заявка.</param>
             <returns>Средняя цену исполнения..</returns>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.AlfaUtils.BoardCodeToSecurityType(System.String)">
+            <summary>
+            Converts a board code to the security type
+            </summary>
+            <param name="boardCode">Код торгового раздела: FUTURES, MOPTIONS, MCX_SHR_LSTB, MCX_SHR_NLST...</param>
+            <returns>Security type</returns>
+        </member>
+        <member name="T:StockSharp.AlfaDirect.RngCryptoTransactionIdGenerator">
+            <summary>
+            Класс для генерации уникальных transaction id.
+            </summary>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.RngCryptoTransactionIdGenerator.GetNextId">
+            <summary>
+            Получить следующий transaction id.
+            </summary>
+            <returns>
+            Следующий transaction id.
+            </returns>
         </member>
     </members>
 </doc>

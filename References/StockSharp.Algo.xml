@@ -3758,6 +3758,49 @@
              Значение эквити.
             </summary>
     </member>
+    <member name="T:StockSharp.Algo.MarketTimer">
+      <summary>
+            Таймер, основанный на времени торговой системы.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Algo.MarketTimer.#ctor(StockSharp.BusinessEntities.ITrader,System.Action{StockSharp.Algo.MarketTimer,System.Boolean})">
+      <summary>
+            Создать <see cref="T:StockSharp.Algo.MarketTimer" />.
+            </summary>
+      <param name="trader">Шлюз к торговой системе, из которого будет использоваться событие <see cref="E:StockSharp.BusinessEntities.ITrader.MarketTimeChanged" />.</param>
+      <param name="activated">Обработчик таймера.</param>
+    </member>
+    <member name="M:StockSharp.Algo.MarketTimer.FirstTime(System.DateTime)">
+      <summary>
+            Установить первоначальное время срабатывания таймера.
+            </summary>
+      <param name="time">Первоначальное время.</param>
+      <returns>Таймер.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.MarketTimer.Interval(System.TimeSpan)">
+      <summary>
+            Установить интервал.
+            </summary>
+      <param name="interval">Интервал таймера. Если устанавливается значение <see cref="F:System.TimeSpan.Zero" />, то таймер перестает быть периодичным.</param>
+      <returns>Таймер.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.MarketTimer.Start">
+      <summary>
+            Запустить таймер.
+            </summary>
+      <returns>Таймер.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.MarketTimer.Stop">
+      <summary>
+            Остановить таймер.
+            </summary>
+      <returns>Таймер.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.MarketTimer.DisposeManaged">
+      <summary>
+            Освободить ресурсы.
+            </summary>
+    </member>
     <member name="T:StockSharp.Algo.Derivatives.DerivativesHelper">
       <summary>
             Вспомогательный класс для работы с производными финансовыми инструментами (деривативами).
@@ -7775,7 +7818,7 @@
       <summary>
             Проверить, является ли текущее время торгуемым (началась ли сессия, не закончилась ли, нет ти клиринга).
             </summary>
-      <param name="timeBounds">Временные интервалы работы биржи. Например, для FORTS можно передавать значения 10:30-13:59 и 14:04-23:49.</param>
+      <param name="timeBounds">Временные интервалы работы биржи. Например, для FORTS можно передавать значения 10:00-13:59, 14:03-18:49 и 19:00-23:49.</param>
       <param name="trader">Шлюз с торговой системой. В качестве текущего времени берется значение <see cref="P:StockSharp.BusinessEntities.ITrader.MarketTime" />.</param>
       <returns>True, если торгуемое время, иначе, неторгуемое.</returns>
     </member>
@@ -7783,7 +7826,7 @@
       <summary>
             Проверить, является ли переданное время торгуемым (началась ли сессия, не закончилась ли, нет ти клиринга).
             </summary>
-      <param name="timeBounds">Временные интервалы работы биржи. Например, для FORTS можно передавать значения 10:30-13:59 и 14:04-23:49.</param>
+      <param name="timeBounds">Временные интервалы работы биржи. Например, для FORTS можно передавать значения 10:00-13:59, 14:03-18:49 и 19:00-23:49.</param>
       <param name="dateTime">Передаваемое время, которое нужно проверить.</param>
       <returns>True, если торгуемое время, иначе, неторгуемое.</returns>
     </member>
@@ -7801,7 +7844,7 @@
             Проверить, является ли текущее время торгуемым (началась ли сессия, не закончилась ли, нет ти клиринга).
             </summary>
       <param name="exchange">Информация о бирже, хранящая временные интервалы работы биржи <see cref="P:StockSharp.BusinessEntities.Exchange.WorkingTime" />.
-            Например, для FORTS будут значения 10:30-13:59 и 14:04-23:49.</param>
+            Например, для FORTS будут значения 10:00-13:59, 14:03-18:49 и 19:00-23:49.</param>
       <param name="trader">Шлюз с торговой системой. В качестве текущего времени берется значение <see cref="P:StockSharp.BusinessEntities.ITrader.MarketTime" />.</param>
       <returns>True, если торгуемое время, иначе, неторгуемое.</returns>
     </member>
@@ -7810,7 +7853,7 @@
             Проверить, является ли текущее время торгуемым (началась ли сессия, не закончилась ли, нет ти клиринга).
             </summary>
       <param name="exchange">Информация о бирже, хранящая временные интервалы работы биржи <see cref="P:StockSharp.BusinessEntities.Exchange.WorkingTime" />.
-            Например, для FORTS будут значения 10:30-13:59 и 14:04-23:49.</param>
+            Например, для FORTS будут значения 10:00-13:59, 14:03-18:49 и 19:00-23:49.</param>
       <param name="dateTime">Передаваемое время, которое нужно проверить.</param>
       <returns>True, если торгуемое время, иначе, неторгуемое.</returns>
     </member>
@@ -8031,7 +8074,7 @@
       <param name="order">Заявку, для которой необходимо расcчитать вероятные сделки.</param>
       <returns>Вероятные сделки.</returns>
     </member>
-    <member name="M:StockSharp.Algo.TraderHelper.GetTheoreticalTrades(StockSharp.BusinessEntities.MarketDepth,StockSharp.BusinessEntities.OrderDirections,System.Int32)">
+    <member name="M:StockSharp.Algo.TraderHelper.GetTheoreticalTrades(StockSharp.BusinessEntities.MarketDepth,StockSharp.BusinessEntities.OrderDirections,System.Decimal)">
       <summary>
             Получить вероятные сделки по стакану для рыночной цены и заданного объема.
             </summary>
@@ -8040,7 +8083,7 @@
       <param name="volume">Объем, который предполагается реализовать.</param>
       <returns>Вероятные сделки.</returns>
     </member>
-    <member name="M:StockSharp.Algo.TraderHelper.GetTheoreticalTrades(StockSharp.BusinessEntities.MarketDepth,StockSharp.BusinessEntities.OrderDirections,System.Int32,System.Decimal)">
+    <member name="M:StockSharp.Algo.TraderHelper.GetTheoreticalTrades(StockSharp.BusinessEntities.MarketDepth,StockSharp.BusinessEntities.OrderDirections,System.Decimal,System.Decimal)">
       <summary>
             Получить вероятные сделки по стакану для заданных цены и объема.
             </summary>
@@ -8979,7 +9022,7 @@
       <param name="token">Идентификатор группировки.</param>
       <returns>Найденная свечка (null, если нет ни одной свечки).</returns>
     </member>
-    <member name="M:StockSharp.Algo.Candles.CandleHelper.GetLastVolumeCandle(StockSharp.Algo.Candles.ICandleManager,StockSharp.BusinessEntities.Security,System.Int32)">
+    <member name="M:StockSharp.Algo.Candles.CandleHelper.GetLastVolumeCandle(StockSharp.Algo.Candles.ICandleManager,StockSharp.BusinessEntities.Security,System.Decimal)">
       <summary>
             Получить последнюю свечку.
             </summary>
@@ -9077,7 +9120,7 @@
       <param name="candleIndex">Порядковый номер свечки с конца.</param>
       <returns>Найденная свечка (null, если нет ни одной свечки).</returns>
     </member>
-    <member name="M:StockSharp.Algo.Candles.CandleHelper.GetVolumeCandle(StockSharp.Algo.Candles.ICandleManager,StockSharp.BusinessEntities.Security,System.Int32,System.Int32)">
+    <member name="M:StockSharp.Algo.Candles.CandleHelper.GetVolumeCandle(StockSharp.Algo.Candles.ICandleManager,StockSharp.BusinessEntities.Security,System.Decimal,System.Int32)">
       <summary>
             Получить по ее порядковому номеру с конца.
             </summary>
@@ -9183,7 +9226,7 @@
       <param name="tradeCount">Признак максимального количества сделок <see cref="P:StockSharp.Algo.Candles.TickCandle.TradeCount" />.</param>
       <returns>Найденные свечки.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Candles.CandleHelper.GetVolumeCandles(StockSharp.Algo.Candles.ICandleManager,StockSharp.BusinessEntities.Security,System.Int32,Ecng.ComponentModel.Range{System.DateTime})">
+    <member name="M:StockSharp.Algo.Candles.CandleHelper.GetVolumeCandles(StockSharp.Algo.Candles.ICandleManager,StockSharp.BusinessEntities.Security,System.Decimal,Ecng.ComponentModel.Range{System.DateTime})">
       <summary>
             Получить свечки по инструменту, признаку максимального количества контрактов и диапазону дат.
             </summary>
@@ -9193,7 +9236,7 @@
       <param name="timeRange">Диапазон дат, в которые должны входить свечки. Учитывается значение <see cref="P:StockSharp.Algo.Candles.Candle.Time" />.</param>
       <returns>Найденные свечки.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Candles.CandleHelper.GetVolumeCandles(StockSharp.Algo.Candles.ICandleManager,StockSharp.BusinessEntities.Security,System.Int32,System.Int32)">
+    <member name="M:StockSharp.Algo.Candles.CandleHelper.GetVolumeCandles(StockSharp.Algo.Candles.ICandleManager,StockSharp.BusinessEntities.Security,System.Decimal,System.Int32)">
       <summary>
             Получить свечки по инструменту, признаку максимального количества контрактов и общему количеству.
             </summary>
@@ -9203,7 +9246,7 @@
       <param name="candleCount">Количество свечек, которое необходимо вернуть.</param>
       <returns>Найденные свечки.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Candles.CandleHelper.GetVolumeCandles(StockSharp.Algo.Candles.ICandleManager,StockSharp.BusinessEntities.Security,System.Int32)">
+    <member name="M:StockSharp.Algo.Candles.CandleHelper.GetVolumeCandles(StockSharp.Algo.Candles.ICandleManager,StockSharp.BusinessEntities.Security,System.Decimal)">
       <summary>
             Получить все свечки по инструменту и признаку максимального количества контрактов.
             </summary>
@@ -9288,7 +9331,7 @@
       <param name="tradeCount">Максимальное количество сделок.</param>
       <returns>True, если зарегистрирована. Иначе, false.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Candles.CandleHelper.IsVolumeCandlesRegistered(StockSharp.Algo.Candles.ICandleSource,StockSharp.BusinessEntities.Security,System.Int32)">
+    <member name="M:StockSharp.Algo.Candles.CandleHelper.IsVolumeCandlesRegistered(StockSharp.Algo.Candles.ICandleSource,StockSharp.BusinessEntities.Security,System.Decimal)">
       <summary>
             Зарегистрирована ли группировка свечек по признаку максимального количества контрактов.
             </summary>
@@ -10938,6 +10981,14 @@
             </summary>
       <remarks>
             Увеличивает скорость тестирования, так как поток тестирования не ожидает подгрузки данных. Увеличивает потребление памяти.
+            </remarks>
+    </member>
+    <member name="P:StockSharp.Algo.Testing.EmulationTrader.PostTradeMarketTimeChangedCount">
+      <summary>
+            Количество вызовов события <see cref="E:StockSharp.BusinessEntities.ITrader.MarketTimeChanged" /> после окончания торгов. По-умолчанию равно 2.
+            </summary>
+      <remarks>
+            Необходимо для активации пост-трейд правил (правила, которые опираются на события, происходящие после окончания торгов).
             </remarks>
     </member>
     <member name="T:StockSharp.Algo.IDailyInfoSoap">

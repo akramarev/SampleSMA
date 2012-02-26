@@ -176,7 +176,7 @@ namespace SampleSMA
                 if (upFilter)
                 {
                     direction = OrderDirections.Buy;
-                    price = (UseQuoting) ? base.Security.GetMarketPrice(direction) : this.LastCandle.ClosePrice;
+                    price = (this.UseQuoting) ? base.Security.GetMarketPrice(direction) : this.LastCandle.ClosePrice;
                     order = this.CreateOrder(direction, price, base.Volume);
 
                     this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Up appeared (CandleTime: {0}), and filter allowed the deal.", this.LastCandle.Time));
@@ -192,7 +192,7 @@ namespace SampleSMA
                 if (downFilter)
                 {
                     direction = OrderDirections.Sell;
-                    price = (UseQuoting) ? base.Security.GetMarketPrice(direction) : this.LastCandle.ClosePrice;
+                    price = (this.UseQuoting) ? base.Security.GetMarketPrice(direction) : this.LastCandle.ClosePrice;
                     order = this.CreateOrder(direction, price, base.Volume);
 
                     this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Down appeared (CandleTime: {0}), and filter allowed the deal.", this.LastCandle.Time));
@@ -208,7 +208,7 @@ namespace SampleSMA
             {
                 if (this.PositionManager.Position == 0)
                 {
-                    if (UseQuoting)
+                    if (this.UseQuoting)
                     {
                         MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
                         base.ChildStrategies.Add(marketQuotingStrategy);
@@ -252,8 +252,8 @@ namespace SampleSMA
         {
             foreach (MyTrade trade in trades)
             {
-                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) { UseQuoting = UseQuoting };
-                var stopLoss = new StopLossStrategy(trade, StopLossUnit) { UseQuoting = UseQuoting };
+                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) { UseQuoting = this.UseQuoting };
+                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = this.UseQuoting };
 
                 ChildStrategies.Add(new TakeProfitStopLossStrategy(takeProfit, stopLoss));
 
