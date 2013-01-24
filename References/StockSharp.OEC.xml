@@ -1,0 +1,527 @@
+<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>StockSharp.OEC</name>
+  </assembly>
+  <members>
+    <member name="T:StockSharp.OEC.Xaml.OECSettings">
+      <summary>
+            Визуальная панель настроек <see cref="T:StockSharp.OEC.OECTrader" />.
+            </summary>
+      <summary>
+            OECSettings
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.Xaml.OECSettings.#ctor">
+      <summary>
+            Создать <see cref="T:StockSharp.OEC.Xaml.OECSettings" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.Xaml.OECSettings.InitializeComponent">
+      <summary>
+            InitializeComponent
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.Xaml.OECSettings.Login">
+      <summary>
+        <see cref="P:StockSharp.OEC.OECTrader.Login" />.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.Xaml.OECSettings.Password">
+      <summary>
+        <see cref="P:StockSharp.OEC.OECTrader.Password" />.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.Xaml.OECSettings.Address">
+      <summary>
+        <see cref="P:StockSharp.OEC.OECTrader.Address" />.
+            </summary>
+    </member>
+    <member name="T:StockSharp.OEC.OECTrader">
+      <summary>
+            Реализация интерфейса <see cref="T:StockSharp.BusinessEntities.ITrader" />, предоставляющая шлюз взаимодействия с системой OEC.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.OnRegisterSecurity(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Начать получать новую информацию (например, <see cref="P:StockSharp.BusinessEntities.Security.LastTrade" /> или <see cref="P:StockSharp.BusinessEntities.Security.BestBid" />) по инструменту.
+            </summary>
+      <param name="security">Инструмент, по которому необходимо начать получать новую информацию.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.OnUnRegisterSecurity(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Остановить получение новой информации.
+            </summary>
+      <param name="security">Инструмент, по которому необходимо остановить получение новой информации.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseNewOrders(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Order})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewOrders" />.
+            </summary>
+      <param name="orders">Заявки, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseNewStopOrders(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Order})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewStopOrders" />.
+            </summary>
+      <param name="stopOrders">Стоп-заявки, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseOrdersChanged(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Order})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.OrdersChanged" />.
+            </summary>
+      <param name="orders">Заявки, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseStopOrdersChanged(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Order})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.StopOrdersChanged" />.
+            </summary>
+      <param name="stopOrders">Стоп-заявки, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseOrdersRegisterFailed(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.OrderFail})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.OrdersRegisterFailed" />.
+            </summary>
+      <param name="fails">Информация об ошибках, которую нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseOrdersCancelFailed(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.OrderFail})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.OrdersCancelFailed" />.
+            </summary>
+      <param name="fails">Информация об ошибках, которую нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseStopOrdersRegisterFailed(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.OrderFail})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.StopOrdersRegisterFailed" />.
+            </summary>
+      <param name="fails">Информация об ошибках, которую нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseStopOrdersCancelFailed(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.OrderFail})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.StopOrdersCancelFailed" />.
+            </summary>
+      <param name="fails">Информация об ошибках, которую нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseNewMyTrades(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MyTrade})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewMyTrades" />.
+            </summary>
+      <param name="trades">Мои сделки, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseNewTrades(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Trade})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewTrades" />.
+            </summary>
+      <param name="trades">Cделки, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseNewSecurities(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Security})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewSecurities" />.
+            </summary>
+      <param name="securities">Инструменты, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseSecuritiesChanged(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Security})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.SecuritiesChanged" />.
+            </summary>
+      <param name="securities">Инструменты, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseNewPortfolios(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Portfolio})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewPortfolios" />.
+            </summary>
+      <param name="portfolios">Портфели, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaisePortfoliosChanged(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Portfolio})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.PortfoliosChanged" />.
+            </summary>
+      <param name="portfolios">Портфели, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseNewPositions(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Position})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewPositions" />.
+            </summary>
+      <param name="positions">Позиции, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaisePositionsChanged(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Position})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.PositionsChanged" />.
+            </summary>
+      <param name="positions">Позиции, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseNewMarketDepths(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MarketDepth})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewMarketDepths" />.
+            </summary>
+      <param name="marketDepths">Стаканы, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseMarketDepthsChanged(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.MarketDepth})">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.MarketDepthsChanged" />.
+            </summary>
+      <param name="marketDepths">Стаканы, которые нужно передать в событие.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseConnected">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.Connected" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseDisconnected">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.Disconnected" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseConnectionError(System.Exception)">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.ConnectionError" />.
+            </summary>
+      <param name="exception">Ошибка соединения.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseProcessDataError(System.Exception)">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.ProcessDataError" />.
+            </summary>
+      <param name="exception">Ошибка обработки данных.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseNewDataExported">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewDataExported" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseConnectionRestored">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.Algo.ReConnectionSettings.ConnectionRestored" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseConnectionAttemptError(System.Exception)">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.Algo.ReConnectionSettings.ConnectionAttemptError" />.
+            </summary>
+      <param name="exception">Ошибка соединения.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseExportTimeOut">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.Algo.ReConnectionSettings.ExportTimeOut" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.RaiseMarketTimeChanged(System.TimeSpan)">
+      <summary>
+            Вызвать событие <see cref="E:StockSharp.Algo.BaseTrader.MarketTimeChanged" />.
+            </summary>
+      <param name="diff">Разница во времени, прошедшее с последнего вызова события. Первый раз событие передает значение <see cref="F:System.TimeSpan.Zero" />.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.OnRegisterMarketDepth(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Начать получать котировки (стакан) по инструменту.
+            Значение котировок можно получить через метод <see cref="M:StockSharp.BusinessEntities.ITrader.GetMarketDepth(StockSharp.BusinessEntities.Security)" />.
+            </summary>
+      <param name="security">Инструмент, по которому необходимо начать получать котировки.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.OnUnRegisterMarketDepth(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Остановить получение котировок по инструменту.
+            </summary>
+      <param name="security">Инструмент, по которому необходимо остановить получение котировок.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.OnRegisterTrades(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Начать получать сделки (тиковые данные) по инструменту. Новые сделки будут приходить через
+            событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewTrades" />.
+            </summary>
+      <param name="security">Инструмент, по которому необходимо начать получать сделки.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.OnUnRegisterTrades(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Остановить получение сделок (тиковые данные) по инструменту.
+            </summary>
+      <param name="security">Инструмент, по которому необходимо остановить получение сделок.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.OnRegisterOrder(StockSharp.BusinessEntities.Order)">
+      <summary>
+            Зарегистрировать заявку на бирже.
+            </summary>
+      <param name="order">Заявка, содержащая информацию для регистрации.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.ReRegisterOrder(StockSharp.BusinessEntities.Order,StockSharp.BusinessEntities.Order)">
+      <summary>
+            Перерегистрировать заявку на бирже.
+            </summary>
+      <param name="oldOrder">Заявка, которую нужно снять.</param>
+      <param name="newOrder">Новая заявка, которую нужно зарегистрировать.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.ReRegisterOrderPair(StockSharp.BusinessEntities.Order,StockSharp.BusinessEntities.Order,StockSharp.BusinessEntities.Order,StockSharp.BusinessEntities.Order)">
+      <summary>
+            Перерегистрировать пару заявок на бирже.
+            </summary>
+      <param name="oldOrder1">Первая заявка, которую нужно снять.</param>
+      <param name="newOrder1">Первая новая заявка, которую нужно зарегистрировать.</param>
+      <param name="oldOrder2">Вторая заявка, которую нужно снять.</param>
+      <param name="newOrder2">Вторая новая заявка, которую нужно зарегистрировать.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.OnCancelOrder(StockSharp.BusinessEntities.Order)">
+      <summary>
+            Отменить заявку на бирже.
+            </summary>
+      <param name="order">Заявка, которую нужно отменять.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.#ctor">
+      <summary>
+            Создать <see cref="T:StockSharp.OEC.OECTrader" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.SecurityLookup(System.String,System.Nullable{StockSharp.BusinessEntities.SecurityTypes},System.String,System.Int32)">
+      <summary>
+            Выполнить запрос инструментов по заданным параметрам.
+            </summary>
+      <param name="searchText">Поисковый запрос. Примеры: es, gold, euro, oil, brent.</param>
+      <param name="securityType">Фильтр типа инструмента. По умолчанию возвращаются все поддерживаемые типы.</param>
+      <param name="exchangeName">Название биржи. Примеры: CBT, CME.</param>
+      <param name="desiredResultCount">Желаемое количество результатов запроса.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.StartExport">
+      <summary>
+            Запустить экспорт данных из торговой системы в программу (получение портфелей, инструментов, заявок и т.д.).
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.StopExport">
+      <summary>
+            Остановить экспорт данных из торговой системы в программу, запущенный через <see cref="M:StockSharp.BusinessEntities.ITrader.StartExport" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.DisposeManaged">
+      <summary>
+            Освободить занятые ресурсы.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.Save(Ecng.Serialization.SettingsStorage)">
+      <summary>
+            Сохранить настройки.
+            </summary>
+      <param name="storage">Хранилище настроек.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.Load(Ecng.Serialization.SettingsStorage)">
+      <summary>
+            Загрузить настройки.
+            </summary>
+      <param name="storage">Хранилище настроек.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.OnConnect">
+      <summary>
+            Подключиться к торговой системе.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECTrader.OnDisconnect">
+      <summary>
+            Отключиться от торговой системы.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECTrader.Uuid">
+      <summary>
+            Уникальный идентификатор программного обеспечения.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECTrader.Login">
+      <summary>
+            Имя пользователя OpenECry.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECTrader.Password">
+      <summary>
+            Пароль пользователя OpenECry.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECTrader.DisplayName">
+      <summary>
+            Текстовое описание шлюза.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECTrader.RemotingRequested">
+      <summary>
+            Требуемый режим Remoting. По умолчанию - <see cref="F:StockSharp.OEC.OECRemoting.Auto" />. 
+            Свойство может быть установлено только до подключения.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECTrader.RemotingActual">
+      <summary>
+            Реальный режим Remoting. 
+            Свойство актуально только после подключения.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECTrader.UseNativeReconnect">
+      <summary>
+            Использовать "родной" механизм восстановления соединения, по умолчанию - true.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECTrader.Address">
+      <summary>
+            Адрес API сервера OpenECry.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECTrader.IsConnected">
+      <summary>
+            Проверить соединение.
+            </summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECTrader.EnableOECLogging">
+      <summary>
+            Включить логирование библиотеки OEC. Получение логов через событие <see cref="E:StockSharp.OEC.OECTrader.OECLogEvent" />.
+            </summary>
+    </member>
+    <member name="E:StockSharp.OEC.OECTrader.OECLogEvent">
+      <summary>Событие получения нового сообщения лога OEC.</summary>
+    </member>
+    <member name="T:StockSharp.OEC.Xaml.OECAddressComboBox">
+      <summary>
+            Выпадающий список для выбора адреса сервера OpenECry.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.Xaml.OECAddressComboBox.#ctor">
+      <summary>
+            Создать <see cref="T:StockSharp.OEC.Xaml.OECAddressComboBox" />.
+            </summary>
+    </member>
+    <member name="T:StockSharp.OEC.OECStopType">
+      <summary>
+            Тип условной заявки OEC.
+            </summary>
+    </member>
+    <member name="F:StockSharp.OEC.OECStopType.StopMarket">
+      <summary>После достижения стоп-цены автоматически выставляется рыночная заявка.</summary>
+    </member>
+    <member name="F:StockSharp.OEC.OECStopType.StopLimit">
+      <summary>После достижения стоп-цены автоматически выставляется лимитная заявка.</summary>
+    </member>
+    <member name="F:StockSharp.OEC.OECStopType.TrailingStopMarket">
+      <summary>
+            Стоп-цена автоматически следует за рынком, но только в выгодном для позиции направлении, 
+            оставаясь на заранее заявленном интервале от рыночной цены. 
+            В случае, если рынок достигает стоп-цены, автоматически выставляется рыночная заявка.
+            </summary>
+    </member>
+    <member name="F:StockSharp.OEC.OECStopType.TrailingStopLimit">
+      <summary>
+            Как <see cref="F:StockSharp.OEC.OECStopType.TrailingStopMarket" />, но при достижении стоп-цены выставляется лимитная заявка.
+            </summary>
+    </member>
+    <member name="T:StockSharp.OEC.OECStopCondition">
+      <summary>
+            Условие для формирования стоп-заявок, специфичных для <see cref="T:StockSharp.OEC.OECTrader" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.OEC.OECStopCondition.#ctor(StockSharp.OEC.OECStopType,System.Decimal)">
+      <summary>
+            Конструктор для <see cref="F:StockSharp.OEC.OECStopType.StopMarket" /> или <see cref="F:StockSharp.OEC.OECStopType.StopLimit" /> типов.
+            </summary>
+      <param name="type">Тип стопа: <see cref="F:StockSharp.OEC.OECStopType.StopMarket" /> или <see cref="F:StockSharp.OEC.OECStopType.StopLimit" />.</param>
+      <param name="stopPrice">Стоп-цена. Для типа <see cref="F:StockSharp.OEC.OECStopType.StopMarket" /> используется вместо <see cref="P:StockSharp.BusinessEntities.Order.Price" />.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECStopCondition.#ctor(StockSharp.OEC.OECStopType,System.Decimal,System.Boolean,StockSharp.Algo.Storages.SecurityChangeTypes,System.Decimal)">
+      <summary>
+            Конструктор для Trailing стопов.
+            </summary>
+      <remarks>
+        <para>
+            Если тип стопа <paramref name="type" /> равен <see cref="F:StockSharp.OEC.OECStopType.TrailingStopLimit" />,
+            то после срабатывания стопа будет выставлена заявка по цене <see cref="P:StockSharp.BusinessEntities.Order.Price" />,
+            сдвинутой логикой trailing стопа на соответствующее значение.
+            </para>
+        <para>
+            Если тип стопа <paramref name="type" /> равен <see cref="F:StockSharp.OEC.OECStopType.TrailingStopMarket" />,
+            то после срабатывания стопа будет выставлена рыночная заявка.
+            </para>
+      </remarks>
+      <param name="type">Тип стопа: <see cref="F:StockSharp.OEC.OECStopType.TrailingStopMarket" /> или <see cref="F:StockSharp.OEC.OECStopType.TrailingStopLimit" />.</param>
+      <param name="delta">Trailing стоп следует за рынком в выгодном направлении если разница между рыночной ценой и стопом больше <paramref name="delta" />.</param>
+      <param name="isPercentDelta">true, если <paramref name="delta" /> выражена в процентах.</param>
+      <param name="triggerType">Тип срабатывания стопа.</param>
+      <param name="stopPrice">Начальная стоп-цена, которая двигается логикой trailing-стопа.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECStopCondition.#ctor(StockSharp.OEC.OECStopType,System.Decimal,System.Decimal,System.Decimal)">
+      <summary>
+            Конструктор для Trailing стопов для Futures.
+            </summary>
+      <remarks>
+        <para>
+            Если тип стопа <paramref name="type" /> равен <see cref="F:StockSharp.OEC.OECStopType.TrailingStopLimit" />, то после срабатывания стопа будет выставлена
+            заявка по цене <see cref="P:StockSharp.BusinessEntities.Order.Price" />, сдвинутой логикой trailing стопа на соответствующее значение.
+            </para>
+        <para>
+            Если тип стопа <paramref name="type" /> равен <see cref="F:StockSharp.OEC.OECStopType.TrailingStopMarket" />, то после срабатывания стопа будет выставлена
+            рыночная заявка.
+            </para>
+      </remarks>
+      <param name="type">
+        <see cref="F:StockSharp.OEC.OECStopType.TrailingStopMarket" /> или <see cref="F:StockSharp.OEC.OECStopType.TrailingStopLimit" />.</param>
+      <param name="delta">Trailing стоп следует за рынком в выгодном направлении если разница между рыночной ценой и стопом больше <paramref name="delta" />.</param>
+      <param name="referencePrice">Trailing стоп начинает слежение, как только цена достигает <paramref name="referencePrice" />.</param>
+      <param name="stopPrice">Начальная стоп-цена, которая двигается логикой trailing-стопа после активации по <paramref name="referencePrice" />.</param>
+    </member>
+    <member name="M:StockSharp.OEC.OECStopCondition.Clone">
+      <summary>
+            Создать копию условия.
+            </summary>
+      <returns>Копия условия.</returns>
+    </member>
+    <member name="P:StockSharp.OEC.OECStopCondition.StopType">
+      <summary>Тип стопа.</summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECStopCondition.StopPrice">
+      <summary>Стоп-цена.</summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECStopCondition.Delta">
+      <summary>Trailing стоп следует за рынком если изменение цены больше чем Delta.</summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECStopCondition.IsPercentDelta">
+      <summary>True, если <see cref="P:StockSharp.OEC.OECStopCondition.Delta" /> выражена в процентах.</summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECStopCondition.TriggerType">
+      <summary>Тип срабатывания.</summary>
+    </member>
+    <member name="P:StockSharp.OEC.OECStopCondition.ReferencePrice">
+      <summary>Trailing стоп начинает слежение, как только цена достигает ReferencePrice.</summary>
+    </member>
+    <member name="T:StockSharp.OEC.OECTraderException">
+      <summary>
+            Исключение, генерируемое реализацией <see cref="T:StockSharp.OEC.OECTrader" /> в случае возникновения ошибок.
+            </summary>
+    </member>
+    <member name="T:StockSharp.OEC.OECAddresses">
+      <summary>
+            Адреса серверов системы OpenECry.
+            </summary>
+    </member>
+    <member name="F:StockSharp.OEC.OECAddresses.DefaultPort">
+      <summary>
+            Порт сервера по умолчанию, равный 9200.
+            </summary>
+    </member>
+    <member name="F:StockSharp.OEC.OECAddresses.Api">
+      <summary>
+            Основной сервер. Адрес api.openecry.com, порт 9200.
+            </summary>
+    </member>
+    <member name="F:StockSharp.OEC.OECAddresses.Sim">
+      <summary>
+            Демо сервер. Адрес sim.openecry.com, порт 9200.
+            </summary>
+    </member>
+    <member name="T:StockSharp.OEC.OECRemoting">
+      <summary>
+            Режим Remoting. Описание функциональности Remoting см. http://www.openecry.com/api/OECAPIRemoting.pdf
+            </summary>
+    </member>
+    <member name="F:StockSharp.OEC.OECRemoting.None">
+      <summary>Remoting отключен.</summary>
+    </member>
+    <member name="F:StockSharp.OEC.OECRemoting.Auto">
+      <summary>Попытка активировать Remoting в режиме Secondary, в случае неудачи - режим Primary.</summary>
+    </member>
+    <member name="F:StockSharp.OEC.OECRemoting.Primary">
+      <summary>Режим Primary. Если существует другое подключение с теми же Login/Password, оно может быть разорвано.</summary>
+    </member>
+    <member name="F:StockSharp.OEC.OECRemoting.Secondary">
+      <summary>Режим Secondary. Попытка активировать Remoting в режиме Secondary, в случае неудачи - режим None.</summary>
+    </member>
+  </members>
+</doc>

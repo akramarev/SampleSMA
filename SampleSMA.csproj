@@ -94,6 +94,9 @@
     <Reference Include="StockSharp.BusinessEntities">
       <HintPath>References\StockSharp.BusinessEntities.dll</HintPath>
     </Reference>
+    <Reference Include="StockSharp.Logging">
+      <HintPath>References\StockSharp.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="StockSharp.Quik">
       <HintPath>References\StockSharp.Quik.dll</HintPath>
     </Reference>
@@ -125,14 +128,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="IndicatorsChart.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="Logging\JabberLogListener.cs" />
     <Compile Include="Logging\EmailUnitedLogListener.cs" />
     <Compile Include="EMAEventModelStrategy.cs" />
-    <Compile Include="Logging\ExtendedLogMessage.cs" />
     <Compile Include="Logging\SimpleLogSource.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -144,13 +142,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="EmaStrategy.cs" />
     <Compile Include="EMAStrategyOptimizer.cs" />
-    <Compile Include="ExponentialMovingAverageEx.cs" />
-    <Compile Include="IndicatorsChart.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>IndicatorsChart.xaml</DependentUpon>
-    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

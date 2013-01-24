@@ -4,165 +4,349 @@
         <name>Hardcodet.Wpf.GenericTreeView</name>
     </assembly>
     <members>
-        <member name="T:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1">
-            <summary>
-            Observes bound items, and updates the tree
-            accordingly if items are being added or removed.
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.childCollections">
-            <summary>
-            Stores the currently observed child collections of
-            monitored parent items, stored by their parent's
-            key.
-            </summary>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.tree">
-            <summary>
-            The tree that renders the observed items.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.#ctor(Hardcodet.Wpf.GenericTreeView.TreeViewBase{`0})">
-            <summary>
-            Creates the monitor with the tree to be processed.
-            </summary>
-            <param name="tree">The tree that renders the monitored
-            items.</param>
-            <exception cref="T:System.ArgumentNullException">If <paramref name="tree"/>
-            is a null reference.</exception>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.RegisterItem(System.String,System.Collections.Generic.ICollection{`0})">
-            <summary>
-            Creates a change listener for a given item's
-            child nodes and caches the collection.<br/>
-            This requires the submitted <paramref name="childItems"/>
-            collection to be of type <see cref="T:System.Collections.Specialized.INotifyCollectionChanged"/>.
-            If the collection does not implement this interface, a debug
-            warning is issued without an exception.
-            </summary>
-            <param name="itemKey">The unique key of the parent
-            item, as returned by <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.GetItemKey(`0)"/>.
-            </param>
-            <param name="childItems">The item's childs as returned by
-            <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.GetChildItems(`0)"/>.</param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.RemoveNodes(System.Windows.Controls.ItemCollection)">
-            <summary>
-            Deregisters event listeners for all nodes.
-            </summary>
-            <param name="treeNodes">A collection of tree
-            nodes to be removed.</param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.UnregisterListeners(System.Windows.Controls.TreeViewItem)">
-            <summary>
-            Removes listener for an item that is represented
-            by  a given <paramref name="node"/> from the cache, and also
-            processes all the node's descendants recursively.
-            </summary>
-            <param name="node">The node to be removed.</param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.Clear">
-            <summary>
-            Deregisters the all listeners and clears
-            the cache.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.OnItemCollectionChanged(System.Object,System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
-            <summary>
-            Invokes if one of the observed collections is being changed. Triggers
-            updates of the tree control.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.ClearChilds(System.String)">
-            <summary>
-            Removes all childs of a given parent node.
-            </summary>
-            <param name="parentItemKey"></param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.HandleRemovedChildItems(System.Collections.Generic.ICollection{`0},System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
-            <summary>
-            Updates the tree if items were removed from an observed
-            child collection. This might cause rendered tree nodes
-            to be removed. In case lazy loading is enabled, the update
-            of the UI may be as subtle as to remove an expander from
-            a collapsed node if the represented item's childs were
-            removed.
-            </summary>
-            <param name="observed">The observed collection.</param>
-            <param name="e">The event arguments that provide the
-            removed items.</param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.HandleNewChildItems(System.Collections.Generic.ICollection{`0},System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
-            <summary>
-            Updates the tree with newly added items.
-            </summary>
-            <param name="observed">The observed collection.</param>
-            <param name="e">Collection event args.</param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.GetParentNode(`0,System.Collections.Generic.ICollection{`0})">
-            <summary>
-            Gets the tree node that represents the parent
-            of a given item.
-            </summary>
-            <param name="childItem">A currently processed item that
-            contains a parent.</param>
-            <param name="collection">The collection that contains
-            <paramref name="childItem"/>.</param>
-            <returns>The parent tree node (UI control) that reprents the
-            logical parent of <paramref name="childItem"/>.</returns>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.RemoveCollectionFromCache(System.String)">
-            <summary>
-            Removes a given collection from the internal cache
-            and deregisters its event listener.
-            </summary>
-            <param name="itemKey">The item key under which the
-            collection is stored in the cache.</param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.RemoveCollectionFromCache(System.Collections.Specialized.INotifyCollectionChanged)">
-            <summary>
-            Removes a given collection from the cache. This method is
-            only called if something went wrong and a collection's item
-            cannot be found anymore.
-            </summary>
-            <param name="col">The collection to be removed.</param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.TryFindParentKey(System.Object)">
-            <summary>
-            Searches the cache for a given collection.
-            </summary>
-            <returns>The key of the parent item that contains the
-            submitted child collection. If no matching entry was found
-            in the cache, a null reference is being returned.</returns>
-        </member>
-        <member name="P:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.ChildCollections">
-            <summary>
-            Gets the currently observed child collections of
-            monitored parent items, stored by their parent's
-            key.
-            </summary>
-        </member>
-        <member name="P:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.Tree">
-            <summary>
-            Gets the tree that renders the observed items.
-            </summary>
-        </member>
-        <member name="E:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.MonitoredCollectionChanged">
-            <summary>
-            Bubbles an <see cref="E:System.Collections.Specialized.INotifyCollectionChanged.CollectionChanged"/>
-            event of one of the observed collections. The sender is the
-            changed collection.
-            </summary>
-        </member>
         <member name="T:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1">
+            <summary>
+            Encapsulates dependency properties etc.
+            </summary>
             <summary>
             An abstract composite control that hosts a single
             <see cref="T:System.Windows.Controls.TreeView"/> control.
             </summary>
             <typeparam name="T">The type of the tree's items.</typeparam>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemChangedEvent">
             <summary>
-            Encapsulates dependency properties etc.
+            A custom routed event which is fired if the
+            <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemProperty"/> of the tree
+            was changed.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RaiseSelectedItemChangedEvent(`0,`0)">
+            <summary>
+            Fires the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemChangedEvent"/> routed
+            event.
+            </summary>
+            <param name="newItem">The currently selected tree item,
+            or null, if no item is selected.</param>
+            <param name="oldItem">The previously selected item, if
+            any.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemsProperty">
+            <summary>
+            Gets or sets the items to be bound to three.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemsPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemsProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.OnItemsPropertyChanged(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Renders the tree if the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> property
+            was changed. If <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.PreserveLayoutOnRefresh"/>
+            is true, the current layout will be reapplied.
+            </summary>
+            <param name="oldItems">The items that are currently bound
+            to the tree or null, if no data has been assigned yet.</param>
+            <param name="newItems">The new items that will be bound to
+            the tree or null, if the tree is being cleared.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemProperty">
+            <summary>
+            Gets or sets the currently selected item, if any. Setting a null
+            reference deselects the currently selected node.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItem"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.OnSelectedItemPropertyChanged(`0,`0)">
+            <summary>
+            Handles updates of the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItem"/> property
+            by adjusting the currently selected node. If the node that represents
+            <paramref name="newValue"/> has not yet been created, all
+            the item's parent nodes will be expanded and displayed on the UI.
+            </summary>
+            <param name="oldValue">The previously selected item, or a null
+            reference, if no item was selected before.</param>
+            <param name="newValue">The item to be selected on the tree. If this
+            value is null, the root node will be selected if possible. Otherwise,
+            the current selection will be cleared.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsLazyLoadingProperty">
+            <summary>
+            Gets or sets whether tree nodes are being created on demand. If set to
+            true (default value), nodes are being created as soon as they are going
+            to be displayed the first time because their parent node is being expanded.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsLazyLoadingPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsLazyLoadingProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsLazyLoading"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ClearCollapsedNodesProperty">
+            <summary>
+            If enabled along with lazy loading, the tree automatically
+            discards tree nodes if their parent is being collapsed.
+            This keeps the memory footprint at a minimum (only visible nodes exist
+            in memory), but re-expanding a node also requires recreation of its
+            child nodes. This property defaults to true.<br/>
+            Important: This feature is only applied if <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsLazyLoading"/>
+            is true as well.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ClearCollapsedNodesPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ClearCollapsedNodesProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ClearCollapsedNodes"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveRootItemsProperty">
+            <summary>
+            Whether the bound <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> collection should be observed for changes of its contents. Defaults to true.
+            </summary>
+            <remarks>This property only control whether the collection's contents should be observed. A replacement of the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> collection itself always results in a refresh.</remarks>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveRootItemsPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            A static callback listener which is being invoked if the
+            <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveRootItemsProperty"/> dependency property has
+            been changed. Invokes the <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.OnObserveRootItemsPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)"/>
+            instance method of the changed instance.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.OnObserveRootItemsPropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes of the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveRootItemsProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveRootItems"/> property wrapper, updates of the property's value
+            should be handled here.
+            </summary>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveChildItemsProperty">
+            <summary>
+            If set to true, the control observes not only the directly bound
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> collection, but also all rendered child
+            collections for changes in order to reflect updates of the data
+            source.<br/>
+            If this property is set to false, you can always update the
+            tree by invoking <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Refresh"/> or one of its overloads.
+            This property also does not affect the behaviour of the main
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> property. Changing <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> always
+            recreates and fully updates the tree.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveChildItemsPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveChildItemsProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveChildItems"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeProperty">
+            <summary>
+            The underlying WPF <see cref="T:System.Windows.Controls.TreeView"/>
+            control.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreePropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="T:System.Windows.Controls.TreeView"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeStyleProperty">
+            <summary>
+            The style to be attached to the control's <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeProperty"/>.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeStylePropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeStyleProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeStyle"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNodeProperty">
+            <summary>
+            A custom root node, which can be declared for the tree. If this
+            property is not null, All items of the tree will be rendered
+            as childs of this item.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNodePropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNodeProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNode"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.PreserveLayoutOnRefreshProperty">
+            <summary>
+            This property defines whether the tree's layout (selected,
+            expanded nodes) should be preserved as good as possible,
+            if the tree is being recreated due to a new data source
+            or a refresh.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.PreserveLayoutOnRefreshPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.PreserveLayoutOnRefreshProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.PreserveLayoutOnRefresh"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeNodeStyleProperty">
+            <summary>
+            A style which is explicitly applied to every tree node except
+            the custom <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNode"/>.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeNodeStylePropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeNodeStyleProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeNodeStyle"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptionsProperty">
+            <summary>
+            A collection of <see cref="T:System.ComponentModel.SortDescription"/> objects which is applied
+            on all nodes, the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNode"/> (unless it already contains
+            sort descriptions), and the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Tree"/> itself.<br/>
+            If you need more control over sort descriptions, you can override
+            the virtual <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ApplySorting(System.Windows.Controls.TreeViewItem,`0)"/> method.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptionsPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptionsProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptions"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilterProperty">
+            <summary>
+            An optional filter which is being applied in order to limit
+            the number of displayed nodes on all levels.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilterPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            A static callback listener which is being invoked if the
+            <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilterProperty"/> dependency property has
+            been changed. As WPF internally uses the dependency property
+            system and bypasses the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilterProperty"/>
+            property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectNodesOnRightClickProperty">
+            <summary>
+            If set to true, treeview items are automatically selected on right clicks,
+            which simplifies context menu handling.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectNodesOnRightClickPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectNodesOnRightClickProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectNodesOnRightClick"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeContextMenuProperty">
+            <summary>
+            Defines a context menu to be assigned to open on all nodes of
+            the tree. If this property is set, the context menu will be
+            displayed if a node of the tree is being right-clicked, *and*
+            no custom context menu has been assigned to the node.<br/>
+            When handling menu-related events, the clicked node that
+            caused the event can be determined by accessing the menu's
+            <see cref="P:System.Windows.Controls.ContextMenu.PlacementTarget"/> property.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeContextMenuPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeContextMenuProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeContextMenu"/> property wrapper, updates should be handled here.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.AutoCollapseProperty">
+            <summary>
+            If set to true, the tree will automatically collapse all nodes
+            that do not need to be expanded in order to display the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItem"/>.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.AutoCollapsePropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            A static callback listener which is being invoked if the
+            <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.AutoCollapseProperty"/> dependency property has
+            been changed. Invokes the <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.OnAutoCollapsePropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)"/>
+            instance method of the changed instance.
+            </summary>
+            <param name="d">The currently processed owner of the property.</param>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.OnAutoCollapsePropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)">
+            <summary>
+            Handles changes of the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.AutoCollapseProperty"/> dependency property. As
+            WPF internally uses the dependency property system and bypasses the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.AutoCollapse"/> property wrapper, updates of the property's value
+            should be handled here.<br/>
+            If set to true, the tree will automatically collapse all nodes
+            that do not need to be expanded in order to display the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItem"/>.
+            </summary>
+            <param name="e">Provides information about the updated property.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.#cctor">
+            <summary>
+            Inits the control's properties and events.
             </summary>
         </member>
         <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ignoreItemChangeEvents">
@@ -241,7 +425,8 @@
         <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.OnNodeExpanded(System.Windows.Controls.TreeViewItem)">
             <summary>
             Handles lazy creation of child nodes if a node is being expanded
-            the first time.
+            the first time, and also re-evaluates a filter if the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilter"/> dependency property is set.
             </summary>
         </member>
         <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RenderTree(System.Collections.Generic.IEnumerable{`0},Hardcodet.Wpf.GenericTreeView.TreeLayout)">
@@ -280,30 +465,6 @@
             <returns>A <see cref="T:System.Windows.Controls.TreeViewItem"/> which will represent
             the submitted <paramref name="item"/>.</returns>
         </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ApplySorting(System.Windows.Controls.TreeViewItem,`0)">
-            <summary>
-            Copies the <see cref="T:System.ComponentModel.SortDescription"/> elements of
-            the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptions"/> collection to
-            a currently processed tree node. This method is being
-            invoked during the initialization of a given node.<br/>
-            If the <see cref="P:System.Windows.Controls.ItemCollection.SortDescriptions"/>
-            collection of the submitted <paramref name="node"/> is
-            not empty, it will be cleared.<br/>
-            This method is always being invoked, even if the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptions"/> dependency property
-            is null. If you want to apply a custom sorting mechanism,
-            simply override this method.
-            </summary>
-            <param name="node">The currently processed node, if any.
-            This parameter is null if sort parameters should be set
-            on the on the tree's <see cref="P:System.Windows.Controls.ItemsControl.Items"/>
-            collection itself.
-            </param>
-            <param name="item">The item that is being represented
-            by the node. This parameter is null if sort parameters
-            should be set on the tree's <see cref="P:System.Windows.Controls.ItemsControl.Items"/>
-            collection itself, or on the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNode"/>.</param>
-        </member>
         <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ApplyNodeStyle(System.Windows.Controls.TreeViewItem,`0)">
             <summary>
             Applies the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeNodeStyle"/> to a given tree node.
@@ -324,7 +485,7 @@
             ancestors) has been created and selects it immediately.<br/>
             This method basically expands all ancestors of the submitted
             <paramref name="item"/> which makes sure the node
-            will be available.
+            will be available, and then selects the node.
             </summary>
             <param name="item">The item that should be represented
             by an existing tree node.</param>
@@ -332,6 +493,111 @@
             ancestor list does not lead back to the root items because
             the item does not belong to the tree, or the tree's rendered
             nodes and bound data are out of sync.</exception>
+            <seealso cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.EnsureNodeIsVisible(`0)"/>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.EnsureNodeIsVisible(`0)">
+            <summary>
+            Expands all nodes that represent ancestors of a given item
+            in order to make sure the node that represents
+            <paramref name="item"/> is visible (and thus created as well).
+            </summary>
+            <param name="item">The item to make available.</param>
+            <returns>The tree node that represent <paramref name="item"/>.</returns>
+            <exception cref="T:System.InvalidOperationException">If the item's
+            ancestor list does not lead back to the root items because
+            the item does not belong to the tree, or the tree's rendered
+            nodes and bound data are out of sync.</exception>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ApplySorting(System.Windows.Controls.TreeViewItem,`0)">
+            <summary>
+            Copies the <see cref="T:System.ComponentModel.SortDescription"/> elements of
+            the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptions"/> collection to
+            a currently processed tree node. This method is being
+            invoked during the initialization of a given node, and
+            if the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptions"/> property 
+            is changed at runtime.<br/>
+            If the <see cref="P:System.Windows.Controls.ItemCollection.SortDescriptions"/>
+            collection of the submitted <paramref name="node"/> is
+            not empty, it will be cleared.<br/>
+            This method is always being invoked, even if the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptions"/> dependency property
+            is null. If you want to apply a custom sorting mechanism,
+            simply override this method.
+            </summary>
+            <param name="node">The currently processed node, if any.
+            This parameter is null if sort parameters should be set
+            on the tree's <see cref="P:System.Windows.Controls.ItemsControl.Items"/>
+            collection itself.
+            </param>
+            <param name="item">The item that is being represented
+            by the node. This parameter is null if sort parameters
+            should be set on the tree's <see cref="P:System.Windows.Controls.ItemsControl.Items"/>
+            collection itself, or on the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNode"/>.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ClearFilter">
+            <summary>
+            Clears the filter on <em>all</em> created tree
+            nodes. This is the case if the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilter"/>
+            dependency property is set to null.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ClearFilter(System.Windows.Controls.TreeViewItem)">
+            <summary>
+            Recursively reverts filtered items starting at a
+            given node.
+            </summary>
+            <param name="treeNode">The node to be reverted.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RefreshFilter">
+            <summary>
+            Applies the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilter"/> Predicate on all currently
+            visible tree nodes as well as direct descendants of collapsed
+            nodes (in order to determine whether to show or hide a node
+            expander). This method can be invoked in order to re-evaluate
+            a filter, and it's also invoked if the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilter"/>
+            dependency property is changed. This method is also being invoked
+            if the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilter"/> dependency property has been
+            set to <c>null</c>.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.FilterBranch(System.Windows.Controls.TreeViewItem)">
+            <summary>
+            Recursively evaluates a branch of the tree against the currently
+            active filter (if there is one).
+            </summary>
+            <param name="treeNode"></param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ApplyFilter(System.Windows.Controls.TreeViewItem,`0)">
+            <summary>
+            Applies the current <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilter"/> on a given tree node.
+            </summary>
+            <param name="treeNode">The node to be filtered.</param>
+            <param name="item">The item that was bound to the node. If the
+            node does not represent a bound item (because of custom injected
+            nodes), this parameter is null.</param>
+            <returns>The result of the filter evaluation (true if the item is
+            accepted and not filtered).</returns>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ApplyFilterOnDummyNode(System.Windows.Controls.TreeViewItem,`0,System.Windows.Controls.TreeViewItem)">
+            <summary>
+            Determines whether a dummy node should be "filtered" or not. If lazy loading is
+            enabled, a dummy is used to render an expander on a collapsed regular node in
+            order to indicate that child items are available.<br/>
+            In a filtering scenario, applying the filter on the dummy node means that the
+            node should be hidden if none of the substituted child items would pass the filter,
+            which means that no expander should be rendered.<br/>
+            This default implementation simply iterates through the available child items,
+            and invokes <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ApplyFilter(System.Windows.Controls.TreeViewItem,`0)"/> for every item, passing the <paramref name="dummyNode"/>.
+            As soon as an item passes the filter, the method exits, thus having the parent node
+            render an expander.
+            </summary>
+            <param name="parentNode">The currently processed tree node which should show or hide
+            its expander based on the number and filter compliance of its child items.</param>
+            <param name="item">The item that is being represented by <paramref name="parentNode"/>.
+            This parameter might be null in case of custom-injected tree nodes that were not
+            created by the tree, but added by custom code.</param>
+            <param name="dummyNode">The dummy node that was used to ensure that an expander is
+            being rendered for the tree.</param>
         </member>
         <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.GetTreeLayout">
             <summary>
@@ -491,6 +757,16 @@
             <remarks>Beware: In case of circular references, calling this
             method results in a stack overflow.</remarks>
         </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsDummyNode(System.Windows.Controls.TreeViewItem)">
+            <summary>
+            Validates whether a given tree node is a dummy that was
+            included in the tree to have its parent node render an
+            expander.
+            </summary>
+            <param name="treeNode">The node to be inspected.</param>
+            <returns>True if the node does not seem to be a regular
+            node but a dummy that should not be processed any further.</returns>
+        </member>
         <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.GetItemKey(`0)">
             <summary>
             Generates a unique identifier for a given
@@ -534,313 +810,15 @@
             <param name="item">The currently processed item.</param>
             <returns>The parent of the item, if available.</returns>
         </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemChangedEvent">
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.GetRootItemNodes">
             <summary>
-            A custom routed event which is fired if the
-            <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemProperty"/> of the tree
-            was changed.
+            Gets the top-level nodes that represent the bound
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/>. This tree node collection is
+            either directly under the tree, or the child collection
+            of a custom <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNode"/>.
             </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RaiseSelectedItemChangedEvent(`0,`0)">
-            <summary>
-            Fires the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemChangedEvent"/> routed
-            event.
-            </summary>
-            <param name="newItem">The currently selected tree item,
-            or null, if no item is selected.</param>
-            <param name="oldItem">The previously selected item, if
-            any.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemsProperty">
-            <summary>
-            Gets or sets the items to be bound to three.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemsPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemsProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.OnItemsPropertyChanged(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEnumerable{`0})">
-            <summary>
-            Renders the tree if the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> property
-            was changed. If <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.PreserveLayoutOnRefresh"/>
-            is true, the current layout will be reapplied.
-            </summary>
-            <param name="oldItems">The items that are currently bound
-            to the tree or null, if no data has been assigned yet.</param>
-            <param name="newItems">The new items that will be bound to
-            the tree or null, if the tree is being cleared.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemProperty">
-            <summary>
-            Gets or sets the currently selected item, if any. Setting a null
-            reference deselects the currently selected node.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItem"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.OnSelectedItemPropertyChanged(`0,`0)">
-            <summary>
-            Handles updates of the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItem"/> property
-            by adjusting the currently selected node. If the node that represents
-            <paramref name="newValue"/> has not yet been created, all
-            the item's parent nodes will be expanded and displayed on the UI.
-            </summary>
-            <param name="oldValue">The previously selected item, or a null
-            reference, if no item was selected before.</param>
-            <param name="newValue">The item to be selected on the tree. If this
-            value is null, the root node will be selected if possible. Otherwise,
-            the current selection will be cleared.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsLazyLoadingProperty">
-            <summary>
-            Gets or sets whether tree nodes are being created on demand. If set to
-            true (default value), nodes are being created as soon as they are going
-            to be displayed the first time because their parent node is being expanded.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsLazyLoadingPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsLazyLoadingProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsLazyLoading"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ClearCollapsedNodesProperty">
-            <summary>
-            If enabled along with lazy loading, the tree automatically
-            discards tree nodes if their parent is being collapsed.
-            This keeps the memory footprint at a minimum (only visible nodes exist
-            in memory), but re-expanding a node also requires recreation of its
-            child nodes. This property defaults to true.<br/>
-            Important: This feature is only applied if <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsLazyLoading"/>
-            is true as well.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ClearCollapsedNodesPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ClearCollapsedNodesProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ClearCollapsedNodes"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveChildItemsProperty">
-            <summary>
-            If set to true, the control observes not only the directly bound
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> collection, but also all rendered child
-            collections for changes in order to reflect updates of the data
-            source.<br/>
-            If this property is set to false, you can always update the
-            tree by invoking <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Refresh"/> or one of its overloads.
-            This property also does not affect the behaviour of the main
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> property. Changing <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> always
-            recreates and fully updates the tree.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveChildItemsPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveChildItemsProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveChildItems"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeProperty">
-            <summary>
-            The underlying WPF <see cref="T:System.Windows.Controls.TreeView"/>
-            control.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreePropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="T:System.Windows.Controls.TreeView"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeStyleProperty">
-            <summary>
-            The style to be attached to the control's <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeProperty"/>.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeStylePropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeStyleProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeStyle"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNodeProperty">
-            <summary>
-            A custom root node, which can be declared for the tree. If this
-            property is not null, All items of the tree will be rendered
-            as childs of this item.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNodePropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNodeProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNode"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.PreserveLayoutOnRefreshProperty">
-            <summary>
-            This property defines whether the tree's layout (selected,
-            expanded nodes) should be preserved as good as possible,
-            if the tree is being recreated due to a new data source
-            or a refresh.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.PreserveLayoutOnRefreshPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.PreserveLayoutOnRefreshProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.PreserveLayoutOnRefresh"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeNodeStyleProperty">
-            <summary>
-            A style which is explicitly applied to every tree node except
-            the custom <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNode"/>.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeNodeStylePropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeNodeStyleProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.TreeNodeStyle"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptionsProperty">
-            <summary>
-            A collection of <see cref="T:System.ComponentModel.SortDescription"/> objects which is applied
-            on all nodes, the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNode"/> (unless it already contains
-            sort descriptions), and the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Tree"/> itself.<br/>
-            If you need more control over sort descriptions, you can override
-            the virtual <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ApplySorting(System.Windows.Controls.TreeViewItem,`0)"/> method.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptionsPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptionsProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeSortDescriptions"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectNodesOnRightClickProperty">
-            <summary>
-            If set to true, treeview items are automatically selected on right clicks,
-            which simplifies context menu handling.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectNodesOnRightClickPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectNodesOnRightClickProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectNodesOnRightClick"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeContextMenuProperty">
-            <summary>
-            Defines a context menu to be assigned to open on all nodes of
-            the tree. If this property is set, the context menu will be
-            displayed if a node of the tree is being right-clicked, *and*
-            no custom context menu has been assigned to the node.<br/>
-            When handling menu-related events, the clicked node that
-            caused the event can be determined by accessing the menu's
-            <see cref="P:System.Windows.Controls.ContextMenu.PlacementTarget"/> property.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeContextMenuPropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes on the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeContextMenuProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.NodeContextMenu"/> property wrapper, updates should be handled here.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.AutoCollapseProperty">
-            <summary>
-            If set to true, the tree will automatically collapse all nodes
-            that do not need to be expanded in order to display the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItem"/>.
-            </summary>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.AutoCollapsePropertyChanged(System.Windows.DependencyObject,System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            A static callback listener which is being invoked if the
-            <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.AutoCollapseProperty"/> dependency property has
-            been changed. Invokes the <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.OnAutoCollapsePropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)"/>
-            instance method of the changed instance.
-            </summary>
-            <param name="d">The currently processed owner of the property.</param>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.OnAutoCollapsePropertyChanged(System.Windows.DependencyPropertyChangedEventArgs)">
-            <summary>
-            Handles changes of the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.AutoCollapseProperty"/> dependency property. As
-            WPF internally uses the dependency property system and bypasses the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.AutoCollapse"/> property wrapper, updates of the property's value
-            should be handled here.<br/>
-            If set to true, the tree will automatically collapse all nodes
-            that do not need to be expanded in order to display the
-            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItem"/>.
-            </summary>
-            <param name="e">Provides information about the updated property.</param>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.#cctor">
-            <summary>
-            Inits the control's properties and events.
-            </summary>
-        </member>
-        <member name="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Monitor">
-            <summary>
-            Used to track modifications in child collections of rendered
-            items if the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveChildItems"/> dependency
-            property is true.
-            </summary>
-        </member>
-        <member name="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RecursiveNodeList">
-            <summary>
-            Gets an enumerator that provides recursive browsing through
-            all nodes of the tree. Note that this enumerator may not return
-            nodes for all elements in the bound <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> collection
-            if lazy loading is enabled, but traverses the tree's existing
-            nodes (<see cref="T:System.Windows.Controls.TreeViewItem"/> instances).<br/>
-            </summary>
+            <returns>Child collection of the tree or the virtual
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RootNode"/>.</returns>
         </member>
         <member name="E:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemChanged">
             <summary>
@@ -892,6 +870,15 @@
             Important: This feature is only applied if <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.IsLazyLoading"/>
             is true as well.
             </summary>
+        </member>
+        <member name="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveRootItems">
+            <summary>
+            A property wrapper for the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveRootItemsProperty"/>
+            dependency property:<br/>
+            Whether the bound <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> collection should be observed for changes of its contents. Defaults to true.
+            </summary>
+            <remarks>This property only control whether the collection's contents should be observed. A replacement of the
+            <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> collection itself always results in a refresh.</remarks>
         </member>
         <member name="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveChildItems">
             <summary>
@@ -956,6 +943,14 @@
             A collection of <see cref="T:System.ComponentModel.SortDescription"/> objects which is applied
             </summary>
         </member>
+        <member name="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilter">
+            <summary>
+            A property wrapper for the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ItemFilterProperty"/>
+            dependency property:<br/>
+            An optional filter which is being applied in order to limit
+            the number of displayed nodes on all levels.
+            </summary>
+        </member>
         <member name="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectNodesOnRightClick">
             <summary>
             A property wrapper for the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectNodesOnRightClickProperty"/>
@@ -986,20 +981,93 @@
             <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItem"/>.
             </summary>
         </member>
-        <member name="T:Hardcodet.Wpf.GenericTreeView.Properties.Resources">
+        <member name="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Monitor">
             <summary>
-              A strongly-typed resource class, for looking up localized strings, etc.
+            Used to track modifications in child collections of rendered
+            items if the <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.ObserveChildItems"/> dependency
+            property is true.
             </summary>
         </member>
-        <member name="P:Hardcodet.Wpf.GenericTreeView.Properties.Resources.ResourceManager">
+        <member name="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.RecursiveNodeList">
             <summary>
-              Returns the cached ResourceManager instance used by this class.
+            Gets an enumerator that provides recursive browsing through
+            all nodes of the tree. Note that this enumerator may not return
+            nodes for all elements in the bound <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> collection
+            if lazy loading is enabled, but traverses the tree's existing
+            nodes (<see cref="T:System.Windows.Controls.TreeViewItem"/> instances).<br/>
             </summary>
         </member>
-        <member name="P:Hardcodet.Wpf.GenericTreeView.Properties.Resources.Culture">
+        <member name="T:Hardcodet.Wpf.GenericTreeView.RoutedTreeItemEventHandler`1">
             <summary>
-              Overrides the current thread's CurrentUICulture property for all
-              resource lookups using this strongly typed resource class.
+            Event handler signature for the
+            <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemChangedEvent"/>
+            routed event.
+            </summary>
+            <typeparam name="T">The type of the tree's items.</typeparam>
+            <param name="sender">The event source.</param>
+            <param name="e">Provides both new and old processed item.</param>
+        </member>
+        <member name="T:Hardcodet.Wpf.GenericTreeView.RoutedTreeItemEventArgs`1">
+            <summary>
+            Event arguments for the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemChangedEvent"/>
+            routed event.
+            </summary>
+            <typeparam name="T">The type of the tree's items.</typeparam>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.RoutedTreeItemEventArgs`1.#ctor(`0,`0)">
+            <summary>
+            Creates the event args.
+            </summary>
+            <param name="newItem">The selected item, if any.</param>
+            <param name="oldItem">The previously selected item, if any.</param>
+        </member>
+        <member name="P:Hardcodet.Wpf.GenericTreeView.RoutedTreeItemEventArgs`1.NewItem">
+            <summary>
+            The currently selected item that caused the event. If
+            the tree's <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItem"/>
+            property is null, so is this parameter.
+            </summary>
+        </member>
+        <member name="P:Hardcodet.Wpf.GenericTreeView.RoutedTreeItemEventArgs`1.OldItem">
+            <summary>
+            The previously selected item, if any. Might be null
+            if no item was selected before.
+            </summary>
+        </member>
+        <member name="T:Hardcodet.Wpf.GenericTreeView.TreeLayout">
+            <summary>
+            Encapsulates the basic layout (selected / expanded nodes)
+            of a tree control.
+            </summary>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeLayout.selectedItemId">
+            <summary>
+            The ID of the selected item, if any. Defaults to null
+            (no node is selected).
+            </summary>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeLayout.expandedNodeIds">
+            <summary>
+            A list of expanded nodes.
+            </summary>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeLayout.IsNodeExpanded(System.String)">
+            <summary>
+            Checks whether a given node is supposed to be
+            expanded or not.
+            </summary>
+            <param name="nodeId">The ID of the processed node.</param>
+            <returns>True if <paramref name="nodeId"/> is contained
+            in the list of expanded nodes.</returns>
+        </member>
+        <member name="P:Hardcodet.Wpf.GenericTreeView.TreeLayout.SelectedItemId">
+            <summary>
+            The selected group item.
+            </summary>
+        </member>
+        <member name="P:Hardcodet.Wpf.GenericTreeView.TreeLayout.ExpandedNodeIds">
+            <summary>
+            A list of expanded nodes.
             </summary>
         </member>
         <member name="T:Hardcodet.Wpf.GenericTreeView.TreeUtil">
@@ -1043,77 +1111,204 @@
             <returns>An enumerator for the tree's items, starting with the
             submitted <paramref name="nodes"/> collection.</returns>
         </member>
-        <member name="T:Hardcodet.Wpf.GenericTreeView.TreeLayout">
+        <member name="T:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1">
             <summary>
-            Encapsulates the basic layout (selected / expanded nodes)
-            of a tree control.
+            Observes nested items of the tree's bound items, and updates the tree
+            accordingly, if items are being added or removed.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="F:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.childCollections">
+            <summary>
+            Stores the currently observed child collections of
+            monitored parent items, stored by their parent's
+            key.
             </summary>
         </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeLayout.selectedItemId">
+        <member name="F:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.tree">
             <summary>
-            The ID of the selected item, if any. Defaults to null
-            (no node is selected).
+            The tree that renders the observed items.
             </summary>
         </member>
-        <member name="F:Hardcodet.Wpf.GenericTreeView.TreeLayout.expandedNodeIds">
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.#ctor(Hardcodet.Wpf.GenericTreeView.TreeViewBase{`0})">
             <summary>
-            A list of expanded nodes.
+            Creates the monitor with the tree to be processed.
+            </summary>
+            <param name="tree">The tree that renders the monitored
+            items.</param>
+            <exception cref="T:System.ArgumentNullException">If <paramref name="tree"/>
+            is a null reference.</exception>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.UnregisterRootItems(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Removes a change listener for the root collection that has been bound
+            to the tree's <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> dependency property.<br/>
+            <seealso cref="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.RegisterRootItems(System.Collections.Generic.IEnumerable{`0})"/>
+            </summary>
+            <param name="items">A collection of items that have been bound to the
+            tree's <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> dependency property.
+            </param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.RegisterRootItems(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Registers a change listener for the root collection that has been bound
+            to the tree's <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> dependency property.<br/>
+            Picking up changes only works if <paramref name="items"/> implements
+            <see cref="T:System.Collections.Specialized.INotifyCollectionChanged"/>.
+            <seealso cref="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.UnregisterRootItems(System.Collections.Generic.IEnumerable{`0})"/>
+            </summary>
+            <param name="items">A collection of items that have been bound to the
+            tree's <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> dependency property.
+            </param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.OnRootItemCollectionChanged(System.Object,System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
+            <summary>
+            This method is being invoked if the root collection that was bound to the
+            monitored tree's <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.Items"/> property was changed. Just like
+            changes of a nested tree item, this method bubbles the event by invoking the
+            <see cref="E:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.MonitoredCollectionChanged"/> event.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.RegisterItem(System.String,System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Creates a change listener for a given item's
+            child nodes and caches the collection.<br/>
+            This requires the submitted <paramref name="childItems"/>
+            collection to be of type <see cref="T:System.Collections.Specialized.INotifyCollectionChanged"/>.
+            If the collection does not implement this interface, a debug
+            warning is issued without an exception.
+            </summary>
+            <param name="itemKey">The unique key of the parent
+            item, as returned by <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.GetItemKey(`0)"/>.
+            </param>
+            <param name="childItems">The item's childs as returned by
+            <see cref="M:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.GetChildItems(`0)"/>.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.RemoveNodes(System.Windows.Controls.ItemCollection)">
+            <summary>
+            Deregisters event listeners for all nodes.
+            </summary>
+            <param name="treeNodes">A collection of tree
+            nodes to be removed.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.UnregisterListeners(System.Windows.Controls.TreeViewItem)">
+            <summary>
+            Removes listener for an item that is represented
+            by  a given <paramref name="node"/> from the cache, and also
+            processes all the node's descendants recursively.
+            </summary>
+            <param name="node">The node to be removed.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.Clear">
+            <summary>
+            Deregisters the all listeners and clears the cache. Do note however, that
+            deregistering the bound root items requires the <see cref="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.UnregisterRootItems(System.Collections.Generic.IEnumerable{`0})"/>
+            method to be invoked.
             </summary>
         </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.TreeLayout.IsNodeExpanded(System.String)">
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.OnItemCollectionChanged(System.Object,System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
             <summary>
-            Checks whether a given node is supposed to be
-            expanded or not.
-            </summary>
-            <param name="nodeId">The ID of the processed node.</param>
-            <returns>True if <paramref name="nodeId"/> is contained
-            in the list of expanded nodes.</returns>
-        </member>
-        <member name="P:Hardcodet.Wpf.GenericTreeView.TreeLayout.SelectedItemId">
-            <summary>
-            The selected group item.
+            Invokes if one of the observed collections is being changed. Triggers
+            updates of the tree control.
             </summary>
         </member>
-        <member name="P:Hardcodet.Wpf.GenericTreeView.TreeLayout.ExpandedNodeIds">
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.ClearChilds(System.String)">
             <summary>
-            A list of expanded nodes.
+            Removes all childs of a given parent node.
+            </summary>
+            <param name="parentItemKey"></param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.HandleRemovedChildItems(System.Collections.Generic.ICollection{`0},System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
+            <summary>
+            Updates the tree if items were removed from an observed
+            child collection. This might cause rendered tree nodes
+            to be removed. In case lazy loading is enabled, the update
+            of the UI may be as subtle as to remove an expander from
+            a collapsed node if the represented item's childs were
+            removed (or the childs that pass an active filter).<br/>
+            </summary>
+            <param name="observed">The observed collection.</param>
+            <param name="e">The event arguments that provide the
+            removed items.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.HandleNewChildItems(System.Collections.Generic.ICollection{`0},System.Collections.Specialized.NotifyCollectionChangedEventArgs)">
+            <summary>
+            Updates the tree with newly added items.
+            </summary>
+            <param name="observed">The observed collection.</param>
+            <param name="e">Collection event args.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.GetParentNode(`0,System.Collections.Generic.ICollection{`0})">
+            <summary>
+            Gets the tree node that represents the parent
+            of a given item.
+            </summary>
+            <param name="childItem">A currently processed item that
+            contains a parent.</param>
+            <param name="collection">The collection that contains
+            <paramref name="childItem"/>.</param>
+            <returns>The parent tree node (UI control) that reprents the
+            logical parent of <paramref name="childItem"/>.</returns>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.RemoveCollectionFromCache(System.String)">
+            <summary>
+            Removes a given collection from the internal cache
+            and deregisters its event listener.
+            </summary>
+            <param name="itemKey">The item key under which the
+            collection is stored in the cache.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.RemoveCollectionFromCache(System.Collections.Specialized.INotifyCollectionChanged)">
+            <summary>
+            Removes a given collection from the cache. This method is
+            only called if something went wrong and a collection's item
+            cannot be found anymore.
+            </summary>
+            <param name="col">The collection to be removed.</param>
+        </member>
+        <member name="M:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.TryFindParentKey(System.Object)">
+            <summary>
+            Searches the cache for a given collection.
+            </summary>
+            <returns>The key of the parent item that contains the
+            submitted child collection. If no matching entry was found
+            in the cache, a null reference is being returned.</returns>
+        </member>
+        <member name="P:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.ChildCollections">
+            <summary>
+            Gets the currently observed child collections of
+            monitored parent items, stored by their parent's
+            key.
             </summary>
         </member>
-        <member name="T:Hardcodet.Wpf.GenericTreeView.RoutedTreeItemEventHandler`1">
+        <member name="P:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.Tree">
             <summary>
-            Event handler signature for the
-            <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemChangedEvent"/>
-            routed event.
-            </summary>
-            <typeparam name="T">The type of the tree's items.</typeparam>
-            <param name="sender">The event source.</param>
-            <param name="e">Provides both new and old processed item.</param>
-        </member>
-        <member name="T:Hardcodet.Wpf.GenericTreeView.RoutedTreeItemEventArgs`1">
-            <summary>
-            Event arguments for the <see cref="F:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItemChangedEvent"/>
-            routed event.
-            </summary>
-            <typeparam name="T">The type of the tree's items.</typeparam>
-        </member>
-        <member name="M:Hardcodet.Wpf.GenericTreeView.RoutedTreeItemEventArgs`1.#ctor(`0,`0)">
-            <summary>
-            Creates the event args.
-            </summary>
-            <param name="newItem">The selected item, if any.</param>
-            <param name="oldItem">The previously selected item, if any.</param>
-        </member>
-        <member name="P:Hardcodet.Wpf.GenericTreeView.RoutedTreeItemEventArgs`1.NewItem">
-            <summary>
-            The currently selected item that caused the event. If
-            the tree's <see cref="P:Hardcodet.Wpf.GenericTreeView.TreeViewBase`1.SelectedItem"/>
-            property is null, so is this parameter.
+            Gets the tree that renders the observed items.
             </summary>
         </member>
-        <member name="P:Hardcodet.Wpf.GenericTreeView.RoutedTreeItemEventArgs`1.OldItem">
+        <member name="E:Hardcodet.Wpf.GenericTreeView.ItemMonitor`1.MonitoredCollectionChanged">
             <summary>
-            The previously selected item, if any. Might be null
-            if no item was selected before.
+            Bubbles an <see cref="E:System.Collections.Specialized.INotifyCollectionChanged.CollectionChanged"/>
+            event of one of the observed collections. The sender is the
+            changed collection.
+            </summary>
+        </member>
+        <member name="T:Hardcodet.Wpf.GenericTreeView.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Hardcodet.Wpf.GenericTreeView.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Hardcodet.Wpf.GenericTreeView.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
             </summary>
         </member>
     </members>

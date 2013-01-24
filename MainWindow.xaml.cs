@@ -1,51 +1,53 @@
-﻿namespace SampleSMA
-{
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.IO;
-    using System.Linq;
-    using System.Threading;
-    using System.Windows;
-    using System.Windows.Forms;
-    using AmCharts.Windows.Stock;
-    using Ecng.Collections;
-    using Ecng.Common;
-    using Ecng.ComponentModel;
-    using Ecng.Serialization;
-    using Ecng.Xaml;
-    using StockSharp.Algo.Candles;
-    using StockSharp.Algo.Indicators;
-    using StockSharp.Algo.Indicators.Trend;
-    using StockSharp.Algo.Logging;
-    using StockSharp.Algo.Reporting;
-    using StockSharp.Algo.Storages;
-    using StockSharp.Algo.Strategies;
-    using StockSharp.Algo.Testing;
-    using StockSharp.BusinessEntities;
-    using StockSharp.Quik;
-    using StockSharp.Xaml;
-    using MessageBox = System.Windows.MessageBox;
-    using System.Configuration;
-    using SampleSMA.Logging;
+﻿using Ecng.Collections;
+using Ecng.Common;
+using Ecng.Xaml;
+using SampleSMA.Logging;
+using StockSharp.Algo;
+using StockSharp.Algo.Candles;
+using StockSharp.Algo.Candles.Compression;
+using StockSharp.Algo.Indicators;
+using StockSharp.Algo.Indicators.Trend;
+using StockSharp.Algo.Storages;
+using StockSharp.Algo.Testing;
+using StockSharp.BusinessEntities;
+using StockSharp.Logging;
+using StockSharp.Quik;
+using StockSharp.Xaml;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Windows;
+using System.Windows.Forms;
+using MessageBox = System.Windows.MessageBox;
 
+namespace SampleSMA
+{
 	public partial class MainWindow
 	{
-		private readonly TimeSpan _timeFrame = TimeSpan.FromMinutes(5);
+		private readonly TimeSpan _timeFrame = TimeSpan.FromMinutes(10);
 		private ITrader _trader;
         private EMAEventModelStrategy _strategy;
-		private bool _isDdeStarted;
 		private CandleManager _candleManager;
 		private Security _security;
 
-        private int _filterMAPeriod = 90;
-        private int _longMAPeriod = 13;
+        private int _filterMAPeriod = 84;
+        private int _longMAPeriod = 12;
         private int _shortMAPeriod = 9;
 
         private LogManager _logManager = new LogManager();
-        private SimpleLogSource _log = new SimpleLogSource() { Name="Main App" };
+        private SimpleLogSource _log = new SimpleLogSource() { Name = "Main App" };
+
+        private readonly ChartArea _area;
+        private ChartCandleElement _candlesElem;
+        private ChartIndicatorElement _longMaElem;
+        private ChartIndicatorElement _shortMaElem;
+        private ChartIndicatorElement _filterMaElem;
 
 		public MainWindow()
 		{
@@ -60,81 +62,151 @@
             // попробовать сразу найти месторасположение Quik по запущенному процессу
             this.Path.Text = QuikTerminal.GetDefaultPath();
 
+            _area = new ChartArea();
+            _chart.Areas.Add(_area);
+
             _logManager.Sources.Add(_log);
-            _logManager.Listeners.Add(new GuiLogListener(_monitor));
+            _logManager.Listeners.Add(new GuiLogListener(Monitor));
             _logManager.Listeners.Add(new EmailUnitedLogListener());
             _logManager.Listeners.Add(new JabberLogListener());
 		}
 
         #region Main Event Handlers
 
-        private void Start_Click(object sender, RoutedEventArgs e)
+        private void OnConnectClick(object sender, RoutedEventArgs e)
         {
-            if (_strategy == null)
+            if (_trader != null)
             {
-                if (this.Portfolios.SelectedPortfolio == null)
+                if (_trader.IsConnected)
                 {
-                    MessageBox.Show(this, "Портфель не выбран.");
-                    return;
+                    _trader.Disconnect();
                 }
-
-                _strategy = new EMAEventModelStrategy(_candleManager,
-                    new ExponentialMovingAverage { Length = this._filterMAPeriod },
-                    new ExponentialMovingAverage { Length = this._longMAPeriod }, 
-                    new ExponentialMovingAverage { Length = this._shortMAPeriod })
-                {
-                    Volume = this.Volume,
-                    Security = _security,
-                    Portfolio = this.Portfolios.SelectedPortfolio,
-                    Trader = _trader,
-                };
-
-                // draw MAs based on latest strategy data
-                _strategy.CandleProcessed += (candle) => DrawSmaLines(_strategy, candle.Time);
-
-                _strategy.NewOrder += OnNewOrder;
-                _strategy.PropertyChanged += OnStrategyPropertyChanged;
-                _strategy.NewMyTrades += OnNewTrades;
-
-                _logManager.Sources.Add(_strategy);
-
-                this.ClearChart();
-
-                // load & draw history candles
-                TimeFrameCandle[] historyCandles = GetHistoryCandlesFromFile(_security, _timeFrame);
-                if (historyCandles != null)
-                {
-                    _strategy.RemoveStartFootprint(historyCandles[0]);
-
-                    DrawCandles(historyCandles);
-                    CalculateAndDrawMAs(historyCandles);
-                }
-
-                // регистрируем наш тайм-фрейм
-                _candleManager.RegisterTimeFrameCandles(_security, _timeFrame);
-
-                this.Report.IsEnabled = true;
+                
+                _trader.Dispose();
             }
 
-            if (_strategy.ProcessState == ProcessStates.Stopped)
+            if (this.Path.Text.IsEmpty())
             {
-                // запускаем процесс получения стакана, необходимый для работы алгоритма котирования
-                _trader.RegisterQuotes(_strategy.Security);
-                _strategy.Start();
-                this.Start.Content = "Стоп";
+                MessageBox.Show(this, "Путь к Quik не выбран.");
+                return;
+            }
+
+            // Initialize Trader
+            if (rbFightMode.IsChecked != null && rbFightMode.IsChecked.Value)
+            {
+                _trader = new QuikTrader(this.Path.Text);
             }
             else
             {
-                _trader.UnRegisterQuotes(_strategy.Security);
-                _strategy.Stop();
-                this.Start.Content = "Старт";
+                _trader = new RealTimeEmulationTrader<QuikTrader>(new QuikTrader(this.Path.Text));
             }
+
+            // Connect trader with portoflio
+            this.Portfolios.Trader = _trader;
+
+            _trader.Connected += () =>
+            {
+                _trader.NewSecurities += securities => this.GuiAsync(() =>
+                {
+                    // находим нужную бумагу
+                    var security = securities.FirstOrDefault(s => s.Code.Equals(this.txtSecurityCode.Text, StringComparison.InvariantCultureIgnoreCase));
+
+                    if (security != null)
+                    {
+                        _security = security;
+
+                        this.GuiAsync(() =>
+                        {
+                            this.Start.IsEnabled = true;
+                        });
+                    }
+                    else
+                    {
+                        this._log.AddLog(new LogMessage(this._log, DateTime.Now, LogLevels.Error, "Mentioned security {0} can't be found in terminal.", this.txtSecurityCode.Text));
+                    }
+                });
+
+                this.GuiAsync(() =>
+                {
+                    rbFightMode.IsEnabled = false;
+                    rbTrainingMode.IsEnabled = false;
+
+                    this.ConnectBtn.IsEnabled = false;
+                });
+
+                _trader.StartExport();
+            };
+
+            _trader.ConnectionError += ex =>
+            {
+                if (ex != null)
+                {
+                    this._log.AddLog(new LogMessage(this._log, DateTime.Now, LogLevels.Error, ex.Message));
+                }
+            };
+
+            _trader.Connect();
         }
 
-        private void btnHistoryStart_Click(object sender, RoutedEventArgs e)
+        private void OnStartClick(object sender, RoutedEventArgs e)
         {
-            this.ClearChart();
-            this.ClearGrids();
+            if (_strategy != null && _strategy.ProcessState != ProcessStates.Stopped)
+            {
+                _strategy.Stop();
+                this.Start.Content = "Старт";
+                return;
+            }
+
+            if (this.Portfolios.SelectedPortfolio == null)
+            {
+                MessageBox.Show(this, "Портфель не выбран.");
+                return;
+            }
+
+            this.InitGrids();
+
+            _candleManager = new CandleManager(_trader);
+            _candleManager.Processing += (candleSeries, candle) => ProcessCandle(candle);
+
+            // Добавление в источник свечек TimeFrameCandleBuilder источник данных в виде файлов гидры
+            var storageRegistry = new StorageRegistry();
+            ((LocalMarketDataDrive)storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
+
+            var cbs = new TradeStorageCandleBuilderSource { StorageRegistry = storageRegistry };
+            _candleManager.Sources.OfType<TimeFrameCandleBuilder>().Single().Sources.Add(cbs);
+
+            // регистрируем наш тайм-фрейм
+            var series = new CandleSeries(typeof(TimeFrameCandle), _security, _timeFrame);
+
+            _strategy = new EMAEventModelStrategy(series,
+                new ExponentialMovingAverage { Length = this._filterMAPeriod },
+                new ExponentialMovingAverage { Length = this._longMAPeriod }, 
+                new ExponentialMovingAverage { Length = this._shortMAPeriod })
+            {
+                Volume = this.Volume,
+                Security = _security,
+                Portfolio = this.Portfolios.SelectedPortfolio,
+                Trader = _trader,
+            };
+
+            this.InitChart();
+            _candleManager.Start(series, DateTime.Now.AddDays(-3), DateTime.MaxValue);
+
+            _strategy.OrderRegistered += OnOrderRegistered;
+            _strategy.PropertyChanged += OnStrategyPropertyChanged;
+            _strategy.NewMyTrades += OnNewTrades;
+
+            _logManager.Sources.Add(_strategy);
+
+            // запускаем процесс получения стакана, необходимый для работы алгоритма котирования
+            //_trader.RegisterMarketDepth(_strategy.Security);
+            _strategy.Start();
+            this.Start.Content = "Стоп";
+        }
+
+        private void OnHistoryStartClick(object sender, RoutedEventArgs e)
+        {
+            this.InitGrids();
 
             // создаем тестовый инструмент, на котором будет производится тестирование
             var security = new Security
@@ -147,12 +219,10 @@
                 Exchange = Exchange.Rts,
             };
 
-            var storage = new TradingStorage(new InMemoryStorage())
-            {
-                BasePath = this.txtHistoryPath.Text
-            };
+            var storageRegistry = new StorageRegistry();
+            ((LocalMarketDataDrive)storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
 
-            var portfolio = new Portfolio { Name = "test account", BeginAmount = 30000m };
+            var portfolio = new Portfolio { Name = "test account", BeginValue = 30000m };
 
             DateTime startTime;
             DateTime stopTime;
@@ -169,41 +239,40 @@
                 txtHistoryRangeBegin.Text = startTime.ToString();
             }
 
-            EMAStrategyOptimizer optimizer = new EMAStrategyOptimizer(security, storage, portfolio, startTime, stopTime)
+            EMAStrategyOptimizer optimizer = new EMAStrategyOptimizer(security, storageRegistry, portfolio, startTime, stopTime)
             {
                 Volume = this.Volume,
                 Log = _log
             };
 
-            EmulationTrader trader = optimizer.GetOptTraderContext(this._filterMAPeriod, this._longMAPeriod, this._shortMAPeriod, new ManualResetEvent(false));
-            EMAEventModelStrategy strategy = optimizer.Strategies[0];
+            _trader = optimizer.GetOptTraderContext(this._filterMAPeriod, this._longMAPeriod, this._shortMAPeriod, new ManualResetEvent(false));
+            _strategy = optimizer.Strategies[0];
 
-            strategy.CandleProcessed += (candle) => DrawSmaLines(strategy, candle.Time);
-            strategy.NewOrder += OnNewOrder;
-            strategy.CandleManager.CandlesFinished += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
-            //strategy.PropertyChanged += OnStrategyPropertyChanged;
-            strategy.NewMyTrades += OnNewTrades;
+            this.InitChart();
 
-            _logManager.Sources.Add(strategy);
+            _strategy.OrderRegistered += OnOrderRegistered;
+            _strategy.NewMyTrades += OnNewTrades;
+
+            _logManager.Sources.Add(_strategy);
 
             int lastUpdateHour = 0;
-            trader.MarketTimeChanged += () =>
+            _trader.MarketTimeChanged += span =>
             {
                 // в целях оптимизации обновляем ProgressBar и Stat только при начале нового часа
-                if (trader.MarketTime.Hour != lastUpdateHour || trader.MarketTime >= stopTime)
+                if (_trader.CurrentTime.Hour != lastUpdateHour || _trader.CurrentTime >= stopTime)
                 {
-                    lastUpdateHour = trader.MarketTime.Hour;
+                    lastUpdateHour = _trader.CurrentTime.Hour;
 
-                    UpdateStrategyStat(strategy);
-                    this.GuiAsync(() => this.pbHistoryTestProgress.Value = (trader.MarketTime - startTime).TotalMinutes);
+                    UpdateStrategyStat(_strategy);
+                    this.GuiAsync(() => this.pbHistoryTestProgress.Value = (_trader.CurrentTime - startTime).TotalMinutes);
                 }
             };
 
             Stopwatch sw = new Stopwatch();
 
-            trader.StateChanged += () =>
+            ((EmulationTrader)_trader).StateChanged += (states, emulationStates) =>
             {
-                if (trader.State == EmulationStates.Stopped)
+                if (((EmulationTrader)_trader).State == EmulationStates.Stopped)
                 {
                     sw.Stop();
 
@@ -212,18 +281,20 @@
                         btnHistoryStart.IsEnabled = true;
 
                         // Update strategy stat panel
-                        this.UpdateStrategyStat(strategy);
+                        this.UpdateStrategyStat(_strategy);
 
-                        _log.AddLog(new LogMessage(_log, DateTime.Now, ErrorTypes.Warning,
+                        _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Info,
                             String.Format("History testing done ({0}). Result: {1}, {2}, {3}. PnL: {4} ",
                                 sw.Elapsed,
-                                strategy.FilterMA.Length, 
-                                strategy.LongMA.Length, 
-                                strategy.ShortMA.Length, 
-                                strategy.PnLManager.PnL)));
+                                _strategy.FilterMA.Length,
+                                _strategy.LongMA.Length,
+                                _strategy.ShortMA.Length,
+                                _strategy.PnLManager.PnL)));
                     });
+
+                    _strategy.CandleSeries.GetCandles<TimeFrameCandle>().ForEach(ProcessCandle);
                 }
-                else if (trader.State == EmulationStates.Started)
+                else if (((EmulationTrader)_trader).State == EmulationStates.Started)
                 {
                     sw.Start();
 
@@ -237,198 +308,133 @@
             // устанавливаем в визуальный элемент ProgressBar максимальное количество итераций)
             this.pbHistoryTestProgress.Maximum = (stopTime - startTime).TotalMinutes;
             this.pbHistoryTestProgress.Value = 0;
-            this.Report.IsEnabled = true;
 
             // соединяемся с трейдером и запускаем экспорт,
             // чтобы инициализировать переданными инструментами и портфелями необходимые свойства EmulationTrader
-            trader.Connect();
-            trader.StartExport();
+            _trader.Connect();
+            _trader.StartExport();
 
             // запускаем эмуляцию, задавая период тестирования (startTime, stopTime).
-            trader.Start(startTime, stopTime);
+            ((EmulationTrader)_trader).Start(startTime, stopTime);
         }
 
-        private void btnOptimize_Click(object sender, RoutedEventArgs e)
-        {
-            this.GuiAsync(() =>
-            {
-                btnOptimize.IsEnabled = false;
-            });
+        //private void btnOptimize_Click(object sender, RoutedEventArgs e)
+        //{
+        //    this.GuiAsync(() =>
+        //    {
+        //        btnOptimize.IsEnabled = false;
+        //    });
 
-            // создаем тестовый инструмент, на котором будет производится тестирование
-            var security = new Security
-            {
-                Id = this.txtSecurityId.Text, // по идентификатору инструмента будет искаться папка с историческими маркет данными
-                Code = this.txtSecurityCode.Text,
-                Name = this.txtSecurityCode.Text,
-                MinStepSize = 1,
-                MinStepPrice = 1,
-                Exchange = Exchange.Rts,
-            };
+        //    // создаем тестовый инструмент, на котором будет производится тестирование
+        //    var security = new Security
+        //    {
+        //        Id = this.txtSecurityId.Text, // по идентификатору инструмента будет искаться папка с историческими маркет данными
+        //        Code = this.txtSecurityCode.Text,
+        //        Name = this.txtSecurityCode.Text,
+        //        MinStepSize = 1,
+        //        MinStepPrice = 1,
+        //        Exchange = Exchange.Rts,
+        //    };
 
-            var storage = new TradingStorage(new InMemoryStorage())
-            {
-                BasePath = this.txtHistoryPath.Text
-            };
+        //    var storageRegistry = new StorageRegistry();
+        //    ((LocalMarketDataDrive)storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
 
-            var portfolio = new Portfolio { Name = "test account", BeginAmount = 30000m };
+        //    var portfolio = new Portfolio { Name = "test account", BeginValue = 30000m };
 
-            DateTime startTime;
-            DateTime stopTime;
+        //    DateTime startTime;
+        //    DateTime stopTime;
 
-            if (!DateTime.TryParse(txtHistoryRangeEnd.Text, out stopTime))
-            {
-                stopTime = DateTime.Now;
-                txtHistoryRangeEnd.Text = stopTime.ToString();
-            }
+        //    if (!DateTime.TryParse(txtHistoryRangeEnd.Text, out stopTime))
+        //    {
+        //        stopTime = DateTime.Now;
+        //        txtHistoryRangeEnd.Text = stopTime.ToString();
+        //    }
 
-            if (!DateTime.TryParse(txtHistoryRangeBegin.Text, out startTime))
-            {
-                startTime = stopTime.AddDays(-3);
-                txtHistoryRangeBegin.Text = startTime.ToString();
-            }
+        //    if (!DateTime.TryParse(txtHistoryRangeBegin.Text, out startTime))
+        //    {
+        //        startTime = stopTime.AddDays(-3);
+        //        txtHistoryRangeBegin.Text = startTime.ToString();
+        //    }
 
-            Stopwatch sw = new Stopwatch();
+        //    Stopwatch sw = new Stopwatch();
 
-            EMAStrategyOptimizer optimizer = new EMAStrategyOptimizer(security, storage, portfolio, startTime, stopTime)
-                {
-                    Volume = this.Volume,
-                    Log = _log
-                };
+        //    EMAStrategyOptimizer optimizer = new EMAStrategyOptimizer(security, storageRegistry, portfolio, startTime, stopTime)
+        //        {
+        //            Volume = this.Volume,
+        //            Log = _log
+        //        };
 
-            optimizer.StateChanged += () =>
-            {
-                if (optimizer.State == OptimizationState.Finished)
-                {
-                    sw.Stop();
+        //    optimizer.StateChanged += () =>
+        //    {
+        //        if (optimizer.State == OptimizationState.Finished)
+        //        {
+        //            sw.Stop();
 
-                    _log.AddLog(new LogMessage(_log, DateTime.Now, ErrorTypes.Warning, String.Format("Opt done ({0}). The best startegy: {1}, {2}, {3} PnL: {4}",
-                        sw.Elapsed,
-                        optimizer.BestStrategy.FilterMA.Length,
-                        optimizer.BestStrategy.LongMA.Length, optimizer.BestStrategy.ShortMA.Length,
-                        optimizer.BestStrategy.PnLManager.PnL)));
+        //            _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Info, String.Format("Opt done ({0}). The best startegy: {1}, {2}, {3} PnL: {4}",
+        //                sw.Elapsed,
+        //                optimizer.BestStrategy.FilterMA.Length,
+        //                optimizer.BestStrategy.LongMA.Length, optimizer.BestStrategy.ShortMA.Length,
+        //                optimizer.BestStrategy.PnLManager.PnL)));
 
-                    this.GuiAsync(() =>
-                    {
-                        btnOptimize.IsEnabled = true;
-                    });
-                }
-            };
+        //            this.GuiAsync(() =>
+        //            {
+        //                btnOptimize.IsEnabled = true;
+        //            });
+        //        }
+        //    };
 
-            sw.Start();
-            optimizer.Optimize();
-        }
-
-        #endregion
-
-        #region Service Event Handlers
-
-        private void Connect_Click(object sender, RoutedEventArgs e)
-        {
-            if (_trader == null || !_trader.IsConnected)
-            {
-                if (_trader == null)
-                {
-                    if (this.Path.Text.IsEmpty())
-                    {
-                        MessageBox.Show(this, "Путь к Quik не выбран.");
-                        return;
-                    }
-
-                    // создаем шлюз
-                    if (rbFightMode.IsChecked.Value)
-                    {
-                        _trader = new QuikTrader(this.Path.Text);
-                    }
-                    else
-                    {
-                        _trader = new RealTimeEmulationTrader<QuikTrader>(new QuikTrader(this.Path.Text));
-                    }
-
-                    // Connect trader with portoflio
-                    this.Portfolios.Trader = _trader;
-
-                    _trader.Connected += () =>
-                    {
-                        // Create main candle manager
-                        _candleManager = new CandleManager(_trader);
-
-                        _trader.NewSecurities += securities => this.GuiAsync(() =>
-                        {
-                            // находим нужную бумагу
-                            var security = securities.FirstOrDefault(s => s.Code == this.txtSecurityCode.Text);
-
-                            if (security != null)
-                            {
-                                _security = security;
-
-                                this.Start.IsEnabled = true;
-                            }
-                        });
-
-                        _candleManager.CandlesStarted += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
-                        _candleManager.CandlesChanged += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
-                        _candleManager.CandlesFinished += (token, candles) => DrawCandles(candles.Cast<TimeFrameCandle>());
-
-                        _trader.ConnectionError += ex =>
-                        {
-                            if (ex != null)
-                            {
-                                this._log.AddLog(new LogMessage(this._log, DateTime.Now, ErrorTypes.Error, ex.Message));
-                            }
-                        };
-
-                        this.GuiAsync(() =>
-                        {
-                            rbFightMode.IsEnabled = false;
-                            rbTrainingMode.IsEnabled = false;
-
-                            this.ConnectBtn.IsEnabled = false;
-                            this.Report.IsEnabled = true;
-                        });
-                    };
-                }
-
-                _trader.Connect();
-
-                this.StartDde();
-            }
-            else
-                _trader.Disconnect();
-        }
-
-        private void Report_Click(object sender, RoutedEventArgs e)
-        {
-            new ExcelStrategyReport(_strategy, "sma.xlsx").Generate();
-        }
+        //    sw.Start();
+        //    optimizer.Optimize();
+        //}
 
         #endregion
 
         #region Draw candles and indicators
 
-        private void DrawCandles(IEnumerable<TimeFrameCandle> candles)
+        private void InitChart()
         {
-            this.GuiAsync(() => _candleChart.AddCandles(candles));
-        }
-        private void DrawSmaLines(EMAEventModelStrategy strategy, DateTime time)
-        {
-            this.GuiSync(() =>
+            _area.Elements.Clear();
+
+            _candlesElem = new ChartCandleElement();
+            _area.Elements.Add(_candlesElem);
+
+            _longMaElem = new ChartIndicatorElement
             {
-                _candleChart.AddFilterMA(time, (double)strategy.FilterMA.LastValue);
-                _candleChart.AddLongMA(time, (double)strategy.LongMA.LastValue);
-                _candleChart.AddShortMA(time, (double)strategy.ShortMA.LastValue);
-            });
+                Title = "LongMA",
+                Indicator = _strategy.LongMA,
+            };
+            _area.Elements.Add(_longMaElem);
+
+            _shortMaElem = new ChartIndicatorElement
+            {
+                Title = "ShortMA",
+                Indicator = _strategy.ShortMA,
+            };
+            _area.Elements.Add(_shortMaElem);
+
+            _filterMaElem = new ChartIndicatorElement
+            {
+                Title = "FilterMA",
+                Indicator = _strategy.FilterMA,
+            };
+            _area.Elements.Add(_filterMaElem);
         }
 
-        private void CalculateAndDrawMAs(IEnumerable<TimeFrameCandle> candles)
+        private void ProcessCandle(Candle candle)
         {
-            foreach (var candle in candles)
+            if (candle.State == CandleStates.Finished)
             {
-                _strategy.FilterMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-                _strategy.LongMA.Process((DecimalIndicatorValue)candle.ClosePrice);
-                _strategy.ShortMA.Process((DecimalIndicatorValue)candle.ClosePrice);
+                var longValue = candle.State == CandleStates.Finished ? new ChartIndicatorValue(_strategy.LongMA, _strategy.LongMA.Process(candle)) : null;
+                var shortValue = candle.State == CandleStates.Finished ? new ChartIndicatorValue(_strategy.ShortMA, _strategy.ShortMA.Process(candle)) : null;
+                var filterValue = candle.State == CandleStates.Finished ? new ChartIndicatorValue(_strategy.FilterMA, _strategy.FilterMA.Process(candle)) : null;
 
-                DrawSmaLines(_strategy, candle.Time);
+                this.GuiAsync(() => _chart.ProcessValues(candle.OpenTime, new Dictionary<IChartElement, object>
+                {
+                    {_candlesElem, candle},
+                    {_longMaElem, longValue},
+                    {_shortMaElem, shortValue},
+                    {_filterMaElem, filterValue}
+                }));
             }
         }
 
@@ -483,21 +489,22 @@
                 this.PnL.Content = strategy.PnLManager.PnL;
                 this.Slippage.Content = strategy.SlippageManager.Slippage;
                 this.Position.Content = strategy.PositionManager.Position;
-                this.Latency.Content = strategy.LatencyManager.Latency;
+                this.Latency.Content = strategy.LatencyManager.LatencyRegistration;
             });
 
             this._log.AddLog(
-                new ExtendedLogMessage(this._log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
-                    "Stat Changed. State: {0}, PnL: {1} {2}, Slippage: {3}, Position: {4}, Latency: {5}",
+                new LogMessage(this._log, DateTime.Now, LogLevels.Info,
+                    "Stat Changed. State: {0}, PnL: {1} {2}, Slippage: {3}, Position: {4}, LatencyRegistration: {5}, LatencyCancellation: {6}",
                     strategy.ProcessState,
                     strategy.PnLManager.PnL,
                     (strategy.PnLManager.PnL < 0) ? ":(" : ":)",
                     strategy.SlippageManager.Slippage,
                     strategy.PositionManager.Position,
-                    strategy.LatencyManager.Latency));
+                    strategy.LatencyManager.LatencyRegistration,
+                    strategy.LatencyManager.LatencyCancellation));
         }
 
-        private void OnNewOrder(Order order)
+        private void OnOrderRegistered(Order order)
         {
             OrdersGrid.Orders.Add(order);
         }
@@ -508,7 +515,7 @@
 
             var newTradeLogMessage = "I've {0} {1} futures contracts at {2}";
             trades.ForEach(t => this._log.AddLog(
-                new ExtendedLogMessage(this._log, DateTime.Now, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
+                new LogMessage(this._log, DateTime.Now, LogLevels.Info,
                     newTradeLogMessage,
                     (t.Order.Direction == OrderDirections.Buy) ? "bought" : "sold",
                     t.Trade.Volume,
@@ -519,8 +526,10 @@
         {
             if (_trader != null)
             {
-                if (_isDdeStarted)
-                    StopDde();
+                if (_trader.IsExportStarted)
+                {
+                    _trader.StopExport();
+                }
 
                 _trader.Dispose();
             }
@@ -532,67 +541,16 @@
 
         #region Helpers
 
-        private void ClearChart()
-        {
-            _candleChart.Clear();
-        }
-
-        private void ClearGrids()
+        private void InitGrids()
         {
             OrdersGrid.Orders.Clear();
             TradesGrid.Trades.Clear();
         }
 
-        private void StartDde()
-        {
-            _trader.StartExport();
-            _isDdeStarted = true;
-        }
-
-        private void StopDde()
-        {
-            _trader.StopExport();
-            _isDdeStarted = false;
-        }
-
         private void SetDefaultHistoryRange()
         {
-            DateTime d = DateTime.Now.AddDays(-1);
-
-            txtHistoryRangeBegin.Text = (d.Date + Exchange.Rts.WorkingTime.Times[0].Min).ToString("g");
-            txtHistoryRangeEnd.Text = (d.Date + Exchange.Rts.WorkingTime.Times[2].Max).ToString("g");
-
-            txtHistoryRangeBegin.Text = "05.01.2012 10:00";
-            txtHistoryRangeEnd.Text = "05.01.2012 23:45";
-        }
-
-        private static TimeFrameCandle[] GetHistoryCandlesFromFile(Security security, TimeSpan timeFrame)
-        {
-            var historyFilePath = String.Format("{0}.txt", security.Code);
-
-            if (File.Exists(historyFilePath))
-            {
-                var candles = File.ReadAllLines(historyFilePath).Select(line =>
-                {
-                    var parts = line.Split(',');
-                    var time = DateTime.ParseExact(parts[0] + parts[1], "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-                    return new TimeFrameCandle
-                    {
-                        OpenPrice = parts[2].To<decimal>(),
-                        HighPrice = parts[3].To<decimal>(),
-                        LowPrice = parts[4].To<decimal>(),
-                        ClosePrice = parts[5].To<decimal>(),
-                        TimeFrame = timeFrame,
-                        Time = time,
-                        TotalVolume = parts[6].To<int>()/100,
-                        Security = security,
-                    };
-                }).ToArray();
-
-                return candles;
-            }
-
-            return null;
+            txtHistoryRangeBegin.Text = (DateTime.Now.AddDays(-5).Date + Exchange.Rts.WorkingTime.Times[0].Min).ToString("g");
+            txtHistoryRangeEnd.Text = (DateTime.Now.Date + Exchange.Rts.WorkingTime.Times[2].Max).ToString("g");
         }
 
         #endregion

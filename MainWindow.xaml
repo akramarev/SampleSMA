@@ -1,8 +1,7 @@
 ﻿<Window x:Class="SampleSMA.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:EcngTradingXaml="clr-namespace:StockSharp.Xaml;assembly=StockSharp.Xaml"
-    xmlns:IndicatorsXaml="clr-namespace:IndicatorsXaml"
+    xmlns:SX="clr-namespace:StockSharp.Xaml;assembly=StockSharp.Xaml"
     Title="Скользящие Средние" Height="768" Width="1000">
 
     <Grid Margin="1,0,1,1">
@@ -15,8 +14,7 @@
             <ColumnDefinition Width="552" />
         </Grid.ColumnDefinitions>
 
-        <!--<EcngTradingXaml:CandleChart x:Name="_chart" Margin="0,4,0,-4" />-->
-        <IndicatorsXaml:CandleChart x:Name="_candleChart" Margin="0,0,5,5"/>
+        <SX:Chart x:Name="_chart" Margin="0,0,5,5"/>
 
         <Grid Grid.Column="1" Margin="275,47,0,0" Height="165" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
@@ -46,9 +44,9 @@
             </Grid.RowDefinitions>
             <TextBox x:Name="Path" Text="C:\Trading\FinamJunior" Grid.Row="2" />
             <Button x:Name="FindPath" Grid.Column="1" Grid.Row="2" Content="..." Width="25" HorizontalAlignment="Left" Click="FindPath_Click" />
-            <EcngTradingXaml:PortfolioComboBox x:Name="Portfolios" Grid.Row="15" Margin="106,4,0,2" />
-            <Button x:Name="ConnectBtn" Width="100" Content="Подключиться" Click="Connect_Click" Margin="0,4,152,2" Grid.Row="15" />
-            <Button x:Name="Start" Width="100" IsEnabled="False" Content="Старт" Click="Start_Click" Margin="0,5,0,0" Height="33" VerticalAlignment="Top" Grid.Row="17" HorizontalAlignment="Left" />
+            <SX:PortfolioComboBox x:Name="Portfolios" Grid.Row="15" Margin="106,4,0,2" />
+            <Button x:Name="ConnectBtn" Width="100" Content="Подключиться" Click="OnConnectClick" Margin="0,4,152,2" Grid.Row="15" />
+            <Button x:Name="Start" Width="100" IsEnabled="False" Content="Старт" Click="OnStartClick" Margin="0,5,0,0" Height="33" VerticalAlignment="Top" Grid.Row="17" HorizontalAlignment="Left" />
             <RadioButton Content="Training Mode" Grid.Row="3" Height="16" HorizontalAlignment="Left" Name="rbTrainingMode" VerticalAlignment="Top" Width="100" IsChecked="True" GroupName="TradingModeRbGroup" Margin="1,3,0,0" />
             <RadioButton Content="Fight Mode" Grid.Row="3" Height="16" HorizontalAlignment="Left" Margin="106,3,0,0" Name="rbFightMode" VerticalAlignment="Top" Width="100" GroupName="TradingModeRbGroup" />
         </Grid>
@@ -64,13 +62,14 @@
                 <ColumnDefinition Width="244" />
                 <ColumnDefinition Width="25*" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="btnHistoryStart" Grid.Row="2" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Width="53" Content="Старт" Click="btnHistoryStart_Click" Margin="191,4,0,0" />
-            <TextBox Height="23" HorizontalAlignment="Left" Name="txtHistoryPath" VerticalAlignment="Top" Width="244" Text="Z:\Documents\Trading\StockSharp\History Data" />
+            <Button x:Name="btnHistoryStart" Grid.Row="2" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Width="53" Content="Старт" Click="OnHistoryStartClick" Margin="191,4,0,0" />
+            <TextBox Height="23" HorizontalAlignment="Left" Name="txtHistoryPath" VerticalAlignment="Top" Width="244" Text="X:\StockSharp\History" />
             <Button Content="..." Grid.Column="1" Name="btnFindHistoryPath" VerticalAlignment="Top" Click="btnFindHistoryPath_Click" Margin="0,1,0,0" Width="25" />
             <ProgressBar Grid.Row="1" Height="22" HorizontalAlignment="Left" Name="pbHistoryTestProgress" VerticalAlignment="Top" Width="244" />
             <TextBox Grid.Row="2" HorizontalAlignment="Left" Name="txtHistoryRangeBegin" VerticalAlignment="Top" Width="88" Margin="0,4,0,0" />
             <TextBox Grid.Row="2" HorizontalAlignment="Right" Name="txtHistoryRangeEnd" VerticalAlignment="Top" Width="91" Margin="0,4,59,0" />
-            <Button Content="Optimize" Grid.Row="4" Height="33" Margin="0,5,0,0" Name="btnOptimize" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100" Click="btnOptimize_Click" />
+            <!--<Button Content="Optimize" Grid.Row="4" Height="33" Margin="0,5,0,0" Name="btnOptimize" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100" Click="btnOptimize_Click" />-->
+            <Button Content="Optimize" Grid.Row="4" Height="33" Margin="0,5,0,0" Name="btnOptimize" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100" />
         </Grid>
         <Grid Name="grid3" Height="61" VerticalAlignment="Top" Margin="0,215,0,0" HorizontalAlignment="Right" Width="552" Grid.Column="1">
             <Grid.RowDefinitions>
@@ -100,18 +99,17 @@
             <Label Grid.Row="1" Content="Поза:" Margin="0,0,0,3" Grid.Column="1" />
             <Label x:Name="Latency" Grid.Row="1" Margin="0,3,0,0" Grid.Column="8" Content="00:00:00.00" />
             <Label Grid.Row="1" Content="Задержка:" Margin="0,3,0,0" Grid.Column="7" HorizontalAlignment="Left" Width="72" />
-            <Button x:Name="Report" Grid.Column="4" IsEnabled="False" Content="Отчет" Click="Report_Click" Margin="0,4,0,3" Grid.Row="1" Grid.ColumnSpan="2" />
         </Grid>
         <Grid Height="27" HorizontalAlignment="Left" Margin="141,4,0,0" Name="grid4" VerticalAlignment="Top" Grid.Column="1" Width="260">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TextBox Height="23" HorizontalAlignment="Left" Margin="8,4,0,0" Name="txtSecurityId" VerticalAlignment="Top" Width="120" Text="SRH2@RTS" />
-            <TextBox Grid.Column="1" Height="23" HorizontalAlignment="Left" Name="txtSecurityCode" VerticalAlignment="Top" Width="120" Text="SRH2" Margin="0,4,0,0" />
+            <TextBox Height="23" HorizontalAlignment="Left" Margin="8,4,0,0" Name="txtSecurityId" VerticalAlignment="Top" Width="120" Text="SiH3@RTS" />
+            <TextBox Grid.Column="1" Height="23" HorizontalAlignment="Left" Name="txtSecurityCode" VerticalAlignment="Top" Width="120" Text="SiH3" Margin="0,4,0,0" />
         </Grid>
-        <EcngTradingXaml:OrderGrid x:Name="OrdersGrid" Margin="0,402,0,0" HorizontalAlignment="Left" Grid.Column="1" />
-        <EcngTradingXaml:TradeGrid x:Name="TradesGrid" Margin="0,282,0,0" HorizontalAlignment="Left" Width="552" Height="114" VerticalAlignment="Top" Grid.Column="1" />
-        <EcngTradingXaml:Monitor x:Name="_monitor" Grid.ColumnSpan="2" Grid.Row="1" Height="200" VerticalAlignment="Bottom" />
+        <SX:OrderGrid x:Name="OrdersGrid" Margin="0,402,0,0" HorizontalAlignment="Left" Grid.Column="1" />
+        <SX:TradeGrid x:Name="TradesGrid" Margin="0,282,0,0" HorizontalAlignment="Left" Width="552" Height="114" VerticalAlignment="Top" Grid.Column="1" />
+        <SX:Monitor x:Name="Monitor" Grid.ColumnSpan="2" Grid.Row="1" Height="200" VerticalAlignment="Bottom" />
     </Grid>
 </Window>

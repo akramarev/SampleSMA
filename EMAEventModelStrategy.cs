@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using StockSharp.Algo;
-using StockSharp.Algo.Logging;
 using StockSharp.Algo.Candles;
 using StockSharp.Algo.Indicators;
 using StockSharp.Algo.Indicators.Trend;
 using StockSharp.Algo.Strategies;
 using StockSharp.BusinessEntities;
-using SampleSMA.Logging;
+using StockSharp.Logging;
 
 namespace SampleSMA
 {
@@ -32,27 +31,20 @@ namespace SampleSMA
             }
         }
 
-        public CandleManager CandleManager { get; private set; }
-        public Candle LastCandle { get; private set; }
-
-        private decimal _prevFilterMAValue;
-        private decimal _prevLongMAValue;
-        private decimal _prevShortMAValue;
+        public CandleSeries CandleSeries { get; private set; }
 
         private DateTime _strategyStartTime;
 
         public delegate void CandleProcessedHandler(Candle candle);
         public event CandleProcessedHandler CandleProcessed;
 
-        public EMAEventModelStrategy(CandleManager candleManager, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA)
+        public EMAEventModelStrategy(CandleSeries series, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA)
 		{
-            this.Name = "EmaCore";
-
             this.FilterMA = filterMA;
 			this.LongMA = longMA;
 			this.ShortMA = shortMA;
 
-            this.CandleManager = candleManager;
+            this.CandleSeries = series;
 
             this.TakeProfitUnit = 50;
             this.StopLossUnit = 35;
@@ -62,41 +54,30 @@ namespace SampleSMA
             this.UseQuoting = true;
 		}
 
-        protected override void OnStarting()
+        protected override void OnStarted()
         {
-            this.AddLog(new ExtendedLogMessage(this, base.Trader.MarketTime, ErrorTypes.None, ExtendedLogMessage.ImportanceLevel.High,
-                    "Core strategy {0} has been started.", this.Name));
+            this.AddInfoLog("Core strategy {0} has been started.", this.Name);
 
-            this._strategyStartTime = Trader.MarketTime;
-            
-            this
-                .When(CandleManager.Tokens.ElementAt(0).CandlesFinished())
-                .Do<IEnumerable<Candle>>(ProcessCandles);
+            this._strategyStartTime = this.GetMarketTime();
 
-            this
-                .When(PnLManager.Less(this.StopTradingUnit))
+            CandleSeries
+                .WhenCandlesFinished()
+                .Do(ProcessCandle)
+                .Apply(this);
+
+            this.WhenPnLLess(this.StopTradingUnit)
                 .Do(StopTradingOnNotBeckhamsDay)
-                .Once();
+                .Once()
+                .Apply(this);
 
-            base.OnStarting();
+            base.OnStarted();
         }
 
         protected override void OnStopped()
         {
-            this.AddLog(new ExtendedLogMessage(this, base.Trader.MarketTime, ErrorTypes.None, ExtendedLogMessage.ImportanceLevel.High,
-                    "Core strategy {0} has been stopped.", this.Name));
+            this.AddInfoLog("Core strategy {0} has been stopped.", this.Name);
 
             base.OnStopped();
-        }
-
-        protected IEnumerable<Candle> ProcessCandles(IEnumerable<Candle> candles)
-        {
-            foreach (Candle candle in candles)
-            {
-                ProcessCandle(candle);
-            }
-
-            return candles;
         }
 
         protected void ProcessCandle(Candle candle)
@@ -106,64 +87,29 @@ namespace SampleSMA
                 return;
             }
 
-            if (this.LastCandle == null
-                && !this.FilterMA.IsFormed
-                && !this.ShortMA.IsFormed
-                && !this.LongMA.IsFormed)
-            {
-                // it's a very first candle and indicators are not formed yet
-                this.RemoveStartFootprint(candle);
-            }
+            LongMA.Process(candle);
+            ShortMA.Process(candle);
+            FilterMA.Process(candle);
 
-            this.LastCandle = candle;
-
-            // processing Filer, Short and Long MA (also take care about "prev-" variables)
-            this.FilterMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
-            if (this._prevFilterMAValue == 0)
-            {
-                this._prevFilterMAValue = this.FilterMA.LastValue;
-            }
-
-            this.LongMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
-            if (this._prevLongMAValue == 0)
-            {
-                this._prevLongMAValue = this.LongMA.LastValue;
-            }
-
-            this.ShortMA.Process((DecimalIndicatorValue)this.LastCandle.ClosePrice);
-            if (this._prevShortMAValue == 0)
-            {
-                this._prevShortMAValue = this.ShortMA.LastValue;
-            }
-
-            if (candle.Time > this._strategyStartTime)
+            if (candle.CloseTime > this._strategyStartTime
+                && LongMA.IsFormed
+                && ShortMA.IsFormed
+                && FilterMA.IsFormed)
             {
                 this.AnalyseAndTrade();
             }
 
-            // update "prev-" variables
-            this._prevFilterMAValue = this.FilterMA.LastValue;
-            this._prevShortMAValue = this.ShortMA.LastValue;
-            this._prevLongMAValue = this.LongMA.LastValue;
-
             this.OnCandleProcessed(candle);
-        }
-
-        public void RemoveStartFootprint(Candle candle)
-        {
-            this.FilterMA.RemoveStartFootprint((DecimalIndicatorValue)candle.OpenPrice);
-            this.LongMA.RemoveStartFootprint((DecimalIndicatorValue)candle.OpenPrice);
-            this.ShortMA.RemoveStartFootprint((DecimalIndicatorValue)candle.OpenPrice);
         }
 
         private void AnalyseAndTrade()
         {
             // calculate MA X-ing cases 
-            bool xUp = this.ShortMA.LastValue > this.LongMA.LastValue && this._prevShortMAValue <= this._prevLongMAValue;
-            bool xDown = this.ShortMA.LastValue < this.LongMA.LastValue && this._prevShortMAValue >= this._prevLongMAValue;
+            bool xUp = this.ShortMA.GetCurrentValue() > this.LongMA.GetCurrentValue() && this.ShortMA.GetValue(1) <= this.LongMA.GetValue(1);
+            bool xDown = this.ShortMA.GetCurrentValue() < this.LongMA.GetCurrentValue() && this.ShortMA.GetValue(1) >= this.LongMA.GetValue(1);
 
             // calculate Filters
-            bool upFilter = this.FilterMA.LastValue > this._prevFilterMAValue;
+            bool upFilter = this.FilterMA.GetCurrentValue() > this.FilterMA.GetValue(1);
             bool downFilter = !upFilter;
 
             OrderDirections direction;
@@ -176,14 +122,14 @@ namespace SampleSMA
                 if (upFilter)
                 {
                     direction = OrderDirections.Buy;
-                    price = (this.UseQuoting) ? base.Security.GetMarketPrice(direction) : this.LastCandle.ClosePrice;
+                    price = (this.UseQuoting) ? base.Security.GetMarketPrice(direction) : base.Security.GetCurrentPrice(direction).Value;
                     order = this.CreateOrder(direction, price, base.Volume);
 
-                    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Up appeared (CandleTime: {0}), and filter allowed the deal.", this.LastCandle.Time));
+                    this.AddInfoLog("Xing Up appeared (MarketTime: {0}), and filter allowed the deal.", base.Security.GetMarketTime());
                 }
                 else
                 {
-                    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Up appeared (CandleTime: {0}), but filter blocked the deal.", this.LastCandle.Time));
+                    this.AddInfoLog("Xing Up appeared (MarketTime: {0}), but filter blocked the deal.", base.Security.GetMarketTime());
                 }
             }
 
@@ -192,14 +138,14 @@ namespace SampleSMA
                 if (downFilter)
                 {
                     direction = OrderDirections.Sell;
-                    price = (this.UseQuoting) ? base.Security.GetMarketPrice(direction) : this.LastCandle.ClosePrice;
+                    price = (this.UseQuoting) ? base.Security.GetMarketPrice(direction) : base.Security.GetCurrentPrice(direction).Value;
                     order = this.CreateOrder(direction, price, base.Volume);
 
-                    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Down appeared (CandleTime: {0}), and filter allowed the deal.", this.LastCandle.Time));
+                    this.AddInfoLog("Xing Down appeared (MarketTime: {0}), and filter allowed the deal.", base.Security.GetMarketTime());
                 }
                 else
                 {
-                    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "Xing Down appeared (CandleTime: {0}), but filter blocked the deal.", this.LastCandle.Time));
+                    this.AddInfoLog("Xing Down appeared (MarketTime: {0}), but filter blocked the deal.", base.Security.GetMarketTime());
                 }
             }
 
@@ -214,28 +160,31 @@ namespace SampleSMA
                         base.ChildStrategies.Add(marketQuotingStrategy);
 
                         this
-                            .When(marketQuotingStrategy.StrategyNewOrder())
-                            .Do((qOrder) =>
+                            .WhenOrderRegistered()
+                            .Do(qOrder =>
                             {
                                 this
-                                    .When(qOrder.NewTrades())
+                                    .WhenNewMyTrades()
                                     .Do(ProtectMyNewTrades)
-                                    .Periodical(() => qOrder.IsMatched());
-                            });
+                                    .Until(qOrder.IsMatched)
+                                    .Apply(this);
+                            })
+                            .Apply(this);
                     }
                     else
                     {
                         RegisterOrder(order);
 
                         this
-                            .When(order.NewTrades())
+                            .WhenNewMyTrades()
                             .Do(ProtectMyNewTrades)
-                            .Periodical(() => order.IsMatched());
+                            .Until(order.IsMatched)
+                            .Apply(this);
                     }
                 }
                 else
                 {
-                    this.AddLog(new LogMessage(this, base.Trader.MarketTime, ErrorTypes.None, "PositionManager blocked the deal (CandleTime: {0}), we're already in position.", this.LastCandle.Time));
+                    this.AddInfoLog("PositionManager blocked the deal (MarketTime: {0}), we're already in position.", base.Security.GetMarketTime());
                 }
             }
         }
@@ -252,20 +201,18 @@ namespace SampleSMA
         {
             foreach (MyTrade trade in trades)
             {
-                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) { UseQuoting = this.UseQuoting };
-                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = this.UseQuoting };
+                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit);
+                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit);
 
                 ChildStrategies.Add(new TakeProfitStopLossStrategy(takeProfit, stopLoss));
 
-                this.AddLog(new ExtendedLogMessage(this, base.Trader.MarketTime, ErrorTypes.None, ExtendedLogMessage.ImportanceLevel.High,
-                    "Hurrah, we have new trade (#{0}) and I've protected it.", trade.Trade.Id));
+                this.AddInfoLog("Hurrah, we have new trade (#{0}) and I've protected it.", trade.Trade.Id);
             };
         }
 
         private void StopTradingOnNotBeckhamsDay()
         {
-            this.AddLog(new ExtendedLogMessage(this, base.Trader.MarketTime, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
-                "It's not Beckham's day. PnL reduction is detected. ({0}).", PnLManager.PnL));
+            this.AddInfoLog("It's not Beckham's day. PnL reduction is detected. ({0}).", PnLManager.PnL);
 
             var position = PositionManager.Position;
 
@@ -276,15 +223,14 @@ namespace SampleSMA
                 return;
             }
 
-            this.AddLog(new ExtendedLogMessage(this, base.Trader.MarketTime, ErrorTypes.Warning, ExtendedLogMessage.ImportanceLevel.High,
-                            "I can't stop strategy right now. There {0} {1} open position{2}. I'll try again when position change.",
+            this.AddInfoLog("I can't stop strategy right now. There {0} {1} open position{2}. I'll try again when position change.",
                             (position > 1) ? "are" : "is",
                             position,
-                            (position > 1) ? "s" : ""));
+                            (position > 1) ? "s" : "");
 
             // Prepare regular tries to stop the strategy
             this
-                .When(PositionManager.Changed())
+                .WhenPositionChanged()
                 .Do(() =>
                 {
                     if (PositionManager.Position == 0)
@@ -292,12 +238,8 @@ namespace SampleSMA
                         this.Stop();
                     }
                 })
-                .Periodical(() =>
-                    {
-                        return
-                            this.ProcessState == ProcessStates.Stopping
-                            || this.ProcessState == ProcessStates.Stopped;
-                    });
+                .Until(() => this.ProcessState == ProcessStates.Stopping || this.ProcessState == ProcessStates.Stopped)
+                .Apply(this);
         }
     }
 }

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using StockSharp.Algo.Logging;
 using System.Net.Mail;
 using System.Configuration;
 using System.Net;
+using StockSharp.Logging;
 using jabber.client;
 using System.Timers;
 
@@ -51,12 +51,9 @@ namespace SampleSMA.Logging
                 LogMessage message = this.MessageQueue.Dequeue();
 
                 string messageType = String.Empty;
-                if (message is ExtendedLogMessage)
+                if (message.Level > LogLevels.Debug)
                 {
-                    if (((ExtendedLogMessage)message).Importance >= ExtendedLogMessage.ImportanceLevel.High)
-                    {
-                        messageType = @"+/'\ ";
-                    }
+                    messageType = @"+/'\ ";
                 }
 
                 builder.AppendLine(String.Format("{0}{1} | {2} || {3}",

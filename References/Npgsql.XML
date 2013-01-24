@@ -1940,6 +1940,11 @@
             Convert to a postgres money.
             </summary>
         </member>
+        <member name="M:NpgsqlTypes.BasicNativeToBackendTypeConverter.ToSingleDouble(NpgsqlTypes.NpgsqlNativeTypeInfo,System.Object,System.Boolean)">
+            <summary>
+            Convert to a postgres double with maximum precision.
+            </summary>
+        </member>
         <member name="T:NpgsqlTypes.ExtendedBackendToNativeTypeConverter">
             <summary>
             Provide event handlers to convert extended native supported data types from their backend

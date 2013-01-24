@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using StockSharp.Algo.Logging;
 using Ecng.Collections;
+using StockSharp.Logging;
 
 namespace SampleSMA.Logging
 {
@@ -14,6 +14,8 @@ namespace SampleSMA.Logging
             this.Id = Guid.NewGuid();
             this.Name = "Unnamed Log Source";
         }
+
+        public DateTime CurrentTime { get; private set; }
 
         public INotifyList<ILogSource> Childs
         {
@@ -41,6 +43,13 @@ namespace SampleSMA.Logging
         public ILogSource Parent
         {
             get { return null; }
+        }
+
+        public LogLevels LogLevel { get; set; }
+
+        public void Dispose()
+        {
+
         }
     }
 }

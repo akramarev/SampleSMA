@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using StockSharp.Algo.Logging;
 using System.Net.Mail;
 using System.Configuration;
 using System.Net;
 using System.Timers;
+using StockSharp.Logging;
 
 namespace SampleSMA.Logging
 {
@@ -21,7 +21,7 @@ namespace SampleSMA.Logging
         {
             this.Client = new SmtpClient();
 
-            this.CheckTimer.Elapsed += new ElapsedEventHandler(CheckTimer_Elapsed);
+            this.CheckTimer.Elapsed += CheckTimer_Elapsed;
             this.CheckTimer.Enabled = true;
         }
 

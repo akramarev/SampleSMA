@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using StockSharp.Algo.Candles;
+using StockSharp.Algo.Candles.Compression;
 using StockSharp.Algo.Indicators.Trend;
 using StockSharp.Algo.Storages;
 using StockSharp.Algo.Testing;
 using StockSharp.BusinessEntities;
 using StockSharp.Algo;
-using StockSharp.Algo.Logging;
 using SampleSMA.Logging;
+using StockSharp.Logging;
 
 namespace SampleSMA
 {
@@ -38,7 +39,7 @@ namespace SampleSMA
         private DateTime _stopTime;
 
         private Security _security;
-        private TradingStorage _storage;
+        private StorageRegistry _storage;
         private Portfolio _portfolio;
 
         public decimal Volume { get; set; }
@@ -48,7 +49,7 @@ namespace SampleSMA
 
         public SimpleLogSource Log { get; set; }
 
-        public EMAStrategyOptimizer(Security security, TradingStorage storage, Portfolio portfolio, DateTime startTime, DateTime stopTime)
+        public EMAStrategyOptimizer(Security security, StorageRegistry storage, Portfolio portfolio, DateTime startTime, DateTime stopTime)
         {
             _startTime = startTime;
             _stopTime = stopTime;
@@ -102,8 +103,7 @@ namespace SampleSMA
 
             WaitHandle.WaitAll(doneEvents);
 
-            // debug
-            this.Strategies.ForEach(s => Log.AddLog(new LogMessage(Log, DateTime.Now, ErrorTypes.None, 
+            this.Strategies.ForEach(s => Log.AddLog(new LogMessage(Log, DateTime.Now, LogLevels.Debug, 
                 String.Format("Opt: {0}, {1}, {2}. PnL: {3} ", s.FilterMA.Length, s.LongMA.Length, s.ShortMA.Length, s.PnLManager.PnL))));
 
             this.BestStrategy = Strategies.OrderByDescending(s => s.PnLManager.PnL).FirstOrDefault();
@@ -131,38 +131,38 @@ namespace SampleSMA
                 MinStepSize = _security.MinStepSize,
                 MinStepPrice = _security.MinStepPrice,
                 Exchange = _security.Exchange,
+                MaxPrice = Decimal.MaxValue,
+                MinPrice = Decimal.MinValue
             };
 
             // тестовый портфель
-            var portfolio = new Portfolio { BeginAmount = _portfolio.BeginAmount };
+            var portfolio = new Portfolio { BeginValue = _portfolio.BeginValue };
 
             EmulationTrader trader = new EmulationTrader(
                 new[] { security },
                 new[] { portfolio })
             {
                 MarketTimeChangedInterval = _timeFrame,
-                Storage = _storage,
-                WorkingTime = Exchange.Rts.WorkingTime,
-
-                // параметр влияет на занимаемую память.
-                // в случае достаточно количества памяти на компьютере рекомендуется его увеличить
-                DaysInMemory = 3,
+                StorageRegistry = _storage,
+                //UseMarketDepth = true
             };
 
-            trader.DepthGenerators[security] = new TrendMarketDepthGenerator(security)
-            {
-                // стакан для инструмента в истории обновляется раз в 1 секунду
-                Interval = TimeSpan.FromSeconds(1),
-            };
+            //trader.RegisterMarketDepth(new TrendMarketDepthGenerator(security)
+            //{
+            //    // стакан для инструмента в истории обновляется раз в секунду
+            //    Interval = TimeSpan.FromSeconds(5),
+            //});
 
-            CandleManager candleManager = new CandleManager();
+            // соединяемся с трейдером и запускаем экспорт,
+            // чтобы инициализировать переданными инструментами и портфелями необходимые свойства EmulationTrader
+            trader.Connect();
+            trader.StartExport();
 
-            var builder = new CandleBuilder(new TradeCandleBuilderSource(trader) { IsSyncProcess = true });
-            candleManager.Sources.Add(builder);
+            var series = new CandleSeries(typeof(TimeFrameCandle), trader.Securities.First(), _timeFrame);
+            var candleManager = new CandleManager(trader);
+            candleManager.Start(series);
 
-            candleManager.RegisterTimeFrameCandles(security, _timeFrame);
-
-            var strategy = new EMAEventModelStrategy(candleManager,
+            var strategy = new EMAEventModelStrategy(series,
                 new ExponentialMovingAverage { Length = filterOptPeriod },
                 new ExponentialMovingAverage { Length = longOptPeriod }, 
                 new ExponentialMovingAverage { Length = shortOptPeriod })
@@ -171,12 +171,12 @@ namespace SampleSMA
                 Portfolio = portfolio,
                 Security = security,
                 Trader = trader,
-                UseQuoting = true
+                UseQuoting = false
             };
 
             this.Strategies.Add(strategy);
 
-            trader.StateChanged += () =>
+            trader.StateChanged += (oldState, newState) =>
             {
                 if (trader.State == EmulationStates.Started)
                 {
@@ -185,8 +185,9 @@ namespace SampleSMA
                 else if (trader.State == EmulationStates.Stopped)
                 {
                     doneEvent.Set();
-                }
+                }        
             };
+
             return trader;
         }
 

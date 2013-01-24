@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>StockSharp.Micex</name>
+  </assembly>
+  <members>
+    <member name="T:StockSharp.Micex.MicexTrader">
+      <summary>
+            Реализация интерфейса <see cref="T:StockSharp.BusinessEntities.ITrader" />, предоставляющая шлюз взаимодействия с системой Micex Bridge.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Micex.MicexTrader.#ctor">
+      <summary>
+            Создать <see cref="T:StockSharp.Micex.MicexTrader" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Micex.MicexTrader.OnConnect">
+      <summary>
+            Подключиться к торговой системе.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Micex.MicexTrader.OnDisconnect">
+      <summary>
+            Отключиться от торговой системы.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Micex.MicexTrader.StartExport">
+      <summary>
+            Запустить экспорт данных из торговой системы в программу (получение портфелей, инструментов, заявок и т.д.).
+            </summary>
+    </member>
+    <member name="M:StockSharp.Micex.MicexTrader.OnRegisterMarketDepth(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Начать получать котировки (стакан) по инструменту.
+            Значение котировок можно получить через метод <see cref="M:StockSharp.BusinessEntities.ITrader.GetMarketDepth(StockSharp.BusinessEntities.Security)" />.
+            </summary>
+      <param name="security">Инструмент, по которому необходимо начать получать котировки.</param>
+    </member>
+    <member name="M:StockSharp.Micex.MicexTrader.OnCancelOrder(StockSharp.BusinessEntities.Order)">
+      <summary>
+            Отменить заявку на бирже.
+            </summary>
+      <param name="order">Заявка, которую нужно отменять.</param>
+    </member>
+    <member name="M:StockSharp.Micex.MicexTrader.OnRegisterOrder(StockSharp.BusinessEntities.Order)">
+      <summary>
+            Зарегистрировать заявку на бирже.
+            </summary>
+      <param name="order">Заявка, содержащая информацию для регистрации.</param>
+    </member>
+    <member name="P:StockSharp.Micex.MicexTrader.Addresses">
+      <summary>
+            Cписок IP-адресов и портов серверов доступа.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Micex.MicexTrader.Server">
+      <summary>
+            Идентификатор сервера доступа, например “EQ_TEST”.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Micex.MicexTrader.UserId">
+      <summary>
+            Идентификатор пользователя в торговой системе ММВБ.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Micex.MicexTrader.Password">
+      <summary>
+            Пароль пользователя в торговой системе ММВБ.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Micex.MicexTrader.Interface">
+      <summary>
+            Идентификатор интерфейса торговой системы ММВБ.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Micex.MicexTrader.Logging">
+      <summary>
+            Управление логированием Micex Bridge клиента.
+            </summary>
+      <remarks>
+            0 - отключить логирование операций (не создавать log-файл),
+            1 – включить логирование
+            </remarks>
+    </member>
+    <member name="P:StockSharp.Micex.MicexTrader.DisplayName">
+      <summary>
+            Текстовое описание шлюза.
+            </summary>
+    </member>
+  </members>
+</doc>
