@@ -21,15 +21,7 @@ namespace SampleSMA
         public Unit StopLossUnit { get; set; }
         public Unit StopTradingUnit { get; set; }
 
-        private bool useQuoting;
-        public bool UseQuoting
-        {
-            get { return useQuoting; }
-            set 
-            {
-                useQuoting = value;
-            }
-        }
+        public bool UseQuoting { get; set; }
 
         public CandleSeries CandleSeries { get; private set; }
 
@@ -46,7 +38,7 @@ namespace SampleSMA
 
             this.CandleSeries = series;
 
-            this.TakeProfitUnit = 50;
+            this.TakeProfitUnit = 20;
             this.StopLossUnit = 35;
 
             this.StopTradingUnit = this.StopLossUnit * 3;
@@ -82,7 +74,7 @@ namespace SampleSMA
 
         protected void ProcessCandle(Candle candle)
         {
-            if (candle == null)
+            if (candle == null || candle.State != CandleStates.Finished)
             {
                 return;
             }
@@ -156,30 +148,35 @@ namespace SampleSMA
                 {
                     if (this.UseQuoting)
                     {
-                        MarketQuotingStrategy marketQuotingStrategy = new MarketQuotingStrategy(order, new Unit(), new Unit());
-                        base.ChildStrategies.Add(marketQuotingStrategy);
+                        LastTradeQuotingStrategy quotingStrategy = new LastTradeQuotingStrategy(order, new Unit());
+                        base.ChildStrategies.Add(quotingStrategy);
 
-                        this
-                            .WhenOrderRegistered()
-                            .Do(qOrder =>
-                            {
-                                this
-                                    .WhenNewMyTrades()
-                                    .Do(ProtectMyNewTrades)
-                                    .Until(qOrder.IsMatched)
-                                    .Apply(this);
-                            })
+                        quotingStrategy
+                            .WhenNewMyTrades()
+                            .Do(ProtectMyNewTrades)
                             .Apply(this);
+
+                        //quotingStrategy
+                        //    .WhenOrderRegistered()
+                        //    .Do(qOrder =>
+                        //    {
+                        //        this
+                        //            .WhenNewMyTrades()
+                        //            .Do(ProtectMyNewTrades)
+                        //            .Until(qOrder.IsMatched)
+                        //            .Apply(this);
+                        //    })
+                        //    .Apply(this);
                     }
                     else
                     {
-                        RegisterOrder(order);
-
-                        this
-                            .WhenNewMyTrades()
+                        order
+                            .WhenNewTrades()
                             .Do(ProtectMyNewTrades)
                             .Until(order.IsMatched)
                             .Apply(this);
+
+                        RegisterOrder(order);
                     }
                 }
                 else
@@ -201,8 +198,8 @@ namespace SampleSMA
         {
             foreach (MyTrade trade in trades)
             {
-                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit);
-                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit);
+                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) {UseQuoting = this.UseQuoting};
+                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = this.UseQuoting };
 
                 ChildStrategies.Add(new TakeProfitStopLossStrategy(takeProfit, stopLoss));
 

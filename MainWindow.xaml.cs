@@ -1,4 +1,5 @@
-﻿using Ecng.Collections;
+﻿using System.Windows.Media;
+using Ecng.Collections;
 using Ecng.Common;
 using Ecng.Xaml;
 using SampleSMA.Logging;
@@ -43,11 +44,18 @@ namespace SampleSMA
         private LogManager _logManager = new LogManager();
         private SimpleLogSource _log = new SimpleLogSource() { Name = "Main App" };
 
+        // Chart objects
         private readonly ChartArea _area;
         private ChartCandleElement _candlesElem;
+
+	    private ExponentialMovingAverage _longMA;
+        private ExponentialMovingAverage _shortMA;
+        private ExponentialMovingAverage _filterMA;
+
         private ChartIndicatorElement _longMaElem;
         private ChartIndicatorElement _shortMaElem;
         private ChartIndicatorElement _filterMaElem;
+	    private ChartTradeElement _tradeElem;
 
 		public MainWindow()
 		{
@@ -163,7 +171,7 @@ namespace SampleSMA
             this.InitGrids();
 
             _candleManager = new CandleManager(_trader);
-            _candleManager.Processing += (candleSeries, candle) => ProcessCandle(candle);
+            _candleManager.Processing += (candleSeries, candle) => DrawCandleAndEma(candle);
 
             // Добавление в источник свечек TimeFrameCandleBuilder источник данных в виде файлов гидры
             var storageRegistry = new StorageRegistry();
@@ -186,7 +194,7 @@ namespace SampleSMA
                 Trader = _trader,
             };
 
-            this.InitChart();
+            this.InitChart(_strategy);
             _candleManager.Start(series, DateTime.Now.AddDays(-3), DateTime.MaxValue);
 
             _strategy.OrderRegistered += OnOrderRegistered;
@@ -242,26 +250,34 @@ namespace SampleSMA
                 Log = _log
             };
 
-            _trader = optimizer.GetOptTraderContext(this._filterMAPeriod, this._longMAPeriod, this._shortMAPeriod, new ManualResetEvent(false));
+            _trader = optimizer.GetOptTraderContext(this._timeFrame, this._filterMAPeriod, this._longMAPeriod, this._shortMAPeriod, new ManualResetEvent(false));
             _strategy = optimizer.Strategies[0];
 
-            this.InitChart();
+            this.InitChart(_strategy);
 
-            _strategy.OrderRegistered += OnOrderRegistered;
-            _strategy.NewMyTrades += OnNewTrades;
+            _strategy.Trader.NewOrders += orders => orders.ForEach(OnOrderRegistered);
+            _strategy.Trader.NewMyTrades += OnNewTrades;
 
             _logManager.Sources.Add(_strategy);
 
-            int lastUpdateHour = 0;
+            // устанавливаем в визуальный элемент ProgressBar максимальное количество итераций)
+            this.pbHistoryTestProgress.Maximum = 10;
+            this.pbHistoryTestProgress.Value = 0;
+
+            var totalMinutes = (stopTime - startTime).TotalMinutes;
+            var segment = Math.Floor(totalMinutes / 10);
+            var nSegment = 1;
+            var sSegment = segment;
             _trader.MarketTimeChanged += span =>
             {
-                // в целях оптимизации обновляем ProgressBar и Stat только при начале нового часа
-                if (_trader.CurrentTime.Hour != lastUpdateHour || _trader.CurrentTime >= stopTime)
+                var currentMinute = (_trader.CurrentTime - startTime).TotalMinutes;
+                if (currentMinute >= sSegment || _trader.CurrentTime >= stopTime)
                 {
-                    lastUpdateHour = _trader.CurrentTime.Hour;
+                    nSegment += 1;
+                    sSegment = segment * nSegment;
 
-                    UpdateStrategyStat(_strategy);
-                    this.GuiAsync(() => this.pbHistoryTestProgress.Value = (_trader.CurrentTime - startTime).TotalMinutes);
+                    this.UpdateStrategyStat(_strategy);
+                    this.GuiAsync(() => this.pbHistoryTestProgress.Value = nSegment);
                 }
             };
 
@@ -273,23 +289,23 @@ namespace SampleSMA
                 {
                     sw.Stop();
 
+                    this.UpdateStrategyStat(_strategy);
+                    _strategy.CandleSeries.GetCandles<TimeFrameCandle>().ForEach(DrawCandleAndEma);
+                    _strategy.Trader.MyTrades.ForEach(DrawTrade);
+
                     this.GuiAsync(() =>
                     {
+                        this.pbHistoryTestProgress.Value = 0;
                         btnHistoryStart.IsEnabled = true;
+                    });
 
-                        // Update strategy stat panel
-                        this.UpdateStrategyStat(_strategy);
-
-                        _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Info,
+                    _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Info,
                             String.Format("History testing done ({0}). Result: {1}, {2}, {3}. PnL: {4} ",
                                 sw.Elapsed,
                                 _strategy.FilterMA.Length,
                                 _strategy.LongMA.Length,
                                 _strategy.ShortMA.Length,
                                 _strategy.PnLManager.PnL)));
-                    });
-
-                    _strategy.CandleSeries.GetCandles<TimeFrameCandle>().ForEach(ProcessCandle);
                 }
                 else if (((EmulationTrader)_trader).State == EmulationStates.Started)
                 {
@@ -301,10 +317,6 @@ namespace SampleSMA
                     });
                 }
             };
-
-            // устанавливаем в визуальный элемент ProgressBar максимальное количество итераций)
-            this.pbHistoryTestProgress.Maximum = (stopTime - startTime).TotalMinutes;
-            this.pbHistoryTestProgress.Value = 0;
 
             // соединяемся с трейдером и запускаем экспорт,
             // чтобы инициализировать переданными инструментами и портфелями необходимые свойства EmulationTrader
@@ -388,42 +400,57 @@ namespace SampleSMA
 
         #region Draw candles and indicators
 
-        private void InitChart()
+        private void InitChart(EMAEventModelStrategy strategy)
         {
+            _longMA = new ExponentialMovingAverage { Length = strategy.LongMA.Length};
+            _shortMA = new ExponentialMovingAverage { Length = strategy.ShortMA.Length };
+            _filterMA = new ExponentialMovingAverage { Length = strategy.FilterMA.Length };
+
             _area.Elements.Clear();
 
-            _candlesElem = new ChartCandleElement();
+            _candlesElem = new ChartCandleElement()
+            {
+                ColorPriceDown = Color.FromRgb(133, 133, 133),
+                ColorPriceUp = Color.FromRgb(255, 255, 130)
+            };
             _area.Elements.Add(_candlesElem);
 
             _longMaElem = new ChartIndicatorElement
             {
                 Title = "LongMA",
-                Indicator = _strategy.LongMA,
+                Indicator = _longMA,
             };
             _area.Elements.Add(_longMaElem);
 
             _shortMaElem = new ChartIndicatorElement
             {
                 Title = "ShortMA",
-                Indicator = _strategy.ShortMA,
+                Indicator = _shortMA,
             };
             _area.Elements.Add(_shortMaElem);
 
             _filterMaElem = new ChartIndicatorElement
             {
                 Title = "FilterMA",
-                Indicator = _strategy.FilterMA,
+                Indicator = _filterMA,
             };
             _area.Elements.Add(_filterMaElem);
+
+            _tradeElem = new ChartTradeElement()
+            {
+                BuyColor = Color.FromRgb(255, 0, 0),
+                SellColor = Color.FromRgb(0, 0, 255)
+            };
+            _area.Elements.Add(_tradeElem);
         }
 
-        private void ProcessCandle(Candle candle)
+        private void DrawCandleAndEma(Candle candle)
         {
             if (candle.State == CandleStates.Finished)
             {
-                var longValue = candle.State == CandleStates.Finished ? new ChartIndicatorValue(_strategy.LongMA, _strategy.LongMA.Process(candle)) : null;
-                var shortValue = candle.State == CandleStates.Finished ? new ChartIndicatorValue(_strategy.ShortMA, _strategy.ShortMA.Process(candle)) : null;
-                var filterValue = candle.State == CandleStates.Finished ? new ChartIndicatorValue(_strategy.FilterMA, _strategy.FilterMA.Process(candle)) : null;
+                var longValue = new ChartIndicatorValue(_longMA, _longMA.Process(candle));
+                var shortValue = new ChartIndicatorValue(_shortMA, _shortMA.Process(candle));
+                var filterValue = new ChartIndicatorValue(_filterMA, _filterMA.Process(candle));
 
                 this.GuiAsync(() => _chart.ProcessValues(candle.OpenTime, new Dictionary<IChartElement, object>
                 {
@@ -433,6 +460,14 @@ namespace SampleSMA
                     {_filterMaElem, filterValue}
                 }));
             }
+        }
+
+        private void DrawTrade(MyTrade trade)
+        {
+            this.GuiAsync(() => _chart.ProcessValues(trade.Trade.Time, new Dictionary<IChartElement, object>
+                {
+                    {_tradeElem, trade}
+                }));
         }
 
         #endregion

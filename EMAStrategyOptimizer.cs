@@ -33,8 +33,6 @@ namespace SampleSMA
         public EMAEventModelStrategy BestStrategy { get; protected set; }
         public List<EMAEventModelStrategy> Strategies { get; protected set; }
 
-        private readonly TimeSpan _timeFrame = TimeSpan.FromMinutes(5);
-
         private DateTime _startTime;
         private DateTime _stopTime;
 
@@ -63,52 +61,52 @@ namespace SampleSMA
             this.Volume = 1;
         }
 
-        public void Optimize()
-        {
-            // clean up
-            this.BestStrategy = null;
-            this.Strategies.Clear();
+        //public void Optimize()
+        //{
+        //    // clean up
+        //    this.BestStrategy = null;
+        //    this.Strategies.Clear();
 
-            this.OnStateChanged(OptimizationState.Began);
+        //    this.OnStateChanged(OptimizationState.Began);
 
-            Thread t = new Thread(new ThreadStart(AsyncOptimize));
-            t.Start();
-        }
+        //    Thread t = new Thread(new ThreadStart(AsyncOptimize));
+        //    t.Start();
+        //}
 
-        private void AsyncOptimize()
-        {
-            var basketTrader = new BasketTrader { SupportTradesUnique = false };
+        //private void AsyncOptimize()
+        //{
+        //    var basketTrader = new BasketTrader { SupportTradesUnique = false };
 
-            OptVarItem[] optVars = this.GetOptVarField().ToArray();
-            ManualResetEvent[] doneEvents = new ManualResetEvent[optVars.Length];
+        //    OptVarItem[] optVars = this.GetOptVarField().ToArray();
+        //    ManualResetEvent[] doneEvents = new ManualResetEvent[optVars.Length];
 
-            for (int i = 0; i < optVars.Length; i++)
-            {
-                doneEvents[i] = new ManualResetEvent(false);
+        //    for (int i = 0; i < optVars.Length; i++)
+        //    {
+        //        doneEvents[i] = new ManualResetEvent(false);
 
-                EmulationTrader trader = GetOptTraderContext(optVars[i].FilterOptPeriod, optVars[i].LongOptPeriods, optVars[i].ShortOptPeriods, doneEvents[i]);
-                basketTrader.InnerTraders.Add(trader);
-            }
+        //        EmulationTrader trader = GetOptTraderContext(optVars[i].FilterOptPeriod, optVars[i].LongOptPeriods, optVars[i].ShortOptPeriods, doneEvents[i]);
+        //        basketTrader.InnerTraders.Add(trader);
+        //    }
 
-            EmulationTrader[] traders = basketTrader.InnerTraders.Cast<EmulationTrader>().ToArray();
+        //    EmulationTrader[] traders = basketTrader.InnerTraders.Cast<EmulationTrader>().ToArray();
 
-            for (int i = 0; i < traders.Length; i++)
-            {
-                traders[i].Connect();
-                traders[i].StartExport();
+        //    for (int i = 0; i < traders.Length; i++)
+        //    {
+        //        traders[i].Connect();
+        //        traders[i].StartExport();
 
-                traders[i].Start(_startTime, _stopTime);
-                //doneEvents[i].WaitOne();
-            }
+        //        traders[i].Start(_startTime, _stopTime);
+        //        //doneEvents[i].WaitOne();
+        //    }
 
-            WaitHandle.WaitAll(doneEvents);
+        //    WaitHandle.WaitAll(doneEvents);
 
-            this.Strategies.ForEach(s => Log.AddLog(new LogMessage(Log, DateTime.Now, LogLevels.Debug, 
-                String.Format("Opt: {0}, {1}, {2}. PnL: {3} ", s.FilterMA.Length, s.LongMA.Length, s.ShortMA.Length, s.PnLManager.PnL))));
+        //    this.Strategies.ForEach(s => Log.AddLog(new LogMessage(Log, DateTime.Now, LogLevels.Debug, 
+        //        String.Format("Opt: {0}, {1}, {2}. PnL: {3} ", s.FilterMA.Length, s.LongMA.Length, s.ShortMA.Length, s.PnLManager.PnL))));
 
-            this.BestStrategy = Strategies.OrderByDescending(s => s.PnLManager.PnL).FirstOrDefault();
-            this.OnStateChanged(OptimizationState.Finished);
-        }
+        //    this.BestStrategy = Strategies.OrderByDescending(s => s.PnLManager.PnL).FirstOrDefault();
+        //    this.OnStateChanged(OptimizationState.Finished);
+        //}
 
         protected void OnStateChanged(OptimizationState state)
         {
@@ -120,7 +118,7 @@ namespace SampleSMA
             }
         }
 
-        public EmulationTrader GetOptTraderContext(int filterOptPeriod, int longOptPeriod, int shortOptPeriod, ManualResetEvent doneEvent)
+        public EmulationTrader GetOptTraderContext(TimeSpan timeFrame, int filterOptPeriod, int longOptPeriod, int shortOptPeriod, ManualResetEvent doneEvent)
         {
             // clone doesn't work for some reason
             var security = new Security
@@ -142,23 +140,23 @@ namespace SampleSMA
                 new[] { security },
                 new[] { portfolio })
             {
-                MarketTimeChangedInterval = _timeFrame,
+                MarketTimeChangedInterval = timeFrame,
                 StorageRegistry = _storage,
-                //UseMarketDepth = true
+                UseMarketDepth = true
             };
 
-            //trader.RegisterMarketDepth(new TrendMarketDepthGenerator(security)
-            //{
-            //    // стакан для инструмента в истории обновляется раз в секунду
-            //    Interval = TimeSpan.FromSeconds(5),
-            //});
+            trader.RegisterMarketDepth(new TrendMarketDepthGenerator(security)
+            {
+                // стакан для инструмента в истории обновляется раз в секунду
+                Interval = TimeSpan.FromSeconds(1),
+            });
 
             // соединяемся с трейдером и запускаем экспорт,
             // чтобы инициализировать переданными инструментами и портфелями необходимые свойства EmulationTrader
             trader.Connect();
             trader.StartExport();
 
-            var series = new CandleSeries(typeof(TimeFrameCandle), trader.Securities.First(), _timeFrame);
+            var series = new CandleSeries(typeof(TimeFrameCandle), trader.Securities.First(), timeFrame);
             var candleManager = new CandleManager(trader);
             candleManager.Start(series);
 
@@ -170,8 +168,7 @@ namespace SampleSMA
                 Volume = this.Volume,
                 Portfolio = portfolio,
                 Security = security,
-                Trader = trader,
-                UseQuoting = false
+                Trader = trader
             };
 
             this.Strategies.Add(strategy);
