@@ -108,7 +108,6 @@ namespace SampleSMA
             {
                 _trader.NewSecurities += securities => this.GuiAsync(() =>
                 {
-                    // находим нужную бумагу
                     var security = securities.FirstOrDefault(s => s.Code.Equals(this.txtSecurityCode.Text, StringComparison.InvariantCultureIgnoreCase));
 
                     if (security != null)
@@ -130,7 +129,6 @@ namespace SampleSMA
                 {
                     rbFightMode.IsEnabled = false;
                     rbTrainingMode.IsEnabled = false;
-
                     this.ConnectBtn.IsEnabled = false;
                 });
 
@@ -153,14 +151,13 @@ namespace SampleSMA
             if (_strategy != null && _strategy.ProcessState != ProcessStates.Stopped)
             {
                 _strategy.Stop();
-                this.Start.Content = "Старт";
+                this.Start.Content = "Start";
                 return;
             }
 
             if (this.Portfolios.SelectedPortfolio == null)
             {
-                MessageBox.Show(this, "Портфель не выбран.");
-                return;
+                this.Portfolios.SelectedIndex = this.Portfolios.Items.Count - 1;
             }
 
             this.InitGrids();
@@ -201,7 +198,7 @@ namespace SampleSMA
             // запускаем процесс получения стакана, необходимый для работы алгоритма котирования
             //_trader.RegisterMarketDepth(_strategy.Security);
             _strategy.Start();
-            this.Start.Content = "Стоп";
+            this.Start.Content = "Stop";
         }
 
         private void OnHistoryStartClick(object sender, RoutedEventArgs e)
