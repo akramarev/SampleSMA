@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Ecng.Collections;
 using StockSharp.Algo.Candles;
 using StockSharp.Algo.Candles.Compression;
 using StockSharp.Algo.Indicators.Trend;
@@ -30,8 +31,8 @@ namespace SampleSMA
             protected set;
         }
 
-        public EMAEventModelStrategy BestStrategy { get; protected set; }
-        public List<EMAEventModelStrategy> Strategies { get; protected set; }
+        public KeyValuePair<OptVarItem, EMAEventModelStrategy> BestStrategy { get; protected set; }
+        public Dictionary<OptVarItem, EMAEventModelStrategy> Strategies { get; protected set; }
 
         private DateTime _startTime;
         private DateTime _stopTime;
@@ -56,57 +57,65 @@ namespace SampleSMA
             _storage = storage;
             _portfolio = portfolio;
 
-            this.Strategies = new List<EMAEventModelStrategy>();
+            this.Strategies = new Dictionary<OptVarItem, EMAEventModelStrategy>();
 
             this.Volume = 1;
         }
 
-        //public void Optimize()
-        //{
-        //    // clean up
-        //    this.BestStrategy = null;
-        //    this.Strategies.Clear();
+        public void Optimize()
+        {
+            // clean up
+            this.BestStrategy = new KeyValuePair<OptVarItem, EMAEventModelStrategy>();
+            this.Strategies.Clear();
 
-        //    this.OnStateChanged(OptimizationState.Began);
+            this.OnStateChanged(OptimizationState.Began);
 
-        //    Thread t = new Thread(new ThreadStart(AsyncOptimize));
-        //    t.Start();
-        //}
+            Thread t = new Thread(AsyncOptimize);
+            t.Start();
+        }
 
-        //private void AsyncOptimize()
-        //{
-        //    var basketTrader = new BasketTrader { SupportTradesUnique = false };
+        private void AsyncOptimize()
+        {
+            var basketTrader = new BasketTrader { SupportTradesUnique = false };
 
-        //    OptVarItem[] optVars = this.GetOptVarField().ToArray();
-        //    ManualResetEvent[] doneEvents = new ManualResetEvent[optVars.Length];
+            OptVarItem[] optVars = this.GetOptVarField().ToArray();
+            ManualResetEvent[] doneEvents = new ManualResetEvent[optVars.Length];
 
-        //    for (int i = 0; i < optVars.Length; i++)
-        //    {
-        //        doneEvents[i] = new ManualResetEvent(false);
+            Log.AddLog(new LogMessage(Log, DateTime.Now, LogLevels.Info, 
+                optVars.Length > 1 
+                    ? String.Format("{0} optVarItems are going to be optimized", optVars.Length)
+                    : "1 optVarItem is going to be optimized"));
 
-        //        EmulationTrader trader = GetOptTraderContext(optVars[i].FilterOptPeriod, optVars[i].LongOptPeriods, optVars[i].ShortOptPeriods, doneEvents[i]);
-        //        basketTrader.InnerTraders.Add(trader);
-        //    }
+            for (int i = 0; i < optVars.Length; i++)
+            {
+                doneEvents[i] = new ManualResetEvent(false);
 
-        //    EmulationTrader[] traders = basketTrader.InnerTraders.Cast<EmulationTrader>().ToArray();
+                EmulationTrader trader = GetOptTraderContext(optVars[i], doneEvents[i]);
+                basketTrader.InnerTraders.Add(trader);
+            }
 
-        //    for (int i = 0; i < traders.Length; i++)
-        //    {
-        //        traders[i].Connect();
-        //        traders[i].StartExport();
+            EmulationTrader[] traders = basketTrader.InnerTraders.Cast<EmulationTrader>().ToArray();
 
-        //        traders[i].Start(_startTime, _stopTime);
-        //        //doneEvents[i].WaitOne();
-        //    }
+            for (int i = 0; i < traders.Length; i++)
+            {
+                traders[i].Connect();
+                traders[i].StartExport();
 
-        //    WaitHandle.WaitAll(doneEvents);
+                traders[i].Start(_startTime, _stopTime);
+                //doneEvents[i].WaitOne();
+            }
 
-        //    this.Strategies.ForEach(s => Log.AddLog(new LogMessage(Log, DateTime.Now, LogLevels.Debug, 
-        //        String.Format("Opt: {0}, {1}, {2}. PnL: {3} ", s.FilterMA.Length, s.LongMA.Length, s.ShortMA.Length, s.PnLManager.PnL))));
+            WaitHandle.WaitAll(doneEvents);
 
-        //    this.BestStrategy = Strategies.OrderByDescending(s => s.PnLManager.PnL).FirstOrDefault();
-        //    this.OnStateChanged(OptimizationState.Finished);
-        //}
+            //this.Strategies.ForEach(s => Log.AddLog(new LogMessage(Log, DateTime.Now, LogLevels.Debug,
+            //    String.Format("Opt: {0}m, {1}, {2}, {3} PnL: {4} ", 
+            //    s.Key.TimeFrame.Minutes, 
+            //    s.Key.FilterOptPeriod, s.Key.LongOptPeriods, s.Key.ShortOptPeriods, 
+            //    s.Value.PnLManager.PnL))));
+
+            this.BestStrategy = Strategies.OrderByDescending(kv => kv.Value.PnLManager.PnL).FirstOrDefault();
+            this.OnStateChanged(OptimizationState.Finished);
+        }
 
         protected void OnStateChanged(OptimizationState state)
         {
@@ -118,7 +127,7 @@ namespace SampleSMA
             }
         }
 
-        public EmulationTrader GetOptTraderContext(TimeSpan timeFrame, int filterOptPeriod, int longOptPeriod, int shortOptPeriod, ManualResetEvent doneEvent)
+        public EmulationTrader GetOptTraderContext(OptVarItem optVarItem, ManualResetEvent doneEvent)
         {
             // clone doesn't work for some reason
             var security = new Security
@@ -140,7 +149,7 @@ namespace SampleSMA
                 new[] { security },
                 new[] { portfolio })
             {
-                MarketTimeChangedInterval = timeFrame,
+                MarketTimeChangedInterval = optVarItem.TimeFrame,
                 StorageRegistry = _storage,
                 UseMarketDepth = true
             };
@@ -156,14 +165,15 @@ namespace SampleSMA
             trader.Connect();
             trader.StartExport();
 
-            var series = new CandleSeries(typeof(TimeFrameCandle), trader.Securities.First(), timeFrame);
+            var series = new CandleSeries(typeof(TimeFrameCandle), trader.Securities.First(), optVarItem.TimeFrame);
             var candleManager = new CandleManager(trader);
             candleManager.Start(series);
 
             var strategy = new EMAEventModelStrategy(series,
-                new ExponentialMovingAverage { Length = filterOptPeriod },
-                new ExponentialMovingAverage { Length = longOptPeriod }, 
-                new ExponentialMovingAverage { Length = shortOptPeriod })
+                new ExponentialMovingAverage { Length = optVarItem.FilterOptPeriod },
+                new ExponentialMovingAverage { Length = optVarItem.LongOptPeriods },
+                new ExponentialMovingAverage { Length = optVarItem.ShortOptPeriods },
+                optVarItem.TakeProfitUnit, optVarItem.StopLossUnit)
             {
                 Volume = this.Volume,
                 Portfolio = portfolio,
@@ -171,7 +181,7 @@ namespace SampleSMA
                 Trader = trader
             };
 
-            this.Strategies.Add(strategy);
+            this.Strategies.Add(optVarItem, strategy);
 
             trader.StateChanged += (oldState, newState) =>
             {
@@ -181,6 +191,9 @@ namespace SampleSMA
                 }
                 else if (trader.State == EmulationStates.Stopped)
                 {
+                    trader = null;
+                    GC.Collect();
+
                     doneEvent.Set();
                 }        
             };
@@ -190,15 +203,35 @@ namespace SampleSMA
 
         public struct OptVarItem
         {
+            public TimeSpan TimeFrame;
+
             public int FilterOptPeriod;
             public int LongOptPeriods;
             public int ShortOptPeriods;
 
-            public OptVarItem(int filterOptPeriod, int longOptPeriods, int shortOptPeriods)
+            public Unit TakeProfitUnit;
+            public Unit StopLossUnit;
+
+            public OptVarItem(TimeSpan timeFrame, 
+                int filterOptPeriod, int longOptPeriods, int shortOptPeriods,
+                Unit takeProfitUnit, Unit stopLossUnit)
             {
+                TimeFrame = timeFrame;
+
                 FilterOptPeriod = filterOptPeriod;
                 LongOptPeriods = longOptPeriods;
                 ShortOptPeriods = shortOptPeriods;
+
+                TakeProfitUnit = takeProfitUnit;
+                StopLossUnit = stopLossUnit;
+            }
+
+            public override string ToString()
+            {
+                return String.Format("{0}m, {1}, {2}, {3}, {4}tp, {5}sl",
+                                     this.TimeFrame.Minutes,
+                                     this.FilterOptPeriod, this.LongOptPeriods, this.ShortOptPeriods,
+                                     this.TakeProfitUnit, this.StopLossUnit);
             }
         }
 
@@ -206,13 +239,42 @@ namespace SampleSMA
         {
             List<OptVarItem> result = new List<OptVarItem>();
 
-            for (int a = 90; a <= 90; a += 10)
+            //foreach (int t in new[] { 1, 5, 10 })
+            //{
+            //    for (int a = 90; a <= 90; a += 10)
+            //    {
+            //        for (int b = 12; b <= 15; b++)
+            //        {
+            //            for (int c = 9; c <= 11; c++)
+            //            {
+            //                for (int tp = 40; tp < 70; tp += 10)
+            //                {
+            //                    for (int sl = 30; sl < 50; sl += 10)
+            //                    {
+            //                        result.Add(new OptVarItem(TimeSpan.FromMinutes(t), a, b, c, tp, sl));
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+
+            foreach (int t in new[] { 1, 5, 10 })
             {
-                for (int b = 12; b <= 15; b += 1)
+                for (int a = 90; a <= 90; a += 10)
                 {
-                    for (int c = 9; c <= 11; c += 1)
+                    for (int b = 12; b <= 15; b++)
                     {
-                        result.Add(new OptVarItem(a, b, c));
+                        for (int c = 9; c <= 11; c++)
+                        {
+                            for (int tp = 40; tp < 50; tp += 10)
+                            {
+                                for (int sl = 30; sl < 40; sl += 10)
+                                {
+                                    result.Add(new OptVarItem(TimeSpan.FromMinutes(t), a, b, c, tp, sl));
+                                }
+                            }
+                        }
                     }
                 }
             }

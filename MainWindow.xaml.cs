@@ -31,18 +31,31 @@ namespace SampleSMA
 {
 	public partial class MainWindow
 	{
-		private readonly TimeSpan _timeFrame = TimeSpan.FromMinutes(10);
+	    private string _version = "K1.1";
+
 		private ITrader _trader;
         private EMAEventModelStrategy _strategy;
 		private CandleManager _candleManager;
 		private Security _security;
 
-        private int _filterMAPeriod = 84;
-        private int _longMAPeriod = 12;
-        private int _shortMAPeriod = 9;
+        private EMAStrategyOptimizer.OptVarItem _mainOptVarItem = new EMAStrategyOptimizer.OptVarItem(TimeSpan.FromMinutes(1), 90, 12, 11, 20, 40);
+        private EMAStrategyOptimizer.OptVarItem MainOptVarItem
+        {
+            get { return _mainOptVarItem; }
+            set
+            {
+                _mainOptVarItem = value;
 
-        private LogManager _logManager = new LogManager();
-        private SimpleLogSource _log = new SimpleLogSource() { Name = "Main App" };
+                this.Title = String.Format("{0} - {1}",
+                                           this._version, value);
+
+                _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Warning,
+                                           String.Format("MainOptVarItem have been changed: {0}", value)));
+            }
+        }
+
+	    private readonly LogManager _logManager = new LogManager();
+        private readonly SimpleLogSource _log = new SimpleLogSource { Name = "Main App" };
 
         // Chart objects
         private readonly ChartArea _area;
@@ -57,9 +70,11 @@ namespace SampleSMA
         private ChartIndicatorElement _filterMaElem;
 	    private ChartTradeElement _tradeElem;
 
-		public MainWindow()
+	    public MainWindow()
 		{
 			InitializeComponent();
+
+            this.Title = String.Format("{0} - {1}", this._version, MainOptVarItem);
 
 			// изменяет текущий формат, чтобы нецелое числа интерпритировалось как разделенное точкой.
 			var cci = new CultureInfo(Thread.CurrentThread.CurrentCulture.Name) { NumberFormat = { NumberDecimalSeparator = "." } };
@@ -181,12 +196,13 @@ namespace SampleSMA
             _candleManager.Sources.OfType<TimeFrameCandleBuilder>().Single().Sources.Add(cbs);
 
             // регистрируем наш тайм-фрейм
-            var series = new CandleSeries(typeof(TimeFrameCandle), _security, _timeFrame);
+            var series = new CandleSeries(typeof(TimeFrameCandle), _security, this.MainOptVarItem.TimeFrame);
 
             _strategy = new EMAEventModelStrategy(series,
-                new ExponentialMovingAverage { Length = this._filterMAPeriod },
-                new ExponentialMovingAverage { Length = this._longMAPeriod }, 
-                new ExponentialMovingAverage { Length = this._shortMAPeriod })
+                new ExponentialMovingAverage { Length = this.MainOptVarItem.FilterOptPeriod},
+                new ExponentialMovingAverage { Length = this.MainOptVarItem.LongOptPeriods },
+                new ExponentialMovingAverage { Length = this.MainOptVarItem.ShortOptPeriods },
+                this.MainOptVarItem.TakeProfitUnit, this.MainOptVarItem.StopLossUnit)
             {
                 Volume = this.Volume,
                 Security = _security,
@@ -198,7 +214,7 @@ namespace SampleSMA
             _candleManager.Start(series, DateTime.Now.AddDays(-3), DateTime.MaxValue);
 
             _strategy.OrderRegistered += OnOrderRegistered;
-            _strategy.PropertyChanged += OnStrategyPropertyChanged;
+            _strategy.PropertyChanged += (o, args) => this.GuiAsync(() => OnStrategyPropertyChanged(o, args));
             _strategy.NewMyTrades += OnNewTrades;
 
             _logManager.Sources.Add(_strategy);
@@ -211,6 +227,7 @@ namespace SampleSMA
 
         private void OnHistoryStartClick(object sender, RoutedEventArgs e)
         {
+            btnHistoryStart.IsEnabled = false;
             this.InitGrids();
 
             // создаем тестовый инструмент, на котором будет производится тестирование
@@ -250,8 +267,8 @@ namespace SampleSMA
                 Log = _log
             };
 
-            _trader = optimizer.GetOptTraderContext(this._timeFrame, this._filterMAPeriod, this._longMAPeriod, this._shortMAPeriod, new ManualResetEvent(false));
-            _strategy = optimizer.Strategies[0];
+            _trader = optimizer.GetOptTraderContext(this.MainOptVarItem, new ManualResetEvent(false));
+            _strategy = optimizer.Strategies.FirstOrDefault().Value;
 
             this.InitChart(_strategy);
 
@@ -276,8 +293,11 @@ namespace SampleSMA
                     nSegment += 1;
                     sSegment = segment * nSegment;
 
-                    this.UpdateStrategyStat(_strategy);
-                    this.GuiAsync(() => this.pbHistoryTestProgress.Value = nSegment);
+                    this.GuiAsync(() =>
+                    {
+                        this.pbHistoryTestProgress.Value = nSegment;
+                        this.UpdateStrategyStat(_strategy);
+                    });
                 }
             };
 
@@ -289,32 +309,26 @@ namespace SampleSMA
                 {
                     sw.Stop();
 
-                    this.UpdateStrategyStat(_strategy);
-                    _strategy.CandleSeries.GetCandles<TimeFrameCandle>().ForEach(DrawCandleAndEma);
-                    _strategy.Trader.MyTrades.ForEach(DrawTrade);
-
                     this.GuiAsync(() =>
                     {
+                        this.UpdateStrategyStat(_strategy);
+                        _strategy.CandleSeries.GetCandles<TimeFrameCandle>().ForEach(DrawCandleAndEma);
+                        _strategy.Trader.MyTrades.ForEach(DrawTrade);
+
                         this.pbHistoryTestProgress.Value = 0;
                         btnHistoryStart.IsEnabled = true;
                     });
 
                     _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Info,
-                            String.Format("History testing done ({0}). Result: {1}, {2}, {3}. PnL: {4} ",
-                                sw.Elapsed,
-                                _strategy.FilterMA.Length,
-                                _strategy.LongMA.Length,
-                                _strategy.ShortMA.Length,
-                                _strategy.PnLManager.PnL)));
+                                               String.Format("History testing done ({0}). Result: PnL: {1}, {2}",
+                                                             sw.Elapsed,
+                                                             _strategy.PnLManager.PnL,
+                                                             this.MainOptVarItem
+                                                   )));
                 }
                 else if (((EmulationTrader)_trader).State == EmulationStates.Started)
                 {
                     sw.Start();
-
-                    this.GuiAsync(() =>
-                    {
-                        btnHistoryStart.IsEnabled = false;
-                    });
                 }
             };
 
@@ -327,74 +341,87 @@ namespace SampleSMA
             ((EmulationTrader)_trader).Start(startTime, stopTime);
         }
 
-        //private void btnOptimize_Click(object sender, RoutedEventArgs e)
-        //{
-        //    this.GuiAsync(() =>
-        //    {
-        //        btnOptimize.IsEnabled = false;
-        //    });
+        private void OnOptimizeClick(object sender, RoutedEventArgs e)
+        {
+            btnOptimize.IsEnabled = false;
+            _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Info, "Optimization is beginning.."));
 
-        //    // создаем тестовый инструмент, на котором будет производится тестирование
-        //    var security = new Security
-        //    {
-        //        Id = this.txtSecurityId.Text, // по идентификатору инструмента будет искаться папка с историческими маркет данными
-        //        Code = this.txtSecurityCode.Text,
-        //        Name = this.txtSecurityCode.Text,
-        //        MinStepSize = 1,
-        //        MinStepPrice = 1,
-        //        Exchange = Exchange.Rts,
-        //    };
+            this.InitGrids();
 
-        //    var storageRegistry = new StorageRegistry();
-        //    ((LocalMarketDataDrive)storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
+            // создаем тестовый инструмент, на котором будет производится тестирование
+            var security = new Security
+            {
+                Id = this.txtSecurityId.Text, // по идентификатору инструмента будет искаться папка с историческими маркет данными
+                Code = this.txtSecurityCode.Text,
+                Name = this.txtSecurityCode.Text,
+                MinStepSize = 1,
+                MinStepPrice = 1,
+                Exchange = Exchange.Rts,
+            };
 
-        //    var portfolio = new Portfolio { Name = "test account", BeginValue = 30000m };
+            var storageRegistry = new StorageRegistry();
+            ((LocalMarketDataDrive)storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
 
-        //    DateTime startTime;
-        //    DateTime stopTime;
+            var portfolio = new Portfolio { Name = "test account", BeginValue = 30000m };
 
-        //    if (!DateTime.TryParse(txtHistoryRangeEnd.Text, out stopTime))
-        //    {
-        //        stopTime = DateTime.Now;
-        //        txtHistoryRangeEnd.Text = stopTime.ToString();
-        //    }
+            DateTime startTime;
+            DateTime stopTime;
 
-        //    if (!DateTime.TryParse(txtHistoryRangeBegin.Text, out startTime))
-        //    {
-        //        startTime = stopTime.AddDays(-3);
-        //        txtHistoryRangeBegin.Text = startTime.ToString();
-        //    }
+            if (!DateTime.TryParse(txtHistoryRangeEnd.Text, out stopTime))
+            {
+                stopTime = DateTime.Now;
+                txtHistoryRangeEnd.Text = stopTime.ToString();
+            }
 
-        //    Stopwatch sw = new Stopwatch();
+            if (!DateTime.TryParse(txtHistoryRangeBegin.Text, out startTime))
+            {
+                startTime = stopTime.AddDays(-3);
+                txtHistoryRangeBegin.Text = startTime.ToString();
+            }
 
-        //    EMAStrategyOptimizer optimizer = new EMAStrategyOptimizer(security, storageRegistry, portfolio, startTime, stopTime)
-        //        {
-        //            Volume = this.Volume,
-        //            Log = _log
-        //        };
+            Stopwatch sw = new Stopwatch();
 
-        //    optimizer.StateChanged += () =>
-        //    {
-        //        if (optimizer.State == OptimizationState.Finished)
-        //        {
-        //            sw.Stop();
+            EMAStrategyOptimizer optimizer = new EMAStrategyOptimizer(security, storageRegistry, portfolio, startTime, stopTime)
+                {
+                    Volume = this.Volume,
+                    Log = _log
+                };
 
-        //            _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Info, String.Format("Opt done ({0}). The best startegy: {1}, {2}, {3} PnL: {4}",
-        //                sw.Elapsed,
-        //                optimizer.BestStrategy.FilterMA.Length,
-        //                optimizer.BestStrategy.LongMA.Length, optimizer.BestStrategy.ShortMA.Length,
-        //                optimizer.BestStrategy.PnLManager.PnL)));
+            optimizer.StateChanged += () =>
+            {
+                if (optimizer.State == OptimizationState.Finished)
+                {
+                    sw.Stop();
 
-        //            this.GuiAsync(() =>
-        //            {
-        //                btnOptimize.IsEnabled = true;
-        //            });
-        //        }
-        //    };
+                    _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Info,
+                                               String.Format("Opt done ({0}). The best startegy: PnL: {1}, {2}",
+                                                             sw.Elapsed,
+                                                             optimizer.BestStrategy.Value.PnLManager.PnL,
+                                                             optimizer.BestStrategy.Key
+                                                   )));
 
-        //    sw.Start();
-        //    optimizer.Optimize();
-        //}
+                    optimizer.BestStrategy.Value.Trader.Orders.ForEach(OnOrderRegistered);
+                    OnNewTrades(optimizer.BestStrategy.Value.Trader.MyTrades);
+
+                    this.GuiAsync(() =>
+                    {
+                        this.UpdateStrategyStat(optimizer.BestStrategy.Value);
+                        this.InitChart(optimizer.BestStrategy.Value);
+
+                        optimizer.BestStrategy.Value.CandleSeries.GetCandles<TimeFrameCandle>().ForEach(DrawCandleAndEma);
+                        optimizer.BestStrategy.Value.Trader.MyTrades.ForEach(DrawTrade);
+
+                        // Replace MainOptVarItem with optimized one
+                        this.MainOptVarItem = optimizer.BestStrategy.Key;
+
+                        btnOptimize.IsEnabled = true;
+                    });
+                }
+            };
+
+            sw.Start();
+            optimizer.Optimize();
+        }
 
         #endregion
 
@@ -452,22 +479,22 @@ namespace SampleSMA
                 var shortValue = new ChartIndicatorValue(_shortMA, _shortMA.Process(candle));
                 var filterValue = new ChartIndicatorValue(_filterMA, _filterMA.Process(candle));
 
-                this.GuiAsync(() => _chart.ProcessValues(candle.OpenTime, new Dictionary<IChartElement, object>
+                _chart.ProcessValues(candle.OpenTime, new Dictionary<IChartElement, object>
                 {
                     {_candlesElem, candle},
                     {_longMaElem, longValue},
                     {_shortMaElem, shortValue},
                     {_filterMaElem, filterValue}
-                }));
+                });
             }
         }
 
         private void DrawTrade(MyTrade trade)
         {
-            this.GuiAsync(() => _chart.ProcessValues(trade.Trade.Time, new Dictionary<IChartElement, object>
-                {
-                    {_tradeElem, trade}
-                }));
+            _chart.ProcessValues(trade.Trade.Time, new Dictionary<IChartElement, object>
+            {
+                {_tradeElem, trade}
+            });
         }
 
         #endregion
@@ -515,14 +542,12 @@ namespace SampleSMA
 
         private void UpdateStrategyStat(EMAEventModelStrategy strategy)
         {
-            this.GuiAsync(() =>
-            {
-                this.Status.Content = strategy.ProcessState;
-                this.PnL.Content = strategy.PnLManager.PnL;
-                this.Slippage.Content = strategy.SlippageManager.Slippage;
-                this.Position.Content = strategy.PositionManager.Position;
-                this.Latency.Content = strategy.LatencyManager.LatencyRegistration;
-            });
+            this.Status.Content = strategy.ProcessState;
+            this.TradesNumber.Content = strategy.Trader.MyTrades.Count();
+            this.PnL.Content = strategy.PnLManager.PnL;
+            this.Slippage.Content = strategy.SlippageManager.Slippage;
+            this.Position.Content = strategy.PositionManager.Position;
+            this.Latency.Content = strategy.LatencyManager.LatencyRegistration;
 
             this._log.AddLog(
                 new LogMessage(this._log, DateTime.Now, LogLevels.Info,

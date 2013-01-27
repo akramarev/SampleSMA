@@ -30,7 +30,9 @@ namespace SampleSMA
         public delegate void CandleProcessedHandler(Candle candle);
         public event CandleProcessedHandler CandleProcessed;
 
-        public EMAEventModelStrategy(CandleSeries series, ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA)
+        public EMAEventModelStrategy(CandleSeries series, 
+            ExponentialMovingAverage filterMA, ExponentialMovingAverage longMA, ExponentialMovingAverage shortMA,
+            Unit takeProfitUnit, Unit stopLossUnit)
 		{
             this.FilterMA = filterMA;
 			this.LongMA = longMA;
@@ -38,8 +40,8 @@ namespace SampleSMA
 
             this.CandleSeries = series;
 
-            this.TakeProfitUnit = 20;
-            this.StopLossUnit = 35;
+            this.TakeProfitUnit = takeProfitUnit;
+            this.StopLossUnit = stopLossUnit;
 
             this.StopTradingUnit = this.StopLossUnit * 3;
 
