@@ -267,8 +267,9 @@ namespace SampleSMA
                 Log = _log
             };
 
-            _trader = optimizer.GetOptTraderContext(this.MainOptVarItem, new ManualResetEvent(false));
-            _strategy = optimizer.Strategies.FirstOrDefault().Value;
+            var context = optimizer.GetOptContext(this.MainOptVarItem, new ManualResetEvent(false));
+            _trader = context.Value.Trader;
+            _strategy = context.Value;
 
             this.InitChart(_strategy);
 
@@ -396,23 +397,23 @@ namespace SampleSMA
                     _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Info,
                                                String.Format("Opt done ({0}). The best startegy: PnL: {1}, {2}",
                                                              sw.Elapsed,
-                                                             optimizer.BestStrategy.Value.PnLManager.PnL,
-                                                             optimizer.BestStrategy.Key
+                                                             optimizer.BestResult.Value.PnLManager.PnL,
+                                                             optimizer.BestResult.Key
                                                    )));
 
-                    optimizer.BestStrategy.Value.Trader.Orders.ForEach(OnOrderRegistered);
-                    OnNewTrades(optimizer.BestStrategy.Value.Trader.MyTrades);
+                    optimizer.BestResult.Value.Trader.Orders.ForEach(OnOrderRegistered);
+                    OnNewTrades(optimizer.BestResult.Value.Trader.MyTrades);
 
                     this.GuiAsync(() =>
                     {
-                        this.UpdateStrategyStat(optimizer.BestStrategy.Value);
-                        this.InitChart(optimizer.BestStrategy.Value);
+                        this.UpdateStrategyStat(optimizer.BestResult.Value);
+                        this.InitChart(optimizer.BestResult.Value);
 
-                        optimizer.BestStrategy.Value.CandleSeries.GetCandles<TimeFrameCandle>().ForEach(DrawCandleAndEma);
-                        optimizer.BestStrategy.Value.Trader.MyTrades.ForEach(DrawTrade);
+                        optimizer.BestResult.Value.CandleSeries.GetCandles<TimeFrameCandle>().ForEach(DrawCandleAndEma);
+                        optimizer.BestResult.Value.Trader.MyTrades.ForEach(DrawTrade);
 
                         // Replace MainOptVarItem with optimized one
-                        this.MainOptVarItem = optimizer.BestStrategy.Key;
+                        this.MainOptVarItem = optimizer.BestResult.Key;
 
                         btnOptimize.IsEnabled = true;
                     });

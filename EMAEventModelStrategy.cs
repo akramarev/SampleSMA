@@ -200,8 +200,8 @@ namespace SampleSMA
         {
             foreach (MyTrade trade in trades)
             {
-                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) {UseQuoting = this.UseQuoting};
-                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = this.UseQuoting };
+                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) {UseQuoting = this.UseQuoting, IsTrailing = true };
+                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = this.UseQuoting, IsTrailing = true };
 
                 ChildStrategies.Add(new TakeProfitStopLossStrategy(takeProfit, stopLoss));
 
