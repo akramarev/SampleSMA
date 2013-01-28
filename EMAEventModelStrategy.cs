@@ -61,7 +61,6 @@ namespace SampleSMA
 
             this.WhenPnLLess(this.StopTradingUnit)
                 .Do(StopTradingOnNotBeckhamsDay)
-                .Once()
                 .Apply(this);
 
             base.OnStarted();
@@ -111,12 +110,12 @@ namespace SampleSMA
             Order order = null;
 
             // calculate order direction
-            if (xUp)
+            if (xUp || true)
             {
-                if (upFilter)
+                if (upFilter || true)
                 {
                     direction = OrderDirections.Buy;
-                    price = (this.UseQuoting) ? base.Security.GetMarketPrice(direction) : base.Security.GetCurrentPrice(direction).Value;
+                    price = (this.UseQuoting) ? Security.GetMarketPrice(direction) : Security.LastTrade.Price;
                     order = this.CreateOrder(direction, price, base.Volume);
 
                     this.AddInfoLog("Xing Up appeared (MarketTime: {0}), and filter allowed the deal.", base.Security.GetMarketTime());
@@ -132,7 +131,7 @@ namespace SampleSMA
                 if (downFilter)
                 {
                     direction = OrderDirections.Sell;
-                    price = (this.UseQuoting) ? base.Security.GetMarketPrice(direction) : base.Security.GetCurrentPrice(direction).Value;
+                    price = (this.UseQuoting) ? Security.GetMarketPrice(direction) : Security.LastTrade.Price;
                     order = this.CreateOrder(direction, price, base.Volume);
 
                     this.AddInfoLog("Xing Down appeared (MarketTime: {0}), and filter allowed the deal.", base.Security.GetMarketTime());
@@ -153,22 +152,24 @@ namespace SampleSMA
                         LastTradeQuotingStrategy quotingStrategy = new LastTradeQuotingStrategy(order, new Unit());
                         base.ChildStrategies.Add(quotingStrategy);
 
-                        quotingStrategy
+                        this.Trader
                             .WhenNewMyTrades()
                             .Do(ProtectMyNewTrades)
-                            .Apply(this);
+                            .Once()
+                            .Apply();
+
+                        //quotingStrategy.NewMyTrades += ProtectMyNewTrades;
 
                         //quotingStrategy
                         //    .WhenOrderRegistered()
                         //    .Do(qOrder =>
                         //    {
-                        //        this
-                        //            .WhenNewMyTrades()
+                        //        qOrder
+                        //            .WhenNewTrades()
                         //            .Do(ProtectMyNewTrades)
-                        //            .Until(qOrder.IsMatched)
-                        //            .Apply(this);
+                        //            .Apply();
                         //    })
-                        //    .Apply(this);
+                        //    .Apply();
                     }
                     else
                     {
@@ -176,7 +177,7 @@ namespace SampleSMA
                             .WhenNewTrades()
                             .Do(ProtectMyNewTrades)
                             .Until(order.IsMatched)
-                            .Apply(this);
+                            .Apply();
 
                         RegisterOrder(order);
                     }
@@ -203,7 +204,12 @@ namespace SampleSMA
                 var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) {UseQuoting = this.UseQuoting, IsTrailing = true };
                 var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = this.UseQuoting, IsTrailing = true };
 
-                ChildStrategies.Add(new TakeProfitStopLossStrategy(takeProfit, stopLoss));
+                var takeProfitStopLoss = new TakeProfitStopLossStrategy(takeProfit, stopLoss)
+                                             {
+                                                 LogLevel = LogLevels.Debug
+                                             };
+
+                ChildStrategies.Add(takeProfitStopLoss);
 
                 this.AddInfoLog("Hurrah, we have new trade (#{0}) and I've protected it.", trade.Trade.Id);
             };

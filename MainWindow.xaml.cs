@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Reflection;
+using System.Windows.Media;
 using Ecng.Collections;
 using Ecng.Common;
 using Ecng.Xaml;
@@ -38,7 +39,12 @@ namespace SampleSMA
 		private CandleManager _candleManager;
 		private Security _security;
 
-        private EMAStrategyOptimizer.OptVarItem _mainOptVarItem = new EMAStrategyOptimizer.OptVarItem(TimeSpan.FromMinutes(1), 90, 12, 11, 20, 40);
+        private EMAStrategyOptimizer.OptVarItem _mainOptVarItem 
+            = new EMAStrategyOptimizer.OptVarItem(
+                TimeSpan.FromMinutes(1), 
+                84, 12, 11, 
+                20, 40);
+
         private EMAStrategyOptimizer.OptVarItem MainOptVarItem
         {
             get { return _mainOptVarItem; }
@@ -100,12 +106,16 @@ namespace SampleSMA
         {
             if (_trader != null)
             {
-                if (_trader.IsConnected)
+                try
                 {
-                    _trader.Disconnect();
-                }
+                    if (_trader.IsConnected)
+                    {
+                        _trader.Disconnect();
+                    }
                 
-                _trader.Dispose();
+                    _trader.Dispose();
+                }
+                catch {}
             }
 
             if (this.Path.Text.IsEmpty())
@@ -137,6 +147,11 @@ namespace SampleSMA
                     {
                         _security = security;
 
+                        // fix different bugs in real security
+                        _security.MinPrice = 1;
+                        _security.MaxPrice = Decimal.MaxValue;
+                        _security.Exchange.IsSupportAtomicReRegister = false;
+
                         this.GuiAsync(() =>
                         {
                             this.Start.IsEnabled = true;
@@ -148,14 +163,8 @@ namespace SampleSMA
                     }
                 });
 
-                this.GuiAsync(() =>
-                {
-                    rbFightMode.IsEnabled = false;
-                    rbTrainingMode.IsEnabled = false;
-                    this.ConnectBtn.IsEnabled = false;
-                });
-
                 _trader.StartExport();
+                _trader.RegisterMarketDepth(_security);
             };
 
             _trader.ConnectionError += ex =>
@@ -174,7 +183,6 @@ namespace SampleSMA
             if (_strategy != null && _strategy.ProcessState != ProcessStates.Stopped)
             {
                 _strategy.Stop();
-                this.Start.Content = "Start";
                 return;
             }
 
@@ -186,7 +194,6 @@ namespace SampleSMA
             this.InitGrids();
 
             _candleManager = new CandleManager(_trader);
-            _candleManager.Processing += (candleSeries, candle) => DrawCandleAndEma(candle);
 
             // Добавление в источник свечек TimeFrameCandleBuilder источник данных в виде файлов гидры
             var storageRegistry = new StorageRegistry();
@@ -210,18 +217,45 @@ namespace SampleSMA
                 Trader = _trader,
             };
 
-            this.InitChart(_strategy);
-            _candleManager.Start(series, DateTime.Now.AddDays(-3), DateTime.MaxValue);
+            DateTime startTime;
+            if (!DateTime.TryParse(txtHistoryRangeBegin.Text, out startTime))
+            {
+                startTime = DateTime.Now.AddDays(-3);
+                txtHistoryRangeBegin.Text = startTime.ToString();
+            }
 
-            _strategy.OrderRegistered += OnOrderRegistered;
+            this.InitChart(_strategy);
+            _candleManager.Processing += (candleSeries, candle) =>
+            {
+                if (candle.State == CandleStates.Finished)
+                {
+                    this.GuiAsync(() => DrawCandleAndEma(candle));
+                }
+            };
+            _candleManager.Start(series, startTime, DateTime.MaxValue);
+
+            // Subscribe UI to all strategy actions
+            _strategy.Trader.NewOrders += orders => orders.ForEach(OnOrderRegistered);
+            _strategy.Trader.NewMyTrades += OnNewTrades;
+            _strategy.Trader.NewMyTrades += trades => this.GuiAsync(() => trades.ForEach(DrawTrade));
             _strategy.PropertyChanged += (o, args) => this.GuiAsync(() => OnStrategyPropertyChanged(o, args));
-            _strategy.NewMyTrades += OnNewTrades;
+            _strategy.ProcessStateChanged += strategy =>
+            {
+                if (strategy.ProcessState == ProcessStates.Started)
+                {
+                    this.Start.Content = "Stop";
+                }
+                else if (strategy.ProcessState == ProcessStates.Stopped)
+                {
+                    this.Start.Content = "Start";
+                }
+            };
 
             _logManager.Sources.Add(_strategy);
 
             // запускаем процесс получения стакана, необходимый для работы алгоритма котирования
-            //_trader.RegisterMarketDepth(_strategy.Security);
             _strategy.Start();
+
             this.Start.Content = "Stop";
         }
 
@@ -236,6 +270,8 @@ namespace SampleSMA
                 Id = this.txtSecurityId.Text, // по идентификатору инструмента будет искаться папка с историческими маркет данными
                 Code = this.txtSecurityCode.Text,
                 Name = this.txtSecurityCode.Text,
+                MinPrice = 1,
+                MaxPrice = Decimal.MaxValue,
                 MinStepSize = 1,
                 MinStepPrice = 1,
                 Exchange = Exchange.Rts,
@@ -319,6 +355,10 @@ namespace SampleSMA
                         this.pbHistoryTestProgress.Value = 0;
                         btnHistoryStart.IsEnabled = true;
                     });
+
+                    // clean stupid dictionary
+                    var value = _trader.GetType().GetField("#=qUTBJ0c9uFmGWYx4a3_oZjOoV9pJDtArCh9oL5k$U8DQ=", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(_trader);
+                    value.GetType().GetMethod("Clear").Invoke(value, null);
 
                     _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Info,
                                                String.Format("History testing done ({0}). Result: PnL: {1}, {2}",
@@ -447,6 +487,7 @@ namespace SampleSMA
             {
                 Title = "LongMA",
                 Indicator = _longMA,
+                Color = Color.FromRgb(0, 255, 0)
             };
             _area.Elements.Add(_longMaElem);
 
@@ -454,6 +495,7 @@ namespace SampleSMA
             {
                 Title = "ShortMA",
                 Indicator = _shortMA,
+                Color = Color.FromRgb(255, 0, 0)
             };
             _area.Elements.Add(_shortMaElem);
 
@@ -461,6 +503,7 @@ namespace SampleSMA
             {
                 Title = "FilterMA",
                 Indicator = _filterMA,
+                Color = Color.FromRgb(0, 0, 255)
             };
             _area.Elements.Add(_filterMaElem);
 
@@ -584,12 +627,17 @@ namespace SampleSMA
         {
             if (_trader != null)
             {
-                if (_trader.IsExportStarted)
+                try
                 {
-                    _trader.StopExport();
-                }
+                    if (_trader.IsExportStarted)
+                    {
+                        _trader.StopExport();
+                    }
 
-                _trader.Dispose();
+                    _trader.Dispose();
+                }
+                catch
+                { }
             }
 
             base.OnClosing(e);
