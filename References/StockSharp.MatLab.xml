@@ -159,7 +159,7 @@
         </member>
         <member name="E:StockSharp.MatLab.MatLabTrader.MarketTimeChanged">
             <summary>
-            Событие, сигнализирующее об изменении текущего времени на биржах <see cref="P:StockSharp.BusinessEntities.ITrader.Exchanges"/>.
+            Событие, сигнализирующее об изменении текущего времени на площадках <see cref="P:StockSharp.BusinessEntities.ITrader.ExchangeBoards"/>.
             Передается разница во времени, прошедшее с последнего вызова события. Первый раз событие передает значение <see cref="F:System.TimeSpan.Zero"/>.
             </summary>
         </member>

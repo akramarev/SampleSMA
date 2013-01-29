@@ -4,12 +4,15 @@
         <name>StockSharp.AlfaDirect</name>
     </assembly>
     <members>
-        <member name="M:StockSharp.AlfaDirect.AlfaUtils.BoardCodeToSecurityType(System.String)">
+        <member name="T:StockSharp.AlfaDirect.AlfaException">
             <summary>
-            Converts a board code to the security type
+            Исключение, содержащее код и текст ошибки.
             </summary>
-            <param name="boardCode">Код торгового раздела: FUTURES, MOPTIONS, MCX_SHR_LSTB, MCX_SHR_NLST...</param>
-            <returns>Security type</returns>
+        </member>
+        <member name="P:StockSharp.AlfaDirect.AlfaException.Code">
+            <summary>
+            Код ошибки.
+            </summary>
         </member>
         <member name="T:StockSharp.AlfaDirect.AlfaExtensions">
             <summary>
@@ -22,13 +25,6 @@
             </summary>
             <param name="security">Инструмент.</param>
             <returns>Валюта.</returns>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetOpenInteres(StockSharp.BusinessEntities.Security)">
-            <summary>
-            Получить значение открытого интереса по инструменту.
-            </summary>
-            <param name="security">Инструмент.</param>
-            <returns>Значение открытого интереса.</returns>
         </member>
         <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetPaperNo(StockSharp.BusinessEntities.Security)">
             <summary>
@@ -64,142 +60,39 @@
             http://stocksharp.com/forum/yaf_postsm21467_Optsiony-v-Al-fa-Diriekt.aspx#post21467
             </remarks>
         </member>
-        <member name="T:StockSharp.AlfaDirect.Xaml.AlfaSettings">
+        <member name="T:StockSharp.AlfaDirect.AlfaLimitOrderCondition">
             <summary>
-            Визуальная панель для редактирования настроек <see cref="T:StockSharp.AlfaDirect.AlfaTrader"/>.
-            </summary>
-            <summary>
-            AlfaSettings
+            Условие лимитной стоп-заявки.
             </summary>
         </member>
-        <member name="M:StockSharp.AlfaDirect.Xaml.AlfaSettings.#ctor">
-            <summary>
-            Создать <see cref="T:StockSharp.AlfaDirect.Xaml.AlfaSettings"/>.
-            </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.Xaml.AlfaSettings.InitializeComponent">
-            <summary>
-            InitializeComponent
-            </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaWrapper.GetPriceStepInfo(StockSharp.BusinessEntities.Security,System.Decimal@,System.Decimal@)">
-            <summary>
-            Получить информацию о минимальном шаге и его стоимости.
-            </summary>
-            <param name="security">Инструмент.</param>
-            <param name="step">Минимальный шаг цены.</param>
-            <param name="cost">Стоимость шага цены.</param>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.RngCryptoTransactionIdGenerator">
-            <summary>
-            Класс для генерации уникальных transaction id.
-            </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.RngCryptoTransactionIdGenerator.GetNextId">
-            <summary>
-            Получить следующий transaction id.
-            </summary>
-            <returns>
-            Следующий transaction id.
-            </returns>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.Properties.Resources">
-            <summary>
-              A strongly-typed resource class, for looking up localized strings, etc.
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.Properties.Resources.ResourceManager">
-            <summary>
-              Returns the cached ResourceManager instance used by this class.
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.Properties.Resources.Culture">
-            <summary>
-              Overrides the current thread's CurrentUICulture property for all
-              resource lookups using this strongly typed resource class.
-            </summary>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaLimitStopCondition">
-            <summary>
-            Условие лимитной стоп заявки.
-            </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaLimitStopCondition.Clone">
-            <summary>
-            Создать копию условия (копирование параметров условия).
-            </summary>
-            <returns>Копия условия.</returns>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaLimitStopCondition.StopPrice">
+        <member name="P:StockSharp.AlfaDirect.AlfaLimitOrderCondition.StopPrice">
             <summary>
             Стоп-цена.
             </summary>
         </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaLimitStopCondition.Slippage">
+        <member name="P:StockSharp.AlfaDirect.AlfaLimitOrderCondition.Slippage">
             <summary>
             Проскальзывание.
             </summary>
         </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaLimitStopTargetCondition">
+        <member name="T:StockSharp.AlfaDirect.AlfaTargetLimitOrderCondition">
             <summary>
-            Условие лимитной стоп заявки + цель.
+            Условие лимитной стоп-заявки + цель.
             </summary>
         </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaLimitStopTargetCondition.Clone">
-            <summary>
-            Создать копию условия (копирование параметров условия).
-            </summary>
-            <returns>Копия условия.</returns>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaLimitStopTargetCondition.StopPrice">
-            <summary>
-            Стоп-цена.
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaLimitStopTargetCondition.Slippage">
-            <summary>
-            Проскальзывание.
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaLimitStopTargetCondition.TargetPrice">
+        <member name="P:StockSharp.AlfaDirect.AlfaTargetLimitOrderCondition.TargetPrice">
             <summary>
             Цена фиксирования прибыли.
             </summary>
         </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaTrailingStopCondition">
+        <member name="T:StockSharp.AlfaDirect.AlfaTrailingOrderCondition">
             <summary>
             Условие заявки "скользящий стоп".
             </summary>
         </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrailingStopCondition.Clone">
-            <summary>
-            Создать копию условия (копирование параметров условия).
-            </summary>
-            <returns>Копия условия.</returns>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTrailingStopCondition.StartPrice">
-            <summary>
-            Начальная цена.
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTrailingStopCondition.Level">
+        <member name="P:StockSharp.AlfaDirect.AlfaTrailingOrderCondition.Level">
             <summary>
             Максимальное отклонение в противоположную сторону.
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTrailingStopCondition.Slippage">
-            <summary>
-            Проскальзывание.
-            </summary>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaException">
-            <summary>
-            Исключение, содержащее код и текст ошибки.
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaException.Code">
-            <summary>
-            Код ошибки.
             </summary>
         </member>
         <member name="T:StockSharp.AlfaDirect.AlfaTimeFrames">
@@ -490,6 +383,68 @@
         <member name="E:StockSharp.AlfaDirect.AlfaTrader.CandlesFinished">
             <summary>
             Событие появления исторических тайм-фрейм свечек от Альфа-Директ.
+            </summary>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.AlfaUtils.BoardCodeToSecurityType(System.String)">
+            <summary>
+            Converts a board code to the security type
+            </summary>
+            <param name="boardCode">Код торгового раздела: FUTURES, MOPTIONS, MCX_SHR_LSTB, MCX_SHR_NLST...</param>
+            <returns>Security type</returns>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.AlfaWrapper.GetPriceStepInfo(StockSharp.BusinessEntities.Security,System.Decimal@,System.Decimal@)">
+            <summary>
+            Получить информацию о минимальном шаге и его стоимости.
+            </summary>
+            <param name="security">Инструмент.</param>
+            <param name="step">Минимальный шаг цены.</param>
+            <param name="cost">Стоимость шага цены.</param>
+        </member>
+        <member name="T:StockSharp.AlfaDirect.RngCryptoTransactionIdGenerator">
+            <summary>
+            Класс для генерации уникальных transaction id.
+            </summary>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.RngCryptoTransactionIdGenerator.GetNextId">
+            <summary>
+            Получить следующий transaction id.
+            </summary>
+            <returns>
+            Следующий transaction id.
+            </returns>
+        </member>
+        <member name="T:StockSharp.AlfaDirect.Xaml.AlfaSettings">
+            <summary>
+            Визуальная панель для редактирования настроек <see cref="T:StockSharp.AlfaDirect.AlfaTrader"/>.
+            </summary>
+            <summary>
+            AlfaSettings
+            </summary>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.Xaml.AlfaSettings.#ctor">
+            <summary>
+            Создать <see cref="T:StockSharp.AlfaDirect.Xaml.AlfaSettings"/>.
+            </summary>
+        </member>
+        <member name="M:StockSharp.AlfaDirect.Xaml.AlfaSettings.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:StockSharp.AlfaDirect.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:StockSharp.AlfaDirect.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:StockSharp.AlfaDirect.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
             </summary>
         </member>
     </members>

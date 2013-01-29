@@ -149,8 +149,8 @@ namespace SampleSMA
 
                         // fix different bugs in real security
                         _security.MinPrice = 1;
-                        _security.MaxPrice = Decimal.MaxValue;
-                        _security.Exchange.IsSupportAtomicReRegister = false;
+                        _security.MaxPrice = 99999;
+                        _security.ExchangeBoard.IsSupportAtomicReRegister = false; // fixed quoting reregister error
 
                         this.GuiAsync(() =>
                         {
@@ -197,7 +197,8 @@ namespace SampleSMA
 
             // Добавление в источник свечек TimeFrameCandleBuilder источник данных в виде файлов гидры
             var storageRegistry = new StorageRegistry();
-            ((LocalMarketDataDrive)storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
+            ((LocalMarketDataDrive) storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
+            ((LocalMarketDataDrive) storageRegistry.DefaultDrive).UseAlphabeticPath = true;
 
             var cbs = new TradeStorageCandleBuilderSource { StorageRegistry = storageRegistry };
             _candleManager.Sources.OfType<TimeFrameCandleBuilder>().Single().Sources.Add(cbs);
@@ -271,14 +272,15 @@ namespace SampleSMA
                 Code = this.txtSecurityCode.Text,
                 Name = this.txtSecurityCode.Text,
                 MinPrice = 1,
-                MaxPrice = Decimal.MaxValue,
+                MaxPrice = 99999,
                 MinStepSize = 1,
                 MinStepPrice = 1,
-                Exchange = Exchange.Rts,
+                ExchangeBoard = ExchangeBoard.Forts,
             };
 
             var storageRegistry = new StorageRegistry();
-            ((LocalMarketDataDrive)storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
+            ((LocalMarketDataDrive) storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
+            ((LocalMarketDataDrive) storageRegistry.DefaultDrive).UseAlphabeticPath = true;
 
             var portfolio = new Portfolio { Name = "test account", BeginValue = 30000m };
 
@@ -357,8 +359,8 @@ namespace SampleSMA
                     });
 
                     // clean stupid dictionary
-                    var value = _trader.GetType().GetField("#=qUTBJ0c9uFmGWYx4a3_oZjOoV9pJDtArCh9oL5k$U8DQ=", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(_trader);
-                    value.GetType().GetMethod("Clear").Invoke(value, null);
+                    //var value = _trader.GetType().GetField("#=qUTBJ0c9uFmGWYx4a3_oZjOoV9pJDtArCh9oL5k$U8DQ=", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(_trader);
+                    //value.GetType().GetMethod("Clear").Invoke(value, null);
 
                     _log.AddLog(new LogMessage(_log, DateTime.Now, LogLevels.Info,
                                                String.Format("History testing done ({0}). Result: PnL: {1}, {2}",
@@ -397,11 +399,12 @@ namespace SampleSMA
                 Name = this.txtSecurityCode.Text,
                 MinStepSize = 1,
                 MinStepPrice = 1,
-                Exchange = Exchange.Rts,
+                ExchangeBoard = ExchangeBoard.Forts,
             };
 
             var storageRegistry = new StorageRegistry();
-            ((LocalMarketDataDrive)storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
+            ((LocalMarketDataDrive) storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
+            ((LocalMarketDataDrive) storageRegistry.DefaultDrive).UseAlphabeticPath = true;
 
             var portfolio = new Portfolio { Name = "test account", BeginValue = 30000m };
 
@@ -543,36 +546,6 @@ namespace SampleSMA
 
         #endregion
 
-        #region Interface Event Handlers
-
-        private void FindPath_Click(object sender, RoutedEventArgs e)
-        {
-            var dlg = new FolderBrowserDialog();
-
-            if (!this.Path.Text.IsEmpty())
-                dlg.SelectedPath = this.Path.Text;
-
-            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                this.Path.Text = dlg.SelectedPath;
-            }
-        }
-
-        private void btnFindHistoryPath_Click(object sender, RoutedEventArgs e)
-        {
-            var dlg = new FolderBrowserDialog();
-
-            if (!this.txtHistoryPath.Text.IsEmpty())
-                dlg.SelectedPath = this.txtHistoryPath.Text;
-
-            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                this.txtHistoryPath.Text = dlg.SelectedPath;
-            }
-        }
-
-        #endregion
-
         #region Helpers Event Handlers
 
         private void OnStrategyPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -655,8 +628,8 @@ namespace SampleSMA
 
         private void SetDefaultHistoryRange()
         {
-            txtHistoryRangeBegin.Text = (DateTime.Now.AddDays(-5).Date + Exchange.Rts.WorkingTime.Times[0].Min).ToString("g");
-            txtHistoryRangeEnd.Text = (DateTime.Now.Date + Exchange.Rts.WorkingTime.Times[2].Max).ToString("g");
+            txtHistoryRangeBegin.Text = (DateTime.Now.AddDays(-4).Date + ExchangeBoard.Forts.WorkingTime.Times[0].Min).ToString("g");
+            txtHistoryRangeEnd.Text = (DateTime.Now.AddDays(-1).Date + ExchangeBoard.Forts.WorkingTime.Times[2].Max).ToString("g");
         }
 
         #endregion
@@ -674,6 +647,36 @@ namespace SampleSMA
                 }
 
                 return result;
+            }
+        }
+
+        #endregion
+
+        #region Interface Event Handlers
+
+        private void FindPath_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new FolderBrowserDialog();
+
+            if (!this.Path.Text.IsEmpty())
+                dlg.SelectedPath = this.Path.Text;
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.Path.Text = dlg.SelectedPath;
+            }
+        }
+
+        private void btnFindHistoryPath_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new FolderBrowserDialog();
+
+            if (!this.txtHistoryPath.Text.IsEmpty())
+                dlg.SelectedPath = this.txtHistoryPath.Text;
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.txtHistoryPath.Text = dlg.SelectedPath;
             }
         }
 

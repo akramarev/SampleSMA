@@ -54,7 +54,7 @@ namespace SampleSMA
 
             this._strategyStartTime = this.GetMarketTime();
 
-            CandleSeries
+            this.CandleSeries
                 .WhenCandlesFinished()
                 .Do(ProcessCandle)
                 .Apply(this);
@@ -110,9 +110,9 @@ namespace SampleSMA
             Order order = null;
 
             // calculate order direction
-            if (xUp || true)
+            if (xUp)
             {
-                if (upFilter || true)
+                if (upFilter)
                 {
                     direction = OrderDirections.Buy;
                     price = (this.UseQuoting) ? Security.GetMarketPrice(direction) : Security.LastTrade.Price;
@@ -157,19 +157,6 @@ namespace SampleSMA
                             .Do(ProtectMyNewTrades)
                             .Once()
                             .Apply();
-
-                        //quotingStrategy.NewMyTrades += ProtectMyNewTrades;
-
-                        //quotingStrategy
-                        //    .WhenOrderRegistered()
-                        //    .Do(qOrder =>
-                        //    {
-                        //        qOrder
-                        //            .WhenNewTrades()
-                        //            .Do(ProtectMyNewTrades)
-                        //            .Apply();
-                        //    })
-                        //    .Apply();
                     }
                     else
                     {
@@ -201,14 +188,13 @@ namespace SampleSMA
         {
             foreach (MyTrade trade in trades)
             {
-                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) {UseQuoting = this.UseQuoting, IsTrailing = true };
-                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = this.UseQuoting, IsTrailing = true };
+                //var takeProfit = new TakeProfitStrategy(trade, 2) { UseQuoting = this.UseQuoting, IsTrailing = true };
+                //var stopLoss = new StopLossStrategy(trade, 1) { UseQuoting = this.UseQuoting, IsTrailing = true };
 
-                var takeProfitStopLoss = new TakeProfitStopLossStrategy(takeProfit, stopLoss)
-                                             {
-                                                 LogLevel = LogLevels.Debug
-                                             };
+                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) { UseQuoting = false };
+                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = false };
 
+                var takeProfitStopLoss = new TakeProfitStopLossStrategy(takeProfit, stopLoss);
                 ChildStrategies.Add(takeProfitStopLoss);
 
                 this.AddInfoLog("Hurrah, we have new trade (#{0}) and I've protected it.", trade.Trade.Id);

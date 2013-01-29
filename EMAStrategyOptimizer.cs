@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Ecng.Collections;
+using Ecng.Common;
 using StockSharp.Algo.Candles;
 using StockSharp.Algo.Candles.Compression;
 using StockSharp.Algo.Indicators.Trend;
@@ -66,7 +67,7 @@ namespace SampleSMA
             //this.Results = new ConcurrentDictionary<OptVarItem, EMAEventModelStrategy>();
 
             this.Volume = 1;
-            this.UseQuoting = true;
+            this.UseQuoting = false;
         }
 
         public void Optimize()
@@ -125,7 +126,7 @@ namespace SampleSMA
                             )));
 
                         // try to cleanup memory
-                        context.Value.Trader.UnRegisterMarketDepth(context.Value.Trader.RegisteredMarketDepths.FirstOrDefault());
+                        //context.Value.Trader.UnRegisterMarketDepth(context.Value.Trader.RegisteredMarketDepths.FirstOrDefault());
 
                         lock (_bestResultLock)
                         {
@@ -138,7 +139,7 @@ namespace SampleSMA
                             {
                                 // try to cleanup memory, the last private field in EmulationTrader
                                 // #=qUTBJ0c9uFmGWYx4a3_oZjOoV9pJDtArCh9oL5k$U8DQ= {Ecng.Collections.CachedSynchronizedDictionary<StockSharp.BusinessEntities.Security,StockSharp.Algo.Testing.MarketDepthGenerator>}  Ecng.Collections.CachedSynchronizedDictionary<StockSharp.BusinessEntities.Security,StockSharp.Algo.Testing.MarketDepthGenerator>
-                                var value = context.Value.Trader.GetType().GetField("#=qUTBJ0c9uFmGWYx4a3_oZjOoV9pJDtArCh9oL5k$U8DQ=", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(context.Value.Trader);
+                                var value = context.Value.Trader.GetType().GetField("#=qHvivsYU2tNspR3_h$VF0nqA$yDC50HFX_RHAxeUi6UE=", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(context.Value.Trader);
                                 value.GetType().GetMethod("Clear").Invoke(value, null);
                                 context.Value.Trader.Dispose();
                                 context.Value.Trader = null;
@@ -178,14 +179,15 @@ namespace SampleSMA
                 Name = _security.Name,
                 MinStepSize = _security.MinStepSize,
                 MinStepPrice = _security.MinStepPrice,
-                Exchange = _security.Exchange,
-                MaxPrice = Decimal.MaxValue,
+                ExchangeBoard = _security.ExchangeBoard,
+                MaxPrice = 99999,
                 MinPrice = 1
             };
 
             // Create local Storage to make it disposable after optimization
             var storage = new StorageRegistry();
-            ((LocalMarketDataDrive)storage.DefaultDrive).Path = ((LocalMarketDataDrive)_storage.DefaultDrive).Path;
+            ((LocalMarketDataDrive) storage.DefaultDrive).Path = ((LocalMarketDataDrive) _storage.DefaultDrive).Path;
+            ((LocalMarketDataDrive) storage.DefaultDrive).UseAlphabeticPath = true;
 
             var portfolio = new Portfolio { BeginValue = _portfolio.BeginValue };
 
@@ -195,10 +197,11 @@ namespace SampleSMA
             {
                 MarketTimeChangedInterval = optVarItem.TimeFrame,
                 StorageRegistry = storage,
-                UseMarketDepth = this.UseQuoting,
+                UseMarketDepth = true,
+                //UseCandlesTimeFrame = optVarItem.TimeFrame
             };
 
-            if (this.UseQuoting)
+            if (trader.UseMarketDepth)
             {
                 trader.MarketEmulator.Settings.DepthExpirationTime = TimeSpan.FromHours(1); // Default: TimeSpan.FromDays(1);
                 TrendMarketDepthGenerator marketDepthGenerator = new TrendMarketDepthGenerator(security)

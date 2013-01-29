@@ -4,25 +4,150 @@
     <name>StockSharp.Smart</name>
   </assembly>
   <members>
-    <member name="T:StockSharp.Smart.SmartStopCondition">
+    <member name="T:StockSharp.Smart.Xaml.SmartAddressComboBox">
       <summary>
-            Условие для формирования стоп-заявок, специфичных для <see cref="T:StockSharp.Smart.SmartTrader" />.
+            Выпадающий список для выбора адреса сервера SmartCOM.
             </summary>
     </member>
-    <member name="M:StockSharp.Smart.SmartStopCondition.#ctor">
+    <member name="M:StockSharp.Smart.Xaml.SmartAddressComboBox.#ctor">
       <summary>
-            Создать <see cref="T:StockSharp.Smart.SmartStopCondition" />.
+            Создать <see cref="T:StockSharp.Smart.Xaml.SmartAddressComboBox" />.
             </summary>
     </member>
-    <member name="M:StockSharp.Smart.SmartStopCondition.Clone">
+    <member name="T:StockSharp.Smart.SmartCandleManagerSource">
       <summary>
-            Создать копию условия (копирование параметров условия).
+            SmartCOM источник свечек типа <see cref="T:StockSharp.Algo.Candles.TimeFrameCandle" />.
             </summary>
-      <returns>Копия условия.</returns>
     </member>
-    <member name="P:StockSharp.Smart.SmartStopCondition.StopPrice">
+    <member name="M:StockSharp.Smart.SmartCandleManagerSource.#ctor(StockSharp.Smart.SmartTrader)">
       <summary>
-            Стоп-цена заявки.
+            Создать <see cref="T:StockSharp.Smart.SmartCandleManagerSource" />.
+            </summary>
+      <param name="trader">Шлюз к SmartCOM, через событие <see cref="E:StockSharp.Smart.SmartTrader.NewHistoryCandles" /> будут получаться свечки.</param>
+    </member>
+    <member name="M:StockSharp.Smart.SmartCandleManagerSource.DisposeManaged">
+      <summary>
+            Освободить ресурсы.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Smart.SmartCandleManagerSource.Trader">
+      <summary>
+            Шлюз к SmartCOM, через событие <see cref="E:StockSharp.Smart.SmartTrader.NewHistoryCandles" /> будут получаться свечки.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Smart.SmartCandleManagerSource.SpeedPriority">
+      <summary>
+            Приоритет источника по скорости (0 - самый оптимальный).
+            </summary>
+    </member>
+    <member name="T:StockSharp.Smart.SmartExtensionInfoHelper">
+      <summary>
+            Вспомагательный класс, который используется для доступа к специфичной SmartCOM информации через <see cref="P:StockSharp.BusinessEntities.IExtendableEntity.ExtensionInfo" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetTotalVolume(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Получить сумарный объем за текущую торговую сессию для инструмента.
+            </summary>
+      <param name="security">Инструмент.</param>
+      <returns>Сумарный объем за текущую торговую сессию. Если объем отсутствует, то будет возвращено null.</returns>
+    </member>
+    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetSmartId(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Получить уникальный идентификатор инструмента системы SmartCOM.
+            </summary>
+      <param name="security">Инструмент.</param>
+      <returns>Уникальный идентификатор инструмента системы SmartCOM. Если идентификатор отсутствует, то будет возвращено null.</returns>
+    </member>
+    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetBoard(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Получить название площадки инструмента в системе SmartCOM.
+            </summary>
+      <param name="security">Инструмент.</param>
+      <returns>Название площадки инструмента в системе SmartCOM. Если площадка отсутствует, то будет возвращено null.</returns>
+    </member>
+    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetDaysBeforeExpiry(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Получить количество дней до экспирации для инструмента.
+            </summary>
+      <param name="security">Инструмент.</param>
+      <returns>Дней до экспирации. Если информация отсутствует, то будет возвращено null.</returns>
+    </member>
+    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetOptionsMargin(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Получить гарантийное обеспечение продажи опционов для инструмента.
+            </summary>
+      <param name="security">Инструмент.</param>
+      <returns>Гарантийное обеспечение продажи опционов. Если информация отсутствует, то будет возвращено null.</returns>
+    </member>
+    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetOptionsSyntheticMargin(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Получить гарантийное обеспечение по синтетическим позициям для инструмента.
+            </summary>
+      <param name="security">Инструмент.</param>
+      <returns>Гарантийное обеспечение по синтетическим позициям. Если информация отсутствует, то будет возвращено null.</returns>
+    </member>
+    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetSmartId(StockSharp.BusinessEntities.Order)">
+      <summary>
+            Получить уникальный идентификатор заявки системы SmartCOM.
+            </summary>
+      <param name="order">Заявка.</param>
+      <returns>Уникальный идентификатор заявки системы SmartCOM. Если идентификатор отсутствует, то будет возвращено null.</returns>
+    </member>
+    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetSmartStatus(StockSharp.BusinessEntities.Order)">
+      <summary>
+            Получить SmartCOM статус заявки.
+            </summary>
+      <param name="order">Заявка.</param>
+      <returns>SmartCOM статус заявки. Если статус отсутствует, то будет возвращено null.</returns>
+    </member>
+    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetExchange(StockSharp.BusinessEntities.Portfolio)">
+      <summary>
+            Получить SmartCOM название биржи из портфеля.
+            </summary>
+      <param name="portfolio">Портфель.</param>
+      <returns>Название биржи. Если биржа отсутствует, то будет возвращено null.</returns>
+    </member>
+    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetSmartStatus(StockSharp.BusinessEntities.Portfolio)">
+      <summary>
+            Получить SmartCOM статус портфеля.
+            </summary>
+      <param name="portfolio">Портфель.</param>
+      <returns>Статус портфеля. Если статус отсутствует, то будет возвращено null.</returns>
+    </member>
+    <member name="T:StockSharp.Smart.SmartAddresses">
+      <summary>
+            Адреса серверов системы SmartCOM. Описание доступно по адресу http://www.itinvest.ru/services/internet_trading/trade-servers/.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Smart.SmartAddresses.DefaultPort">
+      <summary>
+            Порт сервера по умолчанию, равный 8090.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Smart.SmartAddresses.Major">
+      <summary>
+            Основной сервер. IP адрес 82.204.220.34, порт 8090.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Smart.SmartAddresses.Minor">
+      <summary>
+            Вспомагательный сервер. IP адрес 213.247.232.238, порт 8090.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Smart.SmartAddresses.Reserv">
+      <summary>
+            Резервный сервер. IP адрес 87.118.223.109, порт 8090.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Smart.SmartAddresses.Stalker">
+      <summary>
+            Cервер сталкера. IP адрес 89.175.35.230, порт 8090.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Smart.SmartAddresses.Demo">
+      <summary>
+            Демо сервер. IP адрес 95.131.26.246, порт 8090.
             </summary>
     </member>
     <member name="T:StockSharp.Smart.SmartComWrapper">
@@ -327,154 +452,120 @@
             Передаваемые параметры:
             <list type="number"><item><description>Причина.</description></item></list></remarks>
     </member>
-    <member name="T:StockSharp.Smart.SmartAddresses">
+    <member name="T:StockSharp.Smart.SmartHistoryDirections">
       <summary>
-            Адреса серверов системы SmartCOM. Описание доступно по адресу http://www.itinvest.ru/services/internet_trading/trade-servers/.
+            Направления получения исторических данных.
             </summary>
     </member>
-    <member name="F:StockSharp.Smart.SmartAddresses.DefaultPort">
+    <member name="F:StockSharp.Smart.SmartHistoryDirections.Forward">
       <summary>
-            Порт сервера по умолчанию, равный 8090.
+            По возрастанию.
             </summary>
     </member>
-    <member name="F:StockSharp.Smart.SmartAddresses.Major">
+    <member name="F:StockSharp.Smart.SmartHistoryDirections.Backward">
       <summary>
-            Основной сервер. IP адрес 82.204.220.34, порт 8090.
+            По убыванию.
             </summary>
     </member>
-    <member name="F:StockSharp.Smart.SmartAddresses.Minor">
+    <member name="T:StockSharp.Smart.SmartOrderCondition">
       <summary>
-            Вспомагательный сервер. IP адрес 213.247.232.238, порт 8090.
+            Условие заявок (например, параметры стоп- или алго- заявков), специфичных для <see cref="T:StockSharp.Smart.SmartTrader" />.
             </summary>
     </member>
-    <member name="F:StockSharp.Smart.SmartAddresses.Reserv">
+    <member name="M:StockSharp.Smart.SmartOrderCondition.#ctor">
       <summary>
-            Резервный сервер. IP адрес 87.118.223.109, порт 8090.
+            Создать <see cref="T:StockSharp.Smart.SmartOrderCondition" />.
             </summary>
     </member>
-    <member name="F:StockSharp.Smart.SmartAddresses.Stalker">
+    <member name="P:StockSharp.Smart.SmartOrderCondition.StopPrice">
       <summary>
-            Cервер сталкера. IP адрес 89.175.35.230, порт 8090.
+            Стоп-цена заявки.
             </summary>
     </member>
-    <member name="F:StockSharp.Smart.SmartAddresses.Demo">
+    <member name="T:StockSharp.Smart.SmartTimeFrames">
       <summary>
-            Демо сервер. IP адрес 95.131.26.246, порт 8090.
+            Тайм-фреймы для исторических свечек SmartCOM.
             </summary>
     </member>
-    <member name="T:StockSharp.Smart.SmartExtensionInfoHelper">
+    <member name="M:StockSharp.Smart.SmartTimeFrames.op_Implicit(System.TimeSpan)~StockSharp.Smart.SmartTimeFrames">
       <summary>
-            Вспомагательный класс, который используется для доступа к специфичной SmartCOM информации через <see cref="P:StockSharp.BusinessEntities.IExtendableEntity.ExtensionInfo" />.
+            Привести <see cref="T:System.TimeSpan" /> значение к объекту <see cref="T:StockSharp.Smart.SmartTimeFrames" />.
+            </summary>
+      <param name="value">
+        <see cref="T:System.TimeSpan" /> значение.</param>
+      <returns>Объект <see cref="T:StockSharp.Smart.SmartTimeFrames" />.</returns>
+    </member>
+    <member name="M:StockSharp.Smart.SmartTimeFrames.op_Explicit(StockSharp.Smart.SmartTimeFrames)~System.TimeSpan">
+      <summary>
+            Привести объект <see cref="T:StockSharp.Smart.SmartTimeFrames" /> к <see cref="T:System.TimeSpan" /> значению.
+            </summary>
+      <param name="timeFrame">Объект <see cref="T:StockSharp.Smart.SmartTimeFrames" />.</param>
+      <returns>
+        <see cref="T:System.TimeSpan" /> значение.</returns>
+    </member>
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Minute1">
+      <summary>
+            Минутный тайм-фрейм.
             </summary>
     </member>
-    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetTotalVolume(StockSharp.BusinessEntities.Security)">
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Minute5">
       <summary>
-            Получить сумарный объем за текущую торговую сессию для инструмента.
-            </summary>
-      <param name="security">Инструмент.</param>
-      <returns>Сумарный объем за текущую торговую сессию.</returns>
-    </member>
-    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetIsin(StockSharp.BusinessEntities.Security)">
-      <summary>
-            Получить ISIN инструмента.
-            </summary>
-      <param name="security">Инструмент.</param>
-      <returns>ISIN.</returns>
-    </member>
-    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetSmartId(StockSharp.BusinessEntities.Security)">
-      <summary>
-            Получить уникальный идентификатор инструмента системы SmartCOM.
-            </summary>
-      <param name="security">Инструмент.</param>
-      <returns>Уникальный идентификатор инструмента системы SmartCOM.</returns>
-    </member>
-    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetBoard(StockSharp.BusinessEntities.Security)">
-      <summary>
-            Получить название площадки инструмента в системе SmartCOM.
-            </summary>
-      <param name="security">Инструмент.</param>
-      <returns>Название площадки инструмента в системе SmartCOM.</returns>
-    </member>
-    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetDaysBeforeExpiry(StockSharp.BusinessEntities.Security)">
-      <summary>
-            Получить количество дней до экспирации для инструмента.
-            </summary>
-      <param name="security">Инструмент.</param>
-      <returns>Дней до экспирации.</returns>
-    </member>
-    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetOptionsMargin(StockSharp.BusinessEntities.Security)">
-      <summary>
-            Получить гарантийное обеспечение продажи опционов для инструмента.
-            </summary>
-      <param name="security">Инструмент.</param>
-      <returns>Гарантийное обеспечение продажи опционов.</returns>
-    </member>
-    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetOptionsSyntheticMargin(StockSharp.BusinessEntities.Security)">
-      <summary>
-            Получить гарантийное обеспечение по синтетическим позициям для инструмента.
-            </summary>
-      <param name="security">Инструмент.</param>
-      <returns>Гарантийное обеспечение по синтетическим позициям.</returns>
-    </member>
-    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetSmartId(StockSharp.BusinessEntities.Order)">
-      <summary>
-            Получить уникальный идентификатор заявки системы SmartCOM.
-            </summary>
-      <param name="order">Заявка.</param>
-      <returns>Уникальный идентификатор заявки системы SmartCOM.</returns>
-    </member>
-    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetSmartStatus(StockSharp.BusinessEntities.Order)">
-      <summary>
-            Получить SmartCOM статус заявки.
-            </summary>
-      <param name="order">Заявка.</param>
-      <returns>SmartCOM статус заявки.</returns>
-    </member>
-    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetExchange(StockSharp.BusinessEntities.Portfolio)">
-      <summary>
-            Получить SmartCOM название биржи из портфеля.
-            </summary>
-      <param name="portfolio">Портфель.</param>
-      <returns>Название биржи.</returns>
-    </member>
-    <member name="M:StockSharp.Smart.SmartExtensionInfoHelper.GetSmartStatus(StockSharp.BusinessEntities.Portfolio)">
-      <summary>
-            Получить SmartCOM статус портфеля.
-            </summary>
-      <param name="portfolio">Портфель.</param>
-      <returns>Статус портфеля.</returns>
-    </member>
-    <member name="T:StockSharp.Smart.Xaml.SmartSettings">
-      <summary>
-            Визуальная панель настроек <see cref="T:StockSharp.Smart.SmartTrader" />.
-            </summary>
-      <summary>
-            SmartSettings
+            Пяти минутный тайм-фрейм.
             </summary>
     </member>
-    <member name="M:StockSharp.Smart.Xaml.SmartSettings.#ctor">
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Minute10">
       <summary>
-            Создать <see cref="T:StockSharp.Smart.Xaml.SmartSettings" />.
+            Десяти минутный тайм-фрейм.
             </summary>
     </member>
-    <member name="M:StockSharp.Smart.Xaml.SmartSettings.InitializeComponent">
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Minute15">
       <summary>
-            InitializeComponent
+            Пятнадцати минутный тайм-фрейм.
             </summary>
     </member>
-    <member name="P:StockSharp.Smart.Xaml.SmartSettings.Login">
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Minute30">
       <summary>
-        <see cref="P:StockSharp.Smart.SmartTrader.Login" />.
+            Тридцати минутный тайм-фрейм.
             </summary>
     </member>
-    <member name="P:StockSharp.Smart.Xaml.SmartSettings.Password">
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Hour1">
       <summary>
-        <see cref="P:StockSharp.Smart.SmartTrader.Password" />.
+            Часовой тайм-фрейм.
             </summary>
     </member>
-    <member name="P:StockSharp.Smart.Xaml.SmartSettings.Address">
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Hour2">
       <summary>
-        <see cref="P:StockSharp.Smart.SmartTrader.Address" />.
+            Двух часовой тайм-фрейм.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Hour4">
+      <summary>
+            Четырех часовой тайм-фрейм.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Day">
+      <summary>
+            Дневной тайм-фрейм.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Week">
+      <summary>
+            Недельный тайм-фрейм.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Month1">
+      <summary>
+            Месячный тайм-фрейм.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Month3">
+      <summary>
+            Трех месячный тайм-фрейм.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Smart.SmartTimeFrames.Year">
+      <summary>
+            Годовой тайм-фрейм.
             </summary>
     </member>
     <member name="T:StockSharp.Smart.SmartTrader">
@@ -722,9 +813,9 @@
             или только сделки с момента вызова данного метода.
             </summary>
     </member>
-    <member name="P:StockSharp.Smart.SmartTrader.ExchangeCodes">
+    <member name="P:StockSharp.Smart.SmartTrader.ExchangeBoardCodes">
       <summary>
-            Ассоциация площадок и их кодами, для заполнения <see cref="P:StockSharp.BusinessEntities.Portfolio.Exchange" />.
+            Ассоциация площадок и их кодами, для заполнения <see cref="P:StockSharp.BusinessEntities.Portfolio.ExchangeBoard" />.
             </summary>
     </member>
     <member name="E:StockSharp.Smart.SmartTrader.NewHistoryCandles">
@@ -733,141 +824,37 @@
             <see cref="M:StockSharp.Smart.SmartTrader.RegisterHistoryCandles(StockSharp.BusinessEntities.Security,StockSharp.Smart.SmartTimeFrames,System.DateTime,System.Int32,StockSharp.Smart.SmartHistoryDirections)" />.
             </summary>
     </member>
-    <member name="T:StockSharp.Smart.SmartTimeFrames">
+    <member name="T:StockSharp.Smart.Xaml.SmartSettings">
       <summary>
-            Тайм-фреймы для исторических свечек SmartCOM.
+            Визуальная панель настроек <see cref="T:StockSharp.Smart.SmartTrader" />.
+            </summary>
+      <summary>
+            SmartSettings
             </summary>
     </member>
-    <member name="M:StockSharp.Smart.SmartTimeFrames.op_Implicit(System.TimeSpan)~StockSharp.Smart.SmartTimeFrames">
+    <member name="M:StockSharp.Smart.Xaml.SmartSettings.#ctor">
       <summary>
-            Привести <see cref="T:System.TimeSpan" /> значение к объекту <see cref="T:StockSharp.Smart.SmartTimeFrames" />.
-            </summary>
-      <param name="value">
-        <see cref="T:System.TimeSpan" /> значение.</param>
-      <returns>Объект <see cref="T:StockSharp.Smart.SmartTimeFrames" />.</returns>
-    </member>
-    <member name="M:StockSharp.Smart.SmartTimeFrames.op_Explicit(StockSharp.Smart.SmartTimeFrames)~System.TimeSpan">
-      <summary>
-            Привести объект <see cref="T:StockSharp.Smart.SmartTimeFrames" /> к <see cref="T:System.TimeSpan" /> значению.
-            </summary>
-      <param name="timeFrame">Объект <see cref="T:StockSharp.Smart.SmartTimeFrames" />.</param>
-      <returns>
-        <see cref="T:System.TimeSpan" /> значение.</returns>
-    </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Minute1">
-      <summary>
-            Минутный тайм-фрейм.
+            Создать <see cref="T:StockSharp.Smart.Xaml.SmartSettings" />.
             </summary>
     </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Minute5">
+    <member name="M:StockSharp.Smart.Xaml.SmartSettings.InitializeComponent">
       <summary>
-            Пяти минутный тайм-фрейм.
+            InitializeComponent
             </summary>
     </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Minute10">
+    <member name="P:StockSharp.Smart.Xaml.SmartSettings.Login">
       <summary>
-            Десяти минутный тайм-фрейм.
+        <see cref="P:StockSharp.Smart.SmartTrader.Login" />.
             </summary>
     </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Minute15">
+    <member name="P:StockSharp.Smart.Xaml.SmartSettings.Password">
       <summary>
-            Пятнадцати минутный тайм-фрейм.
+        <see cref="P:StockSharp.Smart.SmartTrader.Password" />.
             </summary>
     </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Minute30">
+    <member name="P:StockSharp.Smart.Xaml.SmartSettings.Address">
       <summary>
-            Тридцати минутный тайм-фрейм.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Hour1">
-      <summary>
-            Часовой тайм-фрейм.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Hour2">
-      <summary>
-            Двух часовой тайм-фрейм.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Hour4">
-      <summary>
-            Четырех часовой тайм-фрейм.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Day">
-      <summary>
-            Дневной тайм-фрейм.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Week">
-      <summary>
-            Недельный тайм-фрейм.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Month1">
-      <summary>
-            Месячный тайм-фрейм.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Month3">
-      <summary>
-            Трех месячный тайм-фрейм.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartTimeFrames.Year">
-      <summary>
-            Годовой тайм-фрейм.
-            </summary>
-    </member>
-    <member name="T:StockSharp.Smart.Xaml.SmartAddressComboBox">
-      <summary>
-            Выпадающий список для выбора адреса сервера SmartCOM.
-            </summary>
-    </member>
-    <member name="M:StockSharp.Smart.Xaml.SmartAddressComboBox.#ctor">
-      <summary>
-            Создать <see cref="T:StockSharp.Smart.Xaml.SmartAddressComboBox" />.
-            </summary>
-    </member>
-    <member name="T:StockSharp.Smart.SmartHistoryDirections">
-      <summary>
-            Направления получения исторических данных.
-            </summary>
-    </member>
-    <member name="F:StockSharp.Smart.SmartHistoryDirections.Forward">
-      <summary>
-            По возрастанию.
-            </summary>
-    </member>
-    <member name="F:StockSharp.Smart.SmartHistoryDirections.Backward">
-      <summary>
-            По убыванию.
-            </summary>
-    </member>
-    <member name="T:StockSharp.Smart.SmartCandleManagerSource">
-      <summary>
-            SmartCOM источник свечек типа <see cref="T:StockSharp.Algo.Candles.TimeFrameCandle" />.
-            </summary>
-    </member>
-    <member name="M:StockSharp.Smart.SmartCandleManagerSource.#ctor(StockSharp.Smart.SmartTrader)">
-      <summary>
-            Создать <see cref="T:StockSharp.Smart.SmartCandleManagerSource" />.
-            </summary>
-      <param name="trader">Шлюз к SmartCOM, через событие <see cref="E:StockSharp.Smart.SmartTrader.NewHistoryCandles" /> будут получаться свечки.</param>
-    </member>
-    <member name="M:StockSharp.Smart.SmartCandleManagerSource.DisposeManaged">
-      <summary>
-            Освободить ресурсы.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartCandleManagerSource.Trader">
-      <summary>
-            Шлюз к SmartCOM, через событие <see cref="E:StockSharp.Smart.SmartTrader.NewHistoryCandles" /> будут получаться свечки.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartCandleManagerSource.SpeedPriority">
-      <summary>
-            Приоритет источника по скорости (0 - самый оптимальный).
+        <see cref="P:StockSharp.Smart.SmartTrader.Address" />.
             </summary>
     </member>
   </members>

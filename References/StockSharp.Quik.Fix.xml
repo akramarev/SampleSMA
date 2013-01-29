@@ -4,6 +4,17 @@
     <name>StockSharp.Quik.Fix</name>
   </assembly>
   <members>
+    <member name="T:StockSharp.Quik.FixLogFactory">
+      <summary>
+            Фабрика логов.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Quik.FixLogFactory.#ctor(StockSharp.Logging.LogManager)">
+      <summary>
+            Создать <see cref="T:StockSharp.Quik.FixLogFactory" />.
+            </summary>
+      <param name="logManager">Менеджер логирования.</param>
+    </member>
     <member name="T:StockSharp.Quik.FixTrader">
       <summary>
             Шлюз, реализующий подключение к серверу Quik через протокол Fix.
@@ -144,17 +155,6 @@
       <summary>
             Инструмент.
             </summary>
-    </member>
-    <member name="T:StockSharp.Quik.FixLogFactory">
-      <summary>
-            Фабрика логов.
-            </summary>
-    </member>
-    <member name="M:StockSharp.Quik.FixLogFactory.#ctor(StockSharp.Logging.LogManager)">
-      <summary>
-            Создать <see cref="T:StockSharp.Quik.FixLogFactory" />.
-            </summary>
-      <param name="logManager">Менеджер логирования.</param>
     </member>
   </members>
 </doc>
