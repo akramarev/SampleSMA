@@ -64,8 +64,6 @@ namespace SampleSMA
 
             _storage = storage;
 
-            //this.Results = new ConcurrentDictionary<OptVarItem, EMAEventModelStrategy>();
-
             this.Volume = 1;
             this.UseQuoting = false;
         }
@@ -74,7 +72,6 @@ namespace SampleSMA
         {
             // clean up
             this.BestResult = new KeyValuePair<OptVarItem, EMAEventModelStrategy>();
-            //this.Results = new ConcurrentDictionary<OptVarItem, EMAEventModelStrategy>();
 
             this.OnStateChanged(OptimizationState.Began);
             ThreadPool.QueueUserWorkItem(AsyncOptimize);
@@ -98,7 +95,7 @@ namespace SampleSMA
                     ThreadPool.QueueUserWorkItem(state =>
                     {
                         var done = new ManualResetEvent(false);
-                        var context = GetOptContext(optVars[a], done);
+                        var context = GetOptContext(optVars[a]);
 
                         var trader = context.Value.Trader as EmulationTrader;
                         trader.StateChanged += (oldState, newState) =>
@@ -125,9 +122,6 @@ namespace SampleSMA
                                 context.Key
                             )));
 
-                        // try to cleanup memory
-                        //context.Value.Trader.UnRegisterMarketDepth(context.Value.Trader.RegisteredMarketDepths.FirstOrDefault());
-
                         lock (_bestResultLock)
                         {
                             if (this.BestResult.Value == null ||
@@ -141,8 +135,10 @@ namespace SampleSMA
                                 // #=qUTBJ0c9uFmGWYx4a3_oZjOoV9pJDtArCh9oL5k$U8DQ= {Ecng.Collections.CachedSynchronizedDictionary<StockSharp.BusinessEntities.Security,StockSharp.Algo.Testing.MarketDepthGenerator>}  Ecng.Collections.CachedSynchronizedDictionary<StockSharp.BusinessEntities.Security,StockSharp.Algo.Testing.MarketDepthGenerator>
                                 var value = context.Value.Trader.GetType().GetField("#=qHvivsYU2tNspR3_h$VF0nqA$yDC50HFX_RHAxeUi6UE=", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(context.Value.Trader);
                                 value.GetType().GetMethod("Clear").Invoke(value, null);
+
                                 context.Value.Trader.Dispose();
                                 context.Value.Trader = null;
+                                context.Value.Dispose();
                             }
                         }
 
@@ -153,8 +149,7 @@ namespace SampleSMA
                 countdownEvent.Wait();
             }
 
-            //this.BestResult = Results.OrderByDescending(kv => kv.Value.PnLManager.PnL).FirstOrDefault();
-            //this.Results = null;
+            GC.Collect();
 
             this.OnStateChanged(OptimizationState.Finished);
         }
@@ -169,7 +164,7 @@ namespace SampleSMA
             }
         }
 
-        public KeyValuePair<OptVarItem, EMAEventModelStrategy> GetOptContext(OptVarItem optVarItem, ManualResetEvent doneEvent)
+        public KeyValuePair<OptVarItem, EMAEventModelStrategy> GetOptContext(OptVarItem optVarItem)
         {
             // clone doesn't work for some reason
             var security = new Security
@@ -204,7 +199,7 @@ namespace SampleSMA
             if (trader.UseMarketDepth)
             {
                 trader.MarketEmulator.Settings.DepthExpirationTime = TimeSpan.FromHours(1); // Default: TimeSpan.FromDays(1);
-                TrendMarketDepthGenerator marketDepthGenerator = new TrendMarketDepthGenerator(security)
+                var marketDepthGenerator = new TrendMarketDepthGenerator(security)
                 {
                     // стакан для инструмента в истории обновляется раз в 10 секунд
                     Interval = TimeSpan.FromSeconds(10),
@@ -213,6 +208,15 @@ namespace SampleSMA
                 };
 
                 trader.RegisterMarketDepth(marketDepthGenerator);
+
+                trader.StateChanged += (oldState, newState) =>
+                {
+                    if (trader.State == EmulationStates.Stopped)
+                    {
+                        trader.UnRegisterMarketDepth(marketDepthGenerator);
+                        marketDepthGenerator = null;
+                    }
+                };
             }
 
             // соединяемся с трейдером и запускаем экспорт,
@@ -246,6 +250,8 @@ namespace SampleSMA
                 else if (trader.State == EmulationStates.Stopped)
                 {
                     strategy.Stop();
+                    candleManager = null;
+                    storage = null;
                 }        
             };
 
@@ -292,38 +298,17 @@ namespace SampleSMA
             List<OptVarItem> result = new List<OptVarItem>();
 
             // --216--
-            //foreach (int t in new[] { 1, 5, 10 })
-            //{
-            //    for (int a = 90; a <= 90; a += 10)
-            //    {
-            //        for (int b = 12; b <= 15; b++)
-            //        {
-            //            for (int c = 9; c <= 11; c++)
-            //            {
-            //                for (int tp = 20; tp < 50; tp += 10)
-            //                {
-            //                    for (int sl = 30; sl < 50; sl += 10)
-            //                    {
-            //                        result.Add(new OptVarItem(TimeSpan.FromMinutes(t), a, b, c, tp, sl));
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-
-            // --36--
-            foreach (int t in new[] { 1, 10 })
+            foreach (int t in new[] { 1, 5, 10 })
             {
-                for (int a = 84; a <= 90; a += 10)
+                for (int a = 90; a <= 90; a += 10)
                 {
                     for (int b = 12; b <= 15; b++)
                     {
                         for (int c = 9; c <= 11; c++)
                         {
-                            for (int tp = 20; tp < 40; tp += 10)
+                            for (int tp = 20; tp < 50; tp += 10)
                             {
-                                for (int sl = 40; sl < 50; sl += 10)
+                                for (int sl = 30; sl < 50; sl += 10)
                                 {
                                     result.Add(new OptVarItem(TimeSpan.FromMinutes(t), a, b, c, tp, sl));
                                 }
@@ -332,6 +317,27 @@ namespace SampleSMA
                     }
                 }
             }
+
+            // --36--
+            //foreach (int t in new[] { 1, 10 })
+            //{
+            //    for (int a = 84; a <= 90; a += 10)
+            //    {
+            //        for (int b = 12; b <= 15; b++)
+            //        {
+            //            for (int c = 9; c <= 11; c++)
+            //            {
+            //                for (int tp = 20; tp < 40; tp += 10)
+            //                {
+            //                    for (int sl = 40; sl < 50; sl += 10)
+            //                    {
+            //                        result.Add(new OptVarItem(TimeSpan.FromMinutes(t), a, b, c, tp, sl));
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
             return result;
         }

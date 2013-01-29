@@ -305,7 +305,7 @@ namespace SampleSMA
                 Log = _log
             };
 
-            var context = optimizer.GetOptContext(this.MainOptVarItem, new ManualResetEvent(false));
+            var context = optimizer.GetOptContext(this.MainOptVarItem);
             _trader = context.Value.Trader;
             _strategy = context.Value;
 
