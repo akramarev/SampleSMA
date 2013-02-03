@@ -37,7 +37,6 @@ namespace SampleSMA
 
         private Object _bestResultLock = new object();
         public KeyValuePair<OptVarItem, EMAEventModelStrategy> BestResult { get; private set; }
-        //private ConcurrentDictionary<OptVarItem, EMAEventModelStrategy> Results { get; set; }
 
         private DateTime _startTime;
         private DateTime _stopTime;
@@ -133,8 +132,8 @@ namespace SampleSMA
                             {
                                 // try to cleanup memory, the last private field in EmulationTrader
                                 // #=qUTBJ0c9uFmGWYx4a3_oZjOoV9pJDtArCh9oL5k$U8DQ= {Ecng.Collections.CachedSynchronizedDictionary<StockSharp.BusinessEntities.Security,StockSharp.Algo.Testing.MarketDepthGenerator>}  Ecng.Collections.CachedSynchronizedDictionary<StockSharp.BusinessEntities.Security,StockSharp.Algo.Testing.MarketDepthGenerator>
-                                var value = context.Value.Trader.GetType().GetField("#=qHvivsYU2tNspR3_h$VF0nqA$yDC50HFX_RHAxeUi6UE=", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(context.Value.Trader);
-                                value.GetType().GetMethod("Clear").Invoke(value, null);
+                                //var value = context.Value.Trader.GetType().GetField("#=qHvivsYU2tNspR3_h$VF0nqA$yDC50HFX_RHAxeUi6UE=", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(context.Value.Trader);
+                                //value.GetType().GetMethod("Clear").Invoke(value, null);
 
                                 context.Value.Trader.Dispose();
                                 context.Value.Trader = null;
@@ -298,7 +297,7 @@ namespace SampleSMA
             List<OptVarItem> result = new List<OptVarItem>();
 
             // --216--
-            foreach (int t in new[] { 1, 5, 10 })
+            foreach (int t in new[] { 1 })
             {
                 for (int a = 90; a <= 90; a += 10)
                 {
@@ -306,9 +305,9 @@ namespace SampleSMA
                     {
                         for (int c = 9; c <= 11; c++)
                         {
-                            for (int tp = 20; tp < 50; tp += 10)
+                            for (int tp = 20; tp <= 50; tp += 10)
                             {
-                                for (int sl = 30; sl < 50; sl += 10)
+                                for (int sl = 30; sl <= 50; sl += 10)
                                 {
                                     result.Add(new OptVarItem(TimeSpan.FromMinutes(t), a, b, c, tp, sl));
                                 }
