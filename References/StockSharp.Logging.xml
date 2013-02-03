@@ -649,7 +649,7 @@
             Максимальное количество накопленных от <see cref="P:StockSharp.Logging.LogManager.Sources"/> сообщений, прежде чем они будут отправлены в <see cref="P:StockSharp.Logging.LogManager.Listeners"/>.
             По умолчанию равно 1000.
             </summary>
-            <remarks>Значение 0 означает бесконечные размер буфера.</remarks>
+            <remarks>Значение 0 означает бесконечный размер буфера. Значение -1 означает отсутствие буферизации.</remarks>
         </member>
         <member name="T:StockSharp.Logging.LogMessage">
             <summary>

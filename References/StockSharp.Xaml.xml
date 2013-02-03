@@ -1159,6 +1159,13 @@
             Переподключиться к торговой системе.
             </summary>
         </member>
+        <member name="M:StockSharp.Xaml.GuiTrader`1.LookupSecurities(StockSharp.BusinessEntities.Security)">
+            <summary>
+            Найти инструменты, соответствующие фильтру <paramref name="criteria"/>.
+            Найденные инструменты будут переданы через событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewSecurities"/>.
+            </summary>
+            <param name="criteria">Инструмент, поля которого будут использоваться в качестве фильтра.</param>
+        </member>
         <member name="M:StockSharp.Xaml.GuiTrader`1.GetPosition(StockSharp.BusinessEntities.Portfolio,StockSharp.BusinessEntities.Security,System.String)">
             <summary>
             Получить позицию по портфелю и инструменту.

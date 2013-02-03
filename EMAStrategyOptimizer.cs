@@ -208,14 +208,14 @@ namespace SampleSMA
 
                 trader.RegisterMarketDepth(marketDepthGenerator);
 
-                trader.StateChanged += (oldState, newState) =>
-                {
-                    if (trader.State == EmulationStates.Stopped)
-                    {
-                        trader.UnRegisterMarketDepth(marketDepthGenerator);
-                        marketDepthGenerator = null;
-                    }
-                };
+                //trader.StateChanged += (oldState, newState) =>
+                //{
+                //    if (trader.State == EmulationStates.Stopped)
+                //    {
+                //        trader.UnRegisterMarketDepth(marketDepthGenerator);
+                //        marketDepthGenerator = null;
+                //    }
+                //};
             }
 
             // соединяемся с трейдером и запускаем экспорт,
@@ -296,12 +296,12 @@ namespace SampleSMA
         {
             List<OptVarItem> result = new List<OptVarItem>();
 
-            // --216--
+            // --144--
             foreach (int t in new[] { 1 })
             {
                 for (int a = 90; a <= 90; a += 10)
                 {
-                    for (int b = 12; b <= 15; b++)
+                    for (int b = 12; b <= 18; b++)
                     {
                         for (int c = 9; c <= 11; c++)
                         {

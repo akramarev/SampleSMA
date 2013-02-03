@@ -181,14 +181,12 @@
             Создать <see cref="T:StockSharp.OEC.OECTrader" />.
             </summary>
     </member>
-    <member name="M:StockSharp.OEC.OECTrader.SecurityLookup(System.String,System.Nullable{StockSharp.BusinessEntities.SecurityTypes},System.String,System.Int32)">
+    <member name="M:StockSharp.OEC.OECTrader.LookupSecurities(StockSharp.BusinessEntities.Security)">
       <summary>
-            Выполнить запрос инструментов по заданным параметрам.
+            Найти инструменты, соответствующие фильтру <paramref name="criteria" />.
+            Найденные инструменты будут переданы через событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewSecurities" />.
             </summary>
-      <param name="searchText">Поисковый запрос. Примеры: es, gold, euro, oil, brent.</param>
-      <param name="securityType">Фильтр типа инструмента. По умолчанию возвращаются все поддерживаемые типы.</param>
-      <param name="exchangeName">Название биржи. Примеры: CBT, CME.</param>
-      <param name="desiredResultCount">Желаемое количество результатов запроса.</param>
+      <param name="criteria">Инструмент, поля которого будут использоваться в качестве фильтра.</param>
     </member>
     <member name="M:StockSharp.OEC.OECTrader.StartExport">
       <summary>

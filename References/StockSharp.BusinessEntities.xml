@@ -1949,6 +1949,13 @@
             Перезапустить экспорт данных из торговой системы через методы <see cref="M:StockSharp.BusinessEntities.ITrader.StopExport"/> и <see cref="M:StockSharp.BusinessEntities.ITrader.StartExport"/>.
             </summary>
         </member>
+        <member name="M:StockSharp.BusinessEntities.ITrader.LookupSecurities(StockSharp.BusinessEntities.Security)">
+            <summary>
+            Найти инструменты, соответствующие фильтру <paramref name="criteria"/>.
+            Найденные инструменты будут переданы через событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewSecurities"/>.
+            </summary>
+            <param name="criteria">Инструмент, поля которого будут использоваться в качестве фильтра.</param>
+        </member>
         <member name="M:StockSharp.BusinessEntities.ITrader.GetPosition(StockSharp.BusinessEntities.Portfolio,StockSharp.BusinessEntities.Security,System.String)">
             <summary>
             Получить позицию по портфелю и инструменту.
@@ -3524,6 +3531,11 @@
         <member name="F:StockSharp.BusinessEntities.SecurityTypes.Swap">
             <summary>
             Споп.
+            </summary>
+        </member>
+        <member name="F:StockSharp.BusinessEntities.SecurityTypes.Commodity">
+            <summary>
+            Товар.
             </summary>
         </member>
         <member name="T:StockSharp.BusinessEntities.OptionTypes">

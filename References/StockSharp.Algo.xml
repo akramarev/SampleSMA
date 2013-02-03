@@ -3119,6 +3119,55 @@
       <param name="direction">Направление основной позиции.</param>
       <returns>Опционная позиция.</returns>
     </member>
+    <member name="T:StockSharp.Algo.History.Hydra.IRemoteStorageAuthorization">
+      <summary>
+            Интерфейс, описывающий модуль проверки доступа соединения с <see cref="T:StockSharp.Algo.History.Hydra.RemoteStorage" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Algo.History.Hydra.IRemoteStorageAuthorization.ValidateCredentials(System.String,System.String)">
+      <summary>
+            Проверить логин и пароль на правильность.
+            </summary>
+      <param name="login">Логин.</param>
+      <param name="password">Пароль.</param>
+      <returns>Допустимые действия.</returns>
+    </member>
+    <member name="T:StockSharp.Algo.History.Hydra.AnonymousRemoteStorageAuthorization">
+      <summary>
+            Модуль проверки доступа соединения с <see cref="T:StockSharp.Algo.History.Hydra.RemoteStorage" />, предоставляющий доступ всем соединениям.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Algo.History.Hydra.AnonymousRemoteStorageAuthorization.#ctor">
+      <summary>
+            Создать <see cref="T:StockSharp.Algo.History.Hydra.AnonymousRemoteStorageAuthorization" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Algo.History.Hydra.AnonymousRemoteStorageAuthorization.ValidateCredentials(System.String,System.String)">
+      <summary>
+            Проверить логин и пароль на правильность.
+            </summary>
+      <param name="login">Логин.</param>
+      <param name="password">Пароль.</param>
+      <returns>Допустимые действия.</returns>
+    </member>
+    <member name="T:StockSharp.Algo.History.Hydra.WindowsRemoteStorageAuthorization">
+      <summary>
+            Модуль проверки доступа соединения с <see cref="T:StockSharp.Algo.History.Hydra.RemoteStorage" />, основанный на Windows авторизации.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Algo.History.Hydra.WindowsRemoteStorageAuthorization.#ctor">
+      <summary>
+            Создать <see cref="T:StockSharp.Algo.History.Hydra.WindowsRemoteStorageAuthorization" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Algo.History.Hydra.WindowsRemoteStorageAuthorization.ValidateCredentials(System.String,System.String)">
+      <summary>
+            Проверить логин и пароль на правильность.
+            </summary>
+      <param name="login">Логин.</param>
+      <param name="password">Пароль.</param>
+      <returns>Допустимые действия.</returns>
+    </member>
     <member name="T:StockSharp.Algo.History.IQFeed.IQFeedAddresses">
       <summary>
             Адреса IQ Connect.
@@ -3185,18 +3234,19 @@
       <param name="securityStorage">Хранилище информации об инструментах.</param>
       <param name="registry">Хранилище торговых объектов.</param>
     </member>
-    <member name="M:StockSharp.Algo.History.IQFeed.IQFeedHistorySource.GetNewSecurities">
+    <member name="M:StockSharp.Algo.History.IQFeed.IQFeedHistorySource.GetNewSecurities(StockSharp.BusinessEntities.SecurityTypes[])">
       <summary>
             Получить новые инструменты.
             </summary>
+      <param name="types">Типы инструментов, по которым необходимо получить данные. Если передано null, то данные будут получены по всем типам инструментов.</param>
       <returns>Новые инструменты.</returns>
     </member>
     <member name="M:StockSharp.Algo.History.IQFeed.IQFeedHistorySource.GetTrades(StockSharp.BusinessEntities.Security,System.DateTime)">
       <summary>
             Получить исторические сделки.
             </summary>
-      <param name="security">Инструмент, для которого необходимо получить все сделки. Если значение равно null, то возвращаются сделки по всем инструментам.</param>
-      <param name="time">Время торговой сессии, для которой необходимо получить сделки.</param>
+      <param name="security">Инструмент, для которого необходимо получить все сделки.</param>
+      <param name="time">Дата торговой сессии, для которой необходимо получить сделки.</param>
       <returns>Исторические сделки.</returns>
     </member>
     <member name="M:StockSharp.Algo.History.IQFeed.IQFeedHistorySource.RegisterTrades(StockSharp.BusinessEntities.Security)">
@@ -3241,6 +3291,11 @@
     <member name="P:StockSharp.Algo.History.IQFeed.IQFeedHistorySource.AdminAddress">
       <summary>
             Адрес для получения служебных данных.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Algo.History.IQFeed.IQFeedHistorySource.IsDownloadSecurityFromApi">
+      <summary>
+            Скачивать ли инструменты с помощью IQFeed API, или загружать их из архива с сайта IQFeed. По-умолчанию скачивание с помощью IQFeed API выключено.
             </summary>
     </member>
     <member name="P:StockSharp.Algo.History.IQFeed.IQFeedHistorySource.Registry">
@@ -3479,6 +3534,11 @@
     <member name="P:StockSharp.Algo.History.Hydra.RemoteStorage.EntityRegistry">
       <summary>
             Хранилище торговых сущностей.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Algo.History.Hydra.RemoteStorage.Authorization">
+      <summary>
+            Модуль проверки доступа.
             </summary>
     </member>
     <member name="T:StockSharp.Algo.History.Hydra.RemoteStorageClient">
@@ -5032,6 +5092,13 @@
             Переподключиться к торговой системе.
             </summary>
     </member>
+    <member name="M:StockSharp.Algo.BaseTrader.LookupSecurities(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Найти инструменты, соответствующие фильтру <paramref name="criteria" />.
+            Найденные инструменты будут переданы через событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewSecurities" />.
+            </summary>
+      <param name="criteria">Инструмент, поля которого будут использоваться в качестве фильтра.</param>
+    </member>
     <member name="M:StockSharp.Algo.BaseTrader.GetPosition(StockSharp.BusinessEntities.Portfolio,StockSharp.BusinessEntities.Security,System.String)">
       <summary>
             Получить позицию по портфелю и инструменту.
@@ -6250,26 +6317,53 @@
     </member>
     <member name="T:StockSharp.Algo.Storages.SecurityChangeContainer">
       <summary>
-            Контейнер для накопления изменений по инструментам для последующего доступа к изменениям как к историческим данным.
+            Контейнер для накопления изменений по инструменту для последующего доступа к его изменениям как к историческим данным.
             </summary>
     </member>
-    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.#ctor">
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.#ctor(StockSharp.BusinessEntities.Security)">
       <summary>
             Создать <see cref="T:StockSharp.Algo.Storages.SecurityChangeContainer" />.
             </summary>
-    </member>
-    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.GetInfo(StockSharp.BusinessEntities.Security)">
-      <summary>
-            Получить контейнер для конкретного инструмента.
-            </summary>
       <param name="security">Инструмент.</param>
-      <returns>Контейнер.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.ProcessSecurities(System.Collections.Generic.IEnumerable{StockSharp.BusinessEntities.Security})">
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.GetCount">
       <summary>
-            Обработать измененные инструменты.
+            Получить количество всех хранящихся изменений.
             </summary>
-      <param name="securities">Измененные инструменты.</param>
+      <returns>Количество хранящихся изменений.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.GetCount(StockSharp.Algo.Storages.SecurityChangeTypes)">
+      <summary>
+            Получить количество хранящихся изменений типа <paramref name="type" />.
+            </summary>
+      <param name="type">Тип изменений.</param>
+      <returns>Количество хранящихся изменений.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.AddChanges(System.Collections.Generic.IEnumerable{StockSharp.Algo.Storages.SecurityChange})">
+      <summary>
+            Добавить новые изменения.
+            </summary>
+      <param name="changes">Новые изменения.</param>
+    </member>
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.GetChanges(System.Int32)">
+      <summary>
+            Получить изменения по индексу.
+            </summary>
+      <param name="index">Индекс. Ноль означает последние изменения.</param>
+      <returns>Найденные изменения. Если для переданного индекса изменений нет, то будет возвращено пустое множество.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.GetChanges(System.DateTime,System.DateTime)">
+      <summary>
+            Получить изменения, произошедшие после <paramref name="from" /> и до <paramref name="to" />.
+            </summary>
+      <param name="from">Временная метка начала.</param>
+      <param name="to">Временная метка окончания.</param>
+      <returns>Найденные изменения. Если изменения присутствуют только для более раннего или более позднего периода, то будет возвращено пустое множество.</returns>
+    </member>
+    <member name="P:StockSharp.Algo.Storages.SecurityChangeContainer.Security">
+      <summary>
+            Инструмент.
+            </summary>
     </member>
     <member name="P:StockSharp.Algo.Storages.SecurityChangeContainer.ChangesKeepTime">
       <summary>
@@ -6277,57 +6371,66 @@
             </summary>
       <remarks>Если значение установлено в <see cref="F:System.TimeSpan.Zero" />, то изменения не будут удаляться.</remarks>
     </member>
-    <member name="T:StockSharp.Algo.Storages.SecurityChangeContainer.SecurityInfo">
-      <summary>
-            Контейнер для конкретного инструмента.
-            </summary>
-    </member>
-    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.SecurityInfo.GetCount">
-      <summary>
-            Получить количество всех хранящихся изменений.
-            </summary>
-      <returns>Количество хранящихся изменений.</returns>
-    </member>
-    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.SecurityInfo.GetCount(StockSharp.Algo.Storages.SecurityChangeTypes)">
-      <summary>
-            Получить количество хранящихся изменений типа <paramref name="type" />.
-            </summary>
-      <param name="type">Тип изменений.</param>
-      <returns>Количество хранящихся изменений.</returns>
-    </member>
-    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.SecurityInfo.GetChanges(System.Int32)">
-      <summary>
-            Получить изменения по индексу.
-            </summary>
-      <param name="index">Индекс. Ноль означает последние изменения.</param>
-      <returns>Найденные изменения. Если для переданного индекса изменений нет, то будет возвращено пустое множество.</returns>
-    </member>
-    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.SecurityInfo.GetChanges(System.TimeSpan)">
-      <summary>
-            Получить изменения, произошедшие раньше текущего времени минус временное смещение <paramref name="offset" />.
-            </summary>
-      <param name="offset">Временное смещение от текущего времени.</param>
-      <returns>Найденные изменения. Если изменения присутствуют только для более раннего периода, то будет возвращено пустое множество.</returns>
-    </member>
-    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.SecurityInfo.GetChanges(System.DateTime)">
-      <summary>
-            Получить изменения, произошедшие до <paramref name="from" />.
-            </summary>
-      <param name="from">Временная метка.</param>
-      <returns>Найденные изменения. Если изменения присутствуют только для более раннего периода, то будет возвращено пустое множество.</returns>
-    </member>
-    <member name="M:StockSharp.Algo.Storages.SecurityChangeContainer.SecurityInfo.GetChanges(System.DateTime,System.DateTime)">
-      <summary>
-            Получить изменения, произошедшие до <paramref name="from" /> и после <paramref name="to" />.
-            </summary>
-      <param name="from">Временная метка начала.</param>
-      <param name="to">Временная метка окончания.</param>
-      <returns>Найденные изменения. Если изменения присутствуют только для более раннего или более позднего периода, то будет возвращено пустое множество.</returns>
-    </member>
-    <member name="P:StockSharp.Algo.Storages.SecurityChangeContainer.SecurityInfo.Types">
+    <member name="P:StockSharp.Algo.Storages.SecurityChangeContainer.Types">
       <summary>
             Получить или устрановить тип отслеживаемых изменения для инструмента.
             </summary>
+    </member>
+    <member name="T:StockSharp.Algo.Storages.SecurityChangeHelper">
+      <summary>
+            Вспомогательный класс для работы с <see cref="T:StockSharp.Algo.Storages.SecurityChange" />.
+            </summary>
+    </member>
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeHelper.AddChanges(StockSharp.Algo.Storages.SecurityChangeContainer)">
+      <summary>
+            Добавить новые изменения.
+            </summary>
+      <param name="container">Контейнер.</param>
+    </member>
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeHelper.GetChanges(StockSharp.Algo.Storages.SecurityChangeContainer,System.TimeSpan)">
+      <summary>
+            Получить изменения, произошедшие раньше текущего времени минус временное смещение <paramref name="offset" />.
+            </summary>
+      <param name="container">Контейнер.</param>
+      <param name="offset">Временное смещение от текущего времени.</param>
+      <returns>Найденные изменения. Если изменения присутствуют только для более раннего периода, то будет возвращено пустое множество.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeHelper.GetChanges(StockSharp.Algo.Storages.SecurityChangeContainer,System.DateTime)">
+      <summary>
+            Получить изменения, произошедшие до <paramref name="date" />.
+            </summary>
+      <param name="container">Контейнер.</param>
+      <param name="date">Временная метка.</param>
+      <returns>Найденные изменения. Если изменения присутствуют только для более раннего периода, то будет возвращено пустое множество.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeHelper.GetChanges(StockSharp.Algo.Storages.SecurityChangeContainer)">
+      <summary>
+            Получить все изменения.
+            </summary>
+      <param name="container">Контейнер.</param>
+      <returns>Найденные изменения. Если изменения отсутствуют, то будет возвращено пустое множество.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeHelper.GetNewChanges(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Получить новые изменения инструмента.
+            </summary>
+      <param name="security">Инструмент.</param>
+      <returns>Новые изменения инструмента.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeHelper.GetNewChanges(StockSharp.BusinessEntities.Security,StockSharp.Algo.Storages.SecurityChangeTypes)">
+      <summary>
+            Получить новые изменения инструмента.
+            </summary>
+      <param name="security">Инструмент.</param>
+      <param name="requiredTypes">Типы изменений, которые необходимо получить.</param>
+      <returns>Новые изменения инструмента.</returns>
+    </member>
+    <member name="M:StockSharp.Algo.Storages.SecurityChangeHelper.ApplyChanges(StockSharp.BusinessEntities.Security,System.Collections.Generic.IEnumerable{StockSharp.Algo.Storages.SecurityChange})">
+      <summary>
+            Применить изменения к инструменту.
+            </summary>
+      <param name="security">Инструмент.</param>
+      <param name="changes">Изменения.</param>
     </member>
     <member name="T:StockSharp.Algo.Testing.MarketDataTypes">
       <summary>
@@ -6841,6 +6944,11 @@
     <member name="P:StockSharp.Algo.Statistics.BaseStatisticParameter`1.DisplayName">
       <summary>
             Локализованное название параметра.
+            </summary>
+    </member>
+    <member name="P:StockSharp.Algo.Statistics.BaseStatisticParameter`1.Description">
+      <summary>
+            Локализованное описание параметра.
             </summary>
     </member>
     <member name="P:StockSharp.Algo.Statistics.BaseStatisticParameter`1.Value">
@@ -8671,28 +8779,6 @@
       <param name="storage">Хранилище маркет-данных.</param>
       <returns>Конечная дата. Если значение не инициализировано, значит хранилище пустое.</returns>
     </member>
-    <member name="M:StockSharp.Algo.Storages.StorageHelper.GetNewChanges(StockSharp.BusinessEntities.Security)">
-      <summary>
-            Получить новые изменения инструмента.
-            </summary>
-      <param name="security">Инструмент.</param>
-      <returns>Новые изменения инструмента.</returns>
-    </member>
-    <member name="M:StockSharp.Algo.Storages.StorageHelper.GetNewChanges(StockSharp.BusinessEntities.Security,StockSharp.Algo.Storages.SecurityChangeTypes)">
-      <summary>
-            Получить новые изменения инструмента.
-            </summary>
-      <param name="security">Инструмент.</param>
-      <param name="requiredTypes">Типы изменений, которые необходимо получить.</param>
-      <returns>Новые изменения инструмента.</returns>
-    </member>
-    <member name="M:StockSharp.Algo.Storages.StorageHelper.ApplyChanges(StockSharp.BusinessEntities.Security,System.Collections.Generic.IEnumerable{StockSharp.Algo.Storages.SecurityChange})">
-      <summary>
-            Применить изменения к инструменту.
-            </summary>
-      <param name="security">Инструмент.</param>
-      <param name="changes">Изменения.</param>
-    </member>
     <member name="M:StockSharp.Algo.Storages.StorageHelper.GetStorageDrive(StockSharp.Algo.Storages.IMarketDataStorage)">
       <summary>
             Получить для хранилища <see cref="T:StockSharp.Algo.Storages.IMarketDataStorageDrive" />.
@@ -10332,6 +10418,13 @@
       <param name="strategy">Стратегия.</param>
       <returns>Биржевое время.</returns>
     </member>
+    <member name="M:StockSharp.Algo.Strategies.StrategyHelper.IsTradeTime(StockSharp.Algo.Strategies.Strategy)">
+      <summary>
+            Проверить, является ли текущее время торгуемым (началась ли сессия, не закончилась ли, нет ти клиринга).
+            </summary>
+      <param name="strategy">Стратегия.</param>
+      <returns>True, если торгуемое время, иначе, неторгуемое.</returns>
+    </member>
     <member name="M:StockSharp.Algo.Strategies.StrategyHelper.GetCandleManager(StockSharp.Algo.Strategies.Strategy)">
       <summary>
             Получить менеджер свечек, ассоциированный с переданной стратегией.
@@ -11037,7 +11130,7 @@
       <param name="suspend">True - приостановить, false - возобновить.</param>
       <returns>Правило.</returns>
     </member>
-    <member name="M:StockSharp.Algo.MarketRuleHelper.Sync``1(``0,System.Object)">
+    <member name="M:StockSharp.Algo.MarketRuleHelper.Sync``1(``0,Ecng.Common.SyncObject)">
       <summary>
             Синхронизовать или рассинхронизовать реагирование правила с другими правилами.
             </summary>
@@ -11997,6 +12090,13 @@
       <summary>
             Перезапустить экспорт данных из торговой системы через методы <see cref="M:StockSharp.BusinessEntities.ITrader.StopExport" /> и <see cref="M:StockSharp.BusinessEntities.ITrader.StartExport" />.
             </summary>
+    </member>
+    <member name="M:StockSharp.Algo.BasketTrader.LookupSecurities(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Найти инструменты, соответствующие фильтру <paramref name="criteria" />.
+            Найденные инструменты будут переданы через событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewSecurities" />.
+            </summary>
+      <param name="criteria">Инструмент, поля которого будут использоваться в качестве фильтра.</param>
     </member>
     <member name="M:StockSharp.Algo.BasketTrader.GetPosition(StockSharp.BusinessEntities.Portfolio,StockSharp.BusinessEntities.Security,System.String)">
       <summary>
@@ -13389,7 +13489,7 @@
     </member>
     <member name="P:StockSharp.Algo.Testing.EmulationTrader.UseMarketDepth">
       <summary>
-            Загружать ли и использовать ли стаканы. 
+            Загружать ли стаканы. Cм также <see cref="P:StockSharp.Algo.Testing.MarketEmulatorSettings.UseMarketDepth" />, определяющей использование стаканов для эмуляции. 
             </summary>
     </member>
     <member name="P:StockSharp.Algo.Testing.EmulationTrader.UseOrderLog">
@@ -13766,6 +13866,11 @@
             </summary>
       <param name="time">Текущее время.</param>
       <returns>true если надо сгенерировать данные.</returns>
+    </member>
+    <member name="P:StockSharp.Algo.Testing.MarketDataGenerator`1.RandomArrayLength">
+      <summary>
+            Длина массива предварительно сгенерированных случайных чисел. По умолчанию 100.
+            </summary>
     </member>
     <member name="P:StockSharp.Algo.Testing.MarketDataGenerator`1.Security">
       <summary>
@@ -14344,6 +14449,13 @@
       <summary>
             Перезапустить экспорт данных из торговой системы через методы <see cref="M:StockSharp.BusinessEntities.ITrader.StopExport" /> и <see cref="M:StockSharp.BusinessEntities.ITrader.StartExport" />.
             </summary>
+    </member>
+    <member name="M:StockSharp.Algo.Testing.RealTimeEmulationTrader`1.LookupSecurities(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Найти инструменты, соответствующие фильтру <paramref name="criteria" />.
+            Найденные инструменты будут переданы через событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewSecurities" />.
+            </summary>
+      <param name="criteria">Инструмент, поля которого будут использоваться в качестве фильтра.</param>
     </member>
     <member name="M:StockSharp.Algo.Testing.RealTimeEmulationTrader`1.GetPosition(StockSharp.BusinessEntities.Portfolio,StockSharp.BusinessEntities.Security,System.String)">
       <summary>

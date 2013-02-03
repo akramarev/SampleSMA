@@ -1172,11 +1172,12 @@
             Остановить экспорт данных из торговой системы в программу, запущенный через <see cref="M:StockSharp.BusinessEntities.ITrader.StartExport" />.
             </summary>
     </member>
-    <member name="M:StockSharp.InteractiveBrokers.IBTrader.LookupSecurity(StockSharp.BusinessEntities.Security)">
+    <member name="M:StockSharp.InteractiveBrokers.IBTrader.LookupSecurities(StockSharp.BusinessEntities.Security)">
       <summary>
-            Найти инструмент в базе Interactive Borkers.
+            Найти инструменты, соответствующие фильтру <paramref name="criteria" />.
+            Найденные инструменты будут переданы через событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewSecurities" />.
             </summary>
-      <param name="security">Инструмент, поля которого будут использоваться в качестве фильтра.</param>
+      <param name="criteria">Инструмент, поля которого будут использоваться в качестве фильтра.</param>
     </member>
     <member name="M:StockSharp.InteractiveBrokers.IBTrader.OnRegisterSecurity(StockSharp.BusinessEntities.Security)">
       <summary>

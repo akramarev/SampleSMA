@@ -9,6 +9,60 @@
             <exclude/>
             </summary>
         </member>
+        <member name="T:OEC.API.MarginCalculator.MarginCalculatorResponse">
+            <summary>
+            </summary>
+            <exclude />
+        </member>
+        <member name="T:OEC.API.MarginCalculator.MarginCalculatorRequest">
+            <summary>
+            </summary>
+            <exclude/>
+        </member>
+        <member name="T:OEC.API.MarginCalculator.HypoPosition">
+            <summary>
+            </summary>
+            <exclude/>
+        </member>
+        <member name="T:OEC.API.MarginCalculator.HypoOrder">
+            <summary>
+            </summary>
+            <exclude/>
+        </member>
+        <member name="T:OEC.API.MarginCalculator.HypoOrderList">
+            <summary>
+            </summary>
+            <exclude/>
+        </member>
+        <member name="T:OEC.API.Bases.BasicList`1">
+            <summary>
+            Base class for collections of unsorted non-keyed objects
+            </summary>
+            <typeparam name="T">type of object</typeparam>
+        </member>
+        <member name="M:OEC.API.Bases.BasicList`1.Sort(System.Comparison{`0})">
+            <summary>
+            Sorts the internal list 
+            </summary>
+            <param name="comparison">user provided comparison procedure</param>
+        </member>
+        <member name="P:OEC.API.Bases.BasicList`1.Item(System.Int32)">
+            <summary>
+            Gets an item from a collection by index
+            </summary>
+            <param name="index">Index</param>
+            <returns>Collection item</returns>
+        </member>
+        <member name="P:OEC.API.Bases.BasicList`1.Count">
+            <summary>
+            Gets the number of elements contained in the collection.
+            </summary>
+        </member>
+        <member name="T:OEC.API.MarginCalculator.HypoPositionList">
+            <summary>
+            </summary>
+            <exclude/>
+        </member>
         <member name="T:OEC.API.Currency">
             <summary>
             Currency representation.
@@ -64,6 +118,11 @@
             Initializes the object the integer key value
             </summary>
             <param name="ID">Unique key value</param>
+        </member>
+        <member name="M:OEC.API.Bases.IDObject.GetHashCode">
+            <summary>
+            Hash code overriden to return ID
+            </summary>
         </member>
         <member name="T:OEC.API.Bases.INamed">
             <summary>
@@ -336,8 +395,8 @@
         <member name="T:OEC.API.FolderInfo">
             <summary>
             Holds application folders data
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="M:OEC.API.FolderInfo.InitializeProfileFolders(System.String,System.String,System.String)">
             <summary>
@@ -569,572 +628,6 @@
             The list is indexed by ID and Name
             </remarks>
         </member>
-        <member name="T:OEC.API.Balance">
-            <summary>
-            Account cash balance and profit/loss summary.
-            </summary>
-            <remarks>
-            This class used to represent account balance and p/l values, for a given currency, or total converted values
-            Account P/L information calculated as a sum of P/L per each position.
-            </remarks>
-            <seealso cref="F:OEC.API.Balance.Account"/>
-        </member>
-        <member name="F:OEC.API.Balance.Spec">
-            <summary>
-            Account spec, for compatibility
-            </summary>
-        </member>
-        <member name="F:OEC.API.Balance.Account">
-            <summary>
-            Account, associated with Balance. 
-            </summary>
-        </member>
-        <member name="P:OEC.API.Balance.Currency">
-            <summary>
-            <see cref="T:OEC.API.Currency"/> of this balance part.
-            </summary>
-            <remarks>
-            Contains null for total (summary) balance.
-            </remarks>
-        </member>
-        <member name="P:OEC.API.Balance.RealizedPnL">
-            <summary>
-            Profit/Loss gained from all the positions closed during the trading day
-            </summary>
-        </member>
-        <member name="P:OEC.API.Balance.OpenPnL">
-            <summary>
-            Theoretical Profit/Loss of all the open positions.
-            </summary>
-            <remarks>
-            Calculated using avg. position price versus <see cref="T:OEC.API.Contract"/> last trade price.
-            </remarks>
-        </member>
-        <member name="P:OEC.API.Balance.SettlePnL">
-            <summary>
-            Settlement Profit/Loss for all the open positions.
-            </summary>
-            <remarks>
-            Calculated using avg. position price versus current (yesterday) settlement price
-            </remarks>
-        </member>
-        <member name="P:OEC.API.Balance.HypoPnL">
-            <summary>
-            <exclude />
-            </summary>
-        </member>
-        <member name="P:OEC.API.Balance.NetLiquidatingValue">
-            <summary>
-            Net Liquidating Value calculated as account cash balance + <see cref="P:OEC.API.Balance.SettlePnL"/>
-            </summary>
-        </member>
-        <member name="P:OEC.API.Balance.MaintenanceMargin">
-            <summary>
-            Summary Maintenance Margin for all open positions
-            </summary>
-        </member>
-        <member name="P:OEC.API.Balance.InitialMargin">
-            <summary>
-            Summary Initial Margin for all open positions
-            </summary>
-        </member>
-        <member name="P:OEC.API.Balance.SpanMargin">
-            <summary>
-            Summary Margin (initial and maintenance) calculated by SPAN
-            </summary>
-        </member>
-        <member name="P:OEC.API.Balance.FutPnL">
-            <summary>
-            Futures Profit/Loss
-            </summary>
-        </member>
-        <member name="P:OEC.API.Balance.OptPnL">
-            <summary>
-            Options Profit/Loss
-            </summary>
-        </member>
-        <member name="P:OEC.API.Balance.EquityPnL">
-            <summary>
-            Equity Profit/Loss
-            </summary>
-        </member>
-        <member name="T:OEC.API.SpanMargin">
-            <summary>
-            <exclude/>
-            </summary>
-        </member>
-        <member name="P:OEC.API.SpanMargin.Initial">
-            <summary>
-            <exlude/>
-            </summary>
-        </member>
-        <member name="P:OEC.API.SpanMargin.Maintenance">
-            <summary>
-            <exlude/>
-            </summary>
-        </member>
-        <member name="T:OEC.API.BalanceList">
-            <summary>
-            List of <see cref="T:OEC.API.Balance"/> items - see <see cref="P:OEC.API.Account.Balances">Account.Balances</see>.
-            </summary>
-            <remarks>
-            The list is indexed by <see cref="T:OEC.API.Currency"/> 
-            </remarks>
-        </member>
-        <member name="T:OEC.API.Account">
-            <summary>
-            Customer account
-            </summary>
-            <remarks>
-            A trader can have one or more accounts. For each of those accounts, 
-            the Account instance holds information about open and closed positions 
-            (see <see cref="P:OEC.API.Account.AvgPositions"/>), position details (see <see cref="P:OEC.API.Account.DetailedPositions"/>)
-            cash balance(s) and calculated profit/loss values (see <see cref="P:OEC.API.Account.Balances"/> and <see cref="P:OEC.API.Account.TotalBalance"/>).
-            <br/>
-            All trader accounts are available in the <see cref="T:OEC.API.OECClient"/>.<see cref="P:OEC.API.OECClient.Accounts"/> collection.
-            </remarks>
-        </member>
-        <member name="P:OEC.API.Account.SpanMargin">
-            <summary>
-            Gets span margin.
-            </summary>
-        </member>
-        <member name="P:OEC.API.Account.Spec">
-            <summary>
-            Account Number
-            </summary>
-            <remarks>
-            Account number is a unique string representing a customer account.
-            </remarks>
-        </member>
-        <member name="P:OEC.API.Account.CH">
-            <summary>
-            Clearing house 
-            </summary>
-        </member>
-        <member name="P:OEC.API.Account.Type">
-            <summary>
-            Type of account
-            </summary>
-        </member>
-        <member name="P:OEC.API.Account.ReadOnly">
-            <summary>
-            Indicates that account is read only
-            </summary>
-        </member>
-        <member name="P:OEC.API.Account.AvgPositions">
-            <summary>
-            Average positions stats per symbol - see <see cref="T:OEC.API.Position"/>.
-            </summary>
-            <remarks>
-            Average positions stats are calculated for current trading session and stored in AvgPositions - one item per contract.
-            <see cref="T:OEC.API.Position"/> items in the list have previous day position, 
-            total contracts bought and sold as well as buy/sell prices, current net position
-            and profit/loss information.
-            </remarks>
-        </member>
-        <member name="P:OEC.API.Account.DetailedPositions">
-            <summary>
-            Detailed account/contract <see cref="T:OEC.API.Position"/> items.
-            </summary>
-            <remarks>
-            In this collection, a list of atomic positions opened and closed during the trading session 
-            is available per each contract. The position list can hold multiple closed positions, open position (if any) 
-            is the last item in the list.<br/>
-            Detailed positions contains bought/sold information and profit/loss information 
-            - realized for closed positions, theoretical per open ones.
-            </remarks>
-            <seealso cref="T:OEC.API.Position"/>
-        </member>
-        <member name="P:OEC.API.Account.Trader">
-            <summary>
-            <see cref="T:OEC.API.Trader"/> who owns this account or null
-            </summary>
-        </member>
-        <member name="P:OEC.API.Account.Balances">
-            <summary>
-             Account balance and profit/loss data (see <see cref="T:OEC.API.Balance"/>) per each <see cref="T:OEC.API.Currency"/> available 
-            for the account.
-            </summary>
-            <remarks>
-            Balances collection holds balance and p/l data for USD currency and also for any other currency with non-zero balance or p/l.
-            Sum of all values for all currencies can be found in <see cref="P:OEC.API.Account.TotalBalance"/> property.
-            </remarks>
-            <seealso cref="T:OEC.API.Balance"/>
-            <seealso cref="P:OEC.API.Account.TotalBalance"/>
-        </member>
-        <member name="P:OEC.API.Account.TotalBalance">
-            <summary>
-            Account balance and profit/loss data - total for all currencies
-            </summary>
-            <remarks>
-            Balances and P/L values are converted to USD using <see cref="T:OEC.API.Currency"/> convertion rate.
-            Detailed balances per each currency can be found in <see cref="P:OEC.API.Account.Balances"/> property.
-            </remarks>
-            <seealso cref="T:OEC.API.Balance"/>
-            <seealso cref="P:OEC.API.Account.Balances"/>
-        </member>
-        <member name="P:OEC.API.Account.RiskLimitsType">
-            <summary>
-            <exclude />
-            </summary>
-        </member>
-        <member name="P:OEC.API.Account.CompoundPositionGroups">
-            <summary>
-            List of compound position groups
-            </summary>
-        </member>
-        <member name="P:OEC.API.Account.Root">
-            <summary>
-            Root account, if this account is a subaccount
-            </summary>
-        </member>
-        <member name="P:OEC.API.Account.Subaccounts">
-            <summary>
-            List of subaccounts
-            </summary>
-        </member>
-        <member name="T:OEC.API.AccountList">
-            <summary>
-            List of accounts - see <see cref="P:OEC.API.OECClient.Accounts">OECClient.Accounts</see>.
-            </summary>
-            <remarks>
-            List indexed by Account.ID and Account.Spec fields.
-            </remarks>
-        </member>
-        <member name="T:OEC.API.ClearingHouse">
-            <summary>
-            Clearing house
-            </summary>
-        </member>
-        <member name="T:OEC.API.ClearingHouseList">
-            <summary>
-            List of clearing houses - see <see cref="P:OEC.API.OECClient.ClearingHouses"/>.
-            </summary>
-            <seealso cref="T:OEC.API.ClearingHouse"/>
-        </member>
-        <member name="T:OEC.API.UnknownServerResponseException">
-            <summary>
-            Exceptions to be thrown if unknown data come from server
-            </summary>
-        </member>
-        <member name="M:OEC.API.UnknownServerResponseException.#ctor">
-            <summary>
-            Constructor
-            </summary>
-        </member>
-        <member name="M:OEC.API.UnknownServerResponseException.#ctor(System.String)">
-            <summary>
-            Constuctor with support of user defined message
-            </summary>
-            <param name="message">User defined message for exception</param>
-        </member>
-        <member name="T:OEC.HashTools.ProcessHasher">
-            <summary>
-            <exclude/>
-            </summary>
-        </member>
-        <member name="T:OEC.API.Layers.InitiateReconnect">
-            <summary>
-            <exclude/>
-            </summary>
-        </member>
-        <member name="T:OEC.API.Layers.LayerPriorityAttribute">
-            <summary>
-            <exclude/>
-            </summary>
-        </member>
-        <member name="T:OEC.API.Layers.ResponseReceivedEvent">
-            <summary>
-            <exclude/>
-            </summary>
-            <param name="response"></param>
-        </member>
-        <member name="T:OEC.API.Ticks">
-            <summary>
-            Ticks object - contains array of timestamps and array of prices - one price per one timestamp.
-            See <see cref="M:OEC.API.OECClient.RequestTicks(OEC.API.Contract,System.DateTime,System.DateTime)"/> and <see cref="M:OEC.API.OECClient.RequestTicks(OEC.API.Contract,System.DateTime,System.Int32)"/>
-            </summary>
-        </member>
-        <member name="F:OEC.API.Ticks.Timestamps">
-            <summary>
-            Timestamps of ticks
-            </summary>
-        </member>
-        <member name="F:OEC.API.Ticks.Prices">
-            <summary>
-            Price values of ticks
-            </summary>
-        </member>
-        <member name="F:OEC.API.Ticks.BidPrices">
-            <summary>
-            Price values of ticks
-            </summary>
-        </member>
-        <member name="F:OEC.API.Ticks.AskPrices">
-            <summary>
-            Price values of ticks
-            </summary>
-        </member>
-        <member name="F:OEC.API.Ticks.Volumes">
-            <summary>
-            Volumes of ticks
-            </summary>
-        </member>
-        <member name="F:OEC.API.Ticks.Volumes32">
-            <summary>
-            Volumes of ticks (32-bit values)
-            </summary>
-        </member>
-        <member name="F:OEC.API.Ticks.Types">
-            <summary>
-            Types of ticks.
-            </summary>
-        </member>
-        <member name="F:OEC.API.Ticks.Exchanges">
-            <summary>
-            Exchanges of ticks.
-            </summary>
-        </member>
-        <member name="P:OEC.API.Ticks.TimestampList">
-            <summary>
-            Timestamps as a list
-            </summary>
-        </member>
-        <member name="P:OEC.API.Ticks.PriceList">
-            <summary>
-            Prices as a list
-            </summary>
-        </member>
-        <member name="P:OEC.API.Ticks.BidPriceList">
-            <summary>
-            Bid prices as a list
-            </summary>
-        </member>
-        <member name="P:OEC.API.Ticks.AskPriceList">
-            <summary>
-            Ask prices as a list
-            </summary>
-        </member>
-        <member name="P:OEC.API.Ticks.VolumeList">
-            <summary>
-            Volumes as a list
-            </summary>
-        </member>
-        <member name="P:OEC.API.Ticks.ExchangeList">
-            <summary>
-            Exchanges as a list
-            </summary>
-        </member>
-        <member name="T:OEC.API.Bar">
-            <summary>
-            Price bar - Open, High, Low, Close, Volume values and Timestamp.
-            See <see cref="M:OEC.API.OECClient.RequestHistory(OEC.API.Contract,System.DateTime,System.DateTime)"/>
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.Timestamp">
-            <summary>
-            Bar open timestamp, UTC
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.Open">
-            <summary>
-            Bar open value
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.High">
-            <summary>
-            Bar high value
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.Low">
-            <summary>
-            Bar low value
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.Close">
-            <summary>
-            Bar close value
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.Volume">
-            <summary>
-            Bar volume
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.Volume64">
-            <summary>
-            Bar volume 64-bit value
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.Ticks">
-            <summary>
-            Number of ticks
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.UpTicks">
-            <summary>
-            Number of ticks going up
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.UpVolume">
-            <summary>
-            Volume of ticks going up
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.DownTicks">
-            <summary>
-            Number of ticks going down
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.DownVolume">
-            <summary>
-            Volume of ticks going down
-            </summary>
-        </member>
-        <member name="F:OEC.API.Bar.CloseTimestamp">
-            <summary>
-            Bar close timestamp, UTC
-            </summary>
-        </member>
-        <member name="M:OEC.API.Bar.ToString">
-            <summary>
-            Text representation of the Bar
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:OEC.API.Subscription">
-            <summary>
-            Subscription 
-            </summary>
-        </member>
-        <member name="F:OEC.API.Subscription.Contract">
-            <summary>
-            Contract 
-            </summary>
-        </member>
-        <member name="F:OEC.API.Subscription.Currency">
-            <summary>
-            Currency 
-            </summary>
-        </member>
-        <member name="F:OEC.API.Subscription.Start">
-            <summary>
-            Start of range 
-            </summary>
-            <remarks>
-            ignored for Price/DOM
-            </remarks>
-        </member>
-        <member name="F:OEC.API.Subscription.End">
-            <summary>
-            End of range
-            </summary>
-            <remarks>
-            ignored for Price/DOM
-            </remarks>
-        </member>
-        <member name="F:OEC.API.Subscription.Amount">
-            <summary>
-            Amount of bars/ticks per request
-            </summary>
-            <remarks>
-            ignored for Price/DOM/Momentum and range bars
-            </remarks>
-        </member>
-        <member name="F:OEC.API.Subscription.IntInterval">
-            <summary>
-            Bar interval 
-            </summary>
-            <remarks>
-            0 for Price/DOM/Tick,
-            minutes for bars,
-            ticks for tickbars,
-            volume for volumebars
-            </remarks>
-        </member>
-        <member name="F:OEC.API.Subscription.IgnoreSessionBoundaries">
-            <summary>
-            Ignores session boundaries
-            </summary>
-        </member>
-        <member name="F:OEC.API.Subscription.Updatable">
-            <summary>
-            Updatable or one-time
-            </summary>
-        </member>
-        <member name="F:OEC.API.Subscription.Type">
-            <summary>
-            Subscription type
-            </summary>
-        </member>
-        <member name="M:OEC.API.Subscription.GetNextID">
-            <summary>
-            Local unique order ID generator
-            </summary>
-        </member>
-        <member name="P:OEC.API.Subscription.Interval">
-            <summary>
-            Bar interval 
-            </summary>
-            <remarks>
-            TimeSpan.Zero for Price/DOM/Tick,
-            minutes for bars,
-            ticks for tickbars,
-            milliseconds for volumebars
-            </remarks>
-        </member>
-        <member name="T:OEC.API.SubscriptionList">
-            <summary>
-            List of subscriptions
-            </summary>
-        </member>
-        <member name="T:OEC.API.Histogram">
-            <summary>
-            Histogram for price/volume values
-            </summary>
-        </member>
-        <member name="M:OEC.API.Histogram.GetPriceAt(System.Int32)">
-            <summary>
-            returns price at given level
-            </summary>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:OEC.API.Histogram.GetVolumeAt(System.Int32)">
-            <summary>
-            returns volume at given level
-            </summary>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:OEC.API.Histogram.GetVolumeAtPrice(System.Single)">
-            <summary>
-            returns volume for given price
-            </summary>
-            <param name="price"></param>
-            <returns></returns>
-        </member>
-        <member name="P:OEC.API.Histogram.Count">
-            <summary>
-            count of histogram levels
-            </summary>
-        </member>
-        <member name="P:OEC.API.Histogram.TotalVolume">
-            <summary>
-            Total volume
-            </summary>
-        </member>
-        <member name="P:OEC.API.Histogram.WeighedAverage">
-            <summary>
-            Weighed Average
-            </summary>
-        </member>
-        <member name="P:OEC.API.Histogram.MaxVolume">
-            <summary>
-            Maximum Volume
-            </summary>
-        </member>
         <member name="T:OEC.API.OECClient">
              <summary>
              This class represents a client connection to the OEC Server 
@@ -1227,13 +720,20 @@
              he will call OECClient.<see cref="M:OEC.API.OECClient.Unsubscribe(OEC.API.Contract)"/> method to cancel the subscription.
              </example>
         </member>
+        <member name="M:OEC.API.OECClient.RequestMarginCalculation(OEC.API.MarginCalculator.MarginCalculatorRequest)">
+            <summary>
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exclude/>
+        </member>
         <member name="M:OEC.API.OECClient.RequestCreateForward(OEC.API.BaseContract,System.DateTime)">
             <summary>
-            <exclude />
             </summary>
             <param name="baseContract"></param>
             <param name="settlementDate"></param>
             <returns></returns>
+            <exclude />
         </member>
         <member name="F:OEC.API.OECClient.m_EventsTimer">
             <summary>
@@ -1260,6 +760,7 @@
             <summary>
             Initializes the component. See <see cref="M:OEC.API.OECClient.Connect(System.String,System.Int32,System.String,System.String,System.Boolean)"/> method.
             </summary>
+            <exclude/>
         </member>
         <member name="M:OEC.API.OECClient.Dispose(System.Boolean)">
             <summary>
@@ -1300,8 +801,8 @@
         </member>
         <member name="M:OEC.API.OECClient.Reconnect">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="M:OEC.API.OECClient.SendOCOOrders(OEC.API.OrderDraft[])">
             <summary>
@@ -1362,6 +863,13 @@
             Creates order, command, version and state for a new order.
             </summary>
             <param name="draft">Order draft</param>
+        </member>
+        <member name="M:OEC.API.OECClient.CreateOrder(OEC.API.OrderDraft,System.Boolean)">
+            <summary>
+            Creates order, command, version and state for a new order.
+            </summary>
+            <param name="draft">Order draft</param>
+            <param name="addToOrdersList">Flag indicating the created order is added to the Orders list.</param>
         </member>
         <member name="M:OEC.API.OECClient.ModifyOrder(OEC.API.OrderDraft)">
             <summary>
@@ -1833,8 +1341,8 @@
         </member>
         <member name="M:OEC.API.OECClient.AddLayer(System.Reflection.Assembly)">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="M:OEC.API.OECClient.m_EventsTimer_Tick(System.Object,System.EventArgs)">
             <summary>
@@ -1884,7 +1392,7 @@
         <member name="M:OEC.API.OECClient.SymbolLookup(System.String)">
             <summary>
             Sends strict symbol lookup request to server. Results will be available via event <see cref="E:OEC.API.OECClient.OnSymbolLookupReceived"/>
-            The result will contains only one contract with name that starts with <code>Symbol</code>
+            The result will contains only one contract with name that starts with Symbol
             </summary>
             <param name="Symbol"></param>
         </member>
@@ -1927,8 +1435,8 @@
         </member>
         <member name="M:OEC.API.OECClient.SetClientInfo(OEC.API.ClientInfo)">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="M:OEC.API.OECClient.DisconnectClient(OEC.API.LoggedUserClient)">
             <summary>
@@ -1936,9 +1444,14 @@
             </summary>
             <param name="item">Logged user session</param>
         </member>
+        <member name="M:OEC.API.OECClient.SetLoggingConfig(OEC.API.LoggingConfiguration)">
+            <summary>
+            Sets logging config of API
+            </summary>
+            <param name="config">Logging level</param>
+        </member>
         <member name="M:OEC.API.OECClient.SubscribeDealQuote(OEC.API.Contract,System.Int32,OEC.API.Currency,OEC.Data.OrderSide,System.DateTime)">
             <summary>
-            <exclude />
             </summary>
             <param name="contract"></param>
             <param name="quantity"></param>
@@ -1946,10 +1459,10 @@
             <param name="side"></param>
             <param name="endDate"></param>
             <returns></returns>
+            <exclude />
         </member>
         <member name="M:OEC.API.OECClient.SubscribeDealQuote(OEC.API.Contract,OEC.API.Contract,System.Int32,System.Int32,OEC.Data.OrderSide)">
             <summary>
-            <exclude />
             </summary>
             <param name="contract"></param>
             <param name="swapToContract"></param>
@@ -1957,6 +1470,17 @@
             <param name="quantity2"></param>
             <param name="side"></param>
             <returns></returns>
+            <exclude />
+        </member>
+        <member name="E:OEC.API.OECClient.OnMarginCalculationCompleted">
+            <summary>
+            </summary>
+            <exclude/>
+        </member>
+        <member name="E:OEC.API.OECClient.OnPortfolioMarginChanged">
+            <summary>
+            Occurs when portfolio margining changed 
+            </summary>
         </member>
         <member name="E:OEC.API.OECClient.OnContractCreated">
             <summary>
@@ -2199,6 +1723,21 @@
             Occurs when list of user sessions changed. For example when user connected/disconnected from another location
             </summary>
         </member>
+        <member name="E:OEC.API.OECClient.OnAccountRiskLimitChanged">
+            <summary>
+            Occurs when risk limit type is changed for account
+            </summary>
+        </member>
+        <member name="E:OEC.API.OECClient.OnContractRiskLimitChanged">
+            <summary>
+            Occurs when risk limit type is changed for contract
+            </summary>
+        </member>
+        <member name="E:OEC.API.OECClient.OnRiskLimitDetailsReceived">
+            <summary>
+            Occurs when new risk limits received and RiskLimits collection changed
+            </summary>
+        </member>
         <member name="P:OEC.API.OECClient.EventBatchInterval">
             <summary>
             Interval for accumulating events to batch, in ms.
@@ -2220,6 +1759,11 @@
         <member name="P:OEC.API.OECClient.InAutoReconnect">
             <summary>
             Checks whether auto-reconnect is in progress now
+            </summary>
+        </member>
+        <member name="P:OEC.API.OECClient.ServerStrategyManager">
+            <summary>
+            Gets ServerStrategyManager instance. 
             </summary>
         </member>
         <member name="P:OEC.API.OECClient.Accounts">
@@ -2354,26 +1898,39 @@
             Last username passed to Connect method
             </summary>
         </member>
+        <member name="P:OEC.API.OECClient.PasswordExpirationDate">
+            <summary>
+            Password Expiration Date
+            </summary>
+        </member>
         <member name="P:OEC.API.OECClient.UUID">
             <summary>
             Unique Universal IDentifier (UUID)
             This value has to be set to identify application when OEC API is being used by 3rd parties.
             Remoting connections are required to specify UUID as well.
+            UUID must be obtained from OEC by contacting support (support@openecry.com). 
+            Obtaining the UUID and connecting your application to OEC with the UUID will enable your users 
+            to leverage a single login to access both your application as well as OEC's Trading platform at the same time.
             </summary>
         </member>
         <member name="P:OEC.API.OECClient.UseHypoPL">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="P:OEC.API.OECClient.InRemoting">
             <summary>
-            <exclude/>
             </summary>
+            <exclude/>
         </member>
         <member name="P:OEC.API.OECClient.LoggedUserClients">
             <summary>
             List of another sessions of current user
+            </summary>
+        </member>
+        <member name="P:OEC.API.OECClient.RiskLimits">
+            <summary>
+            List of all available risk limits
             </summary>
         </member>
         <member name="P:OEC.API.OECClient.PriceHost">
@@ -2395,8 +1952,8 @@
         </member>
         <member name="P:OEC.API.OECClient.LayerConfigurations">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="P:OEC.API.OECClient.RemoteHostingEnabled">
             <summary>
@@ -2411,17 +1968,657 @@
         </member>
         <member name="P:OEC.API.OECClient.Administrator">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="P:OEC.API.OECClient.AutoSubscribe">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="E:OEC.API.OECClient.OnDealQuoteUpdated">
             <summary>
+            </summary>
             <exclude />
+        </member>
+        <member name="T:OEC.API.OnMarginCalculationCompletedEvent">
+            <summary>
+            </summary>
+            <param name="response"></param>
+            <exclude />
+        </member>
+        <member name="T:OEC.API.OnPortfolioMarginChangedEvent">
+            <summary>
+            Portfolio margining changed
+            </summary>
+            <param name="account">affected account</param>
+        </member>
+        <member name="T:OEC.API.Balance">
+            <summary>
+            Account cash balance and profit/loss summary.
+            </summary>
+            <remarks>
+            This class used to represent account balance and p/l values, for a given currency, or total converted values
+            Account P/L information calculated as a sum of P/L per each position.
+            </remarks>
+            <seealso cref="F:OEC.API.Balance.Account"/>
+        </member>
+        <member name="F:OEC.API.Balance.Spec">
+            <summary>
+            Account spec, for compatibility
+            </summary>
+        </member>
+        <member name="F:OEC.API.Balance.Account">
+            <summary>
+            Account, associated with Balance. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Balance.Currency">
+            <summary>
+            <see cref="T:OEC.API.Currency"/> of this balance part.
+            </summary>
+            <remarks>
+            Contains null for total (summary) balance.
+            </remarks>
+        </member>
+        <member name="P:OEC.API.Balance.RealizedPnL">
+            <summary>
+            Profit/Loss gained from all the positions closed during the trading day
+            </summary>
+        </member>
+        <member name="P:OEC.API.Balance.OpenPnL">
+            <summary>
+            Theoretical Profit/Loss of all the open positions.
+            </summary>
+            <remarks>
+            Calculated using avg. position price versus <see cref="T:OEC.API.Contract"/> last trade price.
+            </remarks>
+        </member>
+        <member name="P:OEC.API.Balance.SettlePnL">
+            <summary>
+            Settlement Profit/Loss for all the open positions.
+            </summary>
+            <remarks>
+            Calculated using avg. position price versus current (yesterday) settlement price
+            </remarks>
+        </member>
+        <member name="P:OEC.API.Balance.HypoPnL">
+            <exclude />
+        </member>
+        <member name="P:OEC.API.Balance.NetLiquidatingValue">
+            <summary>
+            Net Liquidating Value calculated as account cash balance + <see cref="P:OEC.API.Balance.SettlePnL"/>
+            </summary>
+        </member>
+        <member name="P:OEC.API.Balance.NetLiq">
+            <summary>
+            Net Liq calculated as account Cash  + Open P/L + Cost Basis
+            </summary>
+        </member>
+        <member name="P:OEC.API.Balance.Cash">
+            <summary>
+            Cash
+            </summary>
+        </member>
+        <member name="P:OEC.API.Balance.MaintenanceMargin">
+            <summary>
+            Summary Maintenance Margin for all open positions
+            </summary>
+        </member>
+        <member name="P:OEC.API.Balance.InitialMargin">
+            <summary>
+            Summary Initial Margin for all open positions
+            </summary>
+        </member>
+        <member name="P:OEC.API.Balance.PortfolioMargin">
+            <summary>
+            Portfolio Margining
+            </summary>
+        </member>
+        <member name="P:OEC.API.Balance.FutPnL">
+            <summary>
+            Futures Profit/Loss
+            </summary>
+        </member>
+        <member name="P:OEC.API.Balance.OptPnL">
+            <summary>
+            Options Profit/Loss
+            </summary>
+        </member>
+        <member name="P:OEC.API.Balance.EquityPnL">
+            <summary>
+            Equity Profit/Loss
+            </summary>
+        </member>
+        <member name="T:OEC.API.BalanceList">
+            <summary>
+            List of <see cref="T:OEC.API.Balance"/> items - see <see cref="P:OEC.API.Account.Balances">Account.Balances</see>.
+            </summary>
+            <remarks>
+            The list is indexed by <see cref="T:OEC.API.Currency"/> 
+            </remarks>
+        </member>
+        <member name="T:OEC.API.Account">
+            <summary>
+            Customer account
+            </summary>
+            <remarks>
+            A trader can have one or more accounts. For each of those accounts, 
+            the Account instance holds information about open and closed positions 
+            (see <see cref="P:OEC.API.Account.AvgPositions"/>), position details (see <see cref="P:OEC.API.Account.DetailedPositions"/>)
+            cash balance(s) and calculated profit/loss values (see <see cref="P:OEC.API.Account.Balances"/> and <see cref="P:OEC.API.Account.TotalBalance"/>).
+            <br/>
+            All trader accounts are available in the <see cref="T:OEC.API.OECClient"/>.<see cref="P:OEC.API.OECClient.Accounts"/> collection.
+            </remarks>
+        </member>
+        <member name="P:OEC.API.Account.Spec">
+            <summary>
+            Account Number
+            </summary>
+            <remarks>
+            Account number is a unique string representing a customer account.
+            </remarks>
+        </member>
+        <member name="P:OEC.API.Account.CH">
+            <summary>
+            Clearing house 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Account.Type">
+            <summary>
+            Type of account
+            </summary>
+        </member>
+        <member name="P:OEC.API.Account.ReadOnly">
+            <summary>
+            Indicates that account is read only
+            </summary>
+        </member>
+        <member name="P:OEC.API.Account.AvgPositions">
+            <summary>
+            Average positions stats per symbol - see <see cref="T:OEC.API.Position"/>.
+            </summary>
+            <remarks>
+            Average positions stats are calculated for current trading session and stored in AvgPositions - one item per contract.
+            <see cref="T:OEC.API.Position"/> items in the list have previous day position, 
+            total contracts bought and sold as well as buy/sell prices, current net position
+            and profit/loss information.
+            </remarks>
+        </member>
+        <member name="P:OEC.API.Account.DetailedPositions">
+            <summary>
+            Detailed account/contract <see cref="T:OEC.API.Position"/> items.
+            </summary>
+            <remarks>
+            In this collection, a list of atomic positions opened and closed during the trading session 
+            is available per each contract. The position list can hold multiple closed positions, open position (if any) 
+            is the last item in the list.<br/>
+            Detailed positions contains bought/sold information and profit/loss information 
+            - realized for closed positions, theoretical per open ones.
+            </remarks>
+            <seealso cref="T:OEC.API.Position"/>
+        </member>
+        <member name="P:OEC.API.Account.Trader">
+            <summary>
+            <see cref="T:OEC.API.Trader"/> who owns this account or null
+            </summary>
+        </member>
+        <member name="P:OEC.API.Account.Balances">
+            <summary>
+             Account balance and profit/loss data (see <see cref="T:OEC.API.Balance"/>) per each <see cref="T:OEC.API.Currency"/> available 
+            for the account.
+            </summary>
+            <remarks>
+            Balances collection holds balance and p/l data for USD currency and also for any other currency with non-zero balance or p/l.
+            Sum of all values for all currencies can be found in <see cref="P:OEC.API.Account.TotalBalance"/> property.
+            </remarks>
+            <seealso cref="T:OEC.API.Balance"/>
+            <seealso cref="P:OEC.API.Account.TotalBalance"/>
+        </member>
+        <member name="P:OEC.API.Account.TotalBalance">
+            <summary>
+            Account balance and profit/loss data - total for all currencies
+            </summary>
+            <remarks>
+            Balances and P/L values are converted to USD using <see cref="T:OEC.API.Currency"/> convertion rate.
+            Detailed balances per each currency can be found in <see cref="P:OEC.API.Account.Balances"/> property.
+            </remarks>
+            <seealso cref="T:OEC.API.Balance"/>
+            <seealso cref="P:OEC.API.Account.Balances"/>
+        </member>
+        <member name="P:OEC.API.Account.RiskLimitsType">
+            <summary>
+            Type of risk limitation for account
+            </summary>
+        </member>
+        <member name="P:OEC.API.Account.FrozenRisks">
+            <exclude />
+        </member>
+        <member name="P:OEC.API.Account.CompoundPositionGroups">
+            <summary>
+            List of compound position groups
+            </summary>
+        </member>
+        <member name="P:OEC.API.Account.Root">
+            <summary>
+            Root account, if this account is a subaccount
+            </summary>
+        </member>
+        <member name="P:OEC.API.Account.Subaccounts">
+            <summary>
+            List of subaccounts
+            </summary>
+        </member>
+        <member name="P:OEC.API.Account.RiskProviderId">
+            <exclude />
+        </member>
+        <member name="T:OEC.API.AccountList">
+            <summary>
+            List of accounts - see <see cref="P:OEC.API.OECClient.Accounts">OECClient.Accounts</see>.
+            </summary>
+            <remarks>
+            List indexed by Account.ID and Account.Spec fields.
+            </remarks>
+        </member>
+        <member name="T:OEC.API.ClearingHouse">
+            <summary>
+            Clearing house
+            </summary>
+        </member>
+        <member name="T:OEC.API.ClearingHouseList">
+            <summary>
+            List of clearing houses - see <see cref="P:OEC.API.OECClient.ClearingHouses"/>.
+            </summary>
+            <seealso cref="T:OEC.API.ClearingHouse"/>
+        </member>
+        <member name="T:OEC.API.UnknownServerResponseException">
+            <summary>
+            Exceptions to be thrown if unknown data come from server
+            </summary>
+        </member>
+        <member name="M:OEC.API.UnknownServerResponseException.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:OEC.API.UnknownServerResponseException.#ctor(System.String)">
+            <summary>
+            Constuctor with support of user defined message
+            </summary>
+            <param name="message">User defined message for exception</param>
+        </member>
+        <member name="T:OEC.HashTools.ProcessHasher">
+            <summary>
+            <exclude/>
+            </summary>
+        </member>
+        <member name="T:OEC.API.Layers.InitiateReconnect">
+            <summary>
+            <exclude/>
+            </summary>
+        </member>
+        <member name="T:OEC.API.Layers.LayerPriorityAttribute">
+            <summary>
+            <exclude/>
+            </summary>
+        </member>
+        <member name="T:OEC.API.Layers.ResponseReceivedEvent">
+            <summary>
+            <exclude/>
+            </summary>
+            <param name="response"></param>
+        </member>
+        <member name="T:OEC.API.Ticks">
+            <summary>
+            Ticks object - contains array of timestamps and array of prices - one price per one timestamp.
+            See <see cref="M:OEC.API.OECClient.RequestTicks(OEC.API.Contract,System.DateTime,System.DateTime)"/> and <see cref="M:OEC.API.OECClient.RequestTicks(OEC.API.Contract,System.DateTime,System.Int32)"/>
+            </summary>
+        </member>
+        <member name="F:OEC.API.Ticks.Timestamps">
+            <summary>
+            Timestamps of ticks
+            </summary>
+        </member>
+        <member name="F:OEC.API.Ticks.Prices">
+            <summary>
+            Price values of ticks
+            </summary>
+        </member>
+        <member name="F:OEC.API.Ticks.BidPrices">
+            <summary>
+            Price values of ticks
+            </summary>
+        </member>
+        <member name="F:OEC.API.Ticks.AskPrices">
+            <summary>
+            Price values of ticks
+            </summary>
+        </member>
+        <member name="F:OEC.API.Ticks.Volumes">
+            <summary>
+            Volumes of ticks
+            </summary>
+        </member>
+        <member name="F:OEC.API.Ticks.Volumes32">
+            <summary>
+            Volumes of ticks (32-bit values)
+            </summary>
+        </member>
+        <member name="F:OEC.API.Ticks.Types">
+            <summary>
+            Types of ticks.
+            </summary>
+        </member>
+        <member name="F:OEC.API.Ticks.Exchanges">
+            <summary>
+            Exchanges of ticks.
+            </summary>
+        </member>
+        <member name="P:OEC.API.Ticks.TimestampList">
+            <summary>
+            Timestamps as a list
+            </summary>
+        </member>
+        <member name="P:OEC.API.Ticks.PriceList">
+            <summary>
+            Prices as a list
+            </summary>
+        </member>
+        <member name="P:OEC.API.Ticks.BidPriceList">
+            <summary>
+            Bid prices as a list
+            </summary>
+        </member>
+        <member name="P:OEC.API.Ticks.AskPriceList">
+            <summary>
+            Ask prices as a list
+            </summary>
+        </member>
+        <member name="P:OEC.API.Ticks.VolumeList">
+            <summary>
+            Volumes as a list
+            </summary>
+        </member>
+        <member name="P:OEC.API.Ticks.ExchangeList">
+            <summary>
+            Exchanges as a list
+            </summary>
+        </member>
+        <member name="T:OEC.API.Bar">
+            <summary>
+            Price bar - Open, High, Low, Close, Volume values and Timestamp.
+            See <see cref="M:OEC.API.OECClient.RequestHistory(OEC.API.Contract,System.DateTime,System.DateTime)"/>
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.Timestamp">
+            <summary>
+            Bar open timestamp, UTC
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.Open">
+            <summary>
+            Bar open value
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.High">
+            <summary>
+            Bar high value
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.Low">
+            <summary>
+            Bar low value
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.Close">
+            <summary>
+            Bar close value
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.Volume">
+            <summary>
+            Bar volume
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.Volume64">
+            <summary>
+            Bar volume 64-bit value
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.Ticks">
+            <summary>
+            Number of ticks
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.UpTicks">
+            <summary>
+            Number of ticks going up
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.UpVolume">
+            <summary>
+            Volume of ticks going up
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.DownTicks">
+            <summary>
+            Number of ticks going down
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.DownVolume">
+            <summary>
+            Volume of ticks going down
+            </summary>
+        </member>
+        <member name="F:OEC.API.Bar.CloseTimestamp">
+            <summary>
+            Bar close timestamp, UTC
+            </summary>
+        </member>
+        <member name="M:OEC.API.Bar.ToString">
+            <summary>
+            Text representation of the Bar
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:OEC.API.Subscription">
+            <summary>
+            Subscription 
+            </summary>
+        </member>
+        <member name="F:OEC.API.Subscription.Contract">
+            <summary>
+            Contract 
+            </summary>
+        </member>
+        <member name="F:OEC.API.Subscription.Currency">
+            <summary>
+            Currency 
+            </summary>
+        </member>
+        <member name="F:OEC.API.Subscription.Start">
+            <summary>
+            Start of range 
+            </summary>
+            <remarks>
+            ignored for Price/DOM
+            </remarks>
+        </member>
+        <member name="F:OEC.API.Subscription.End">
+            <summary>
+            End of range
+            </summary>
+            <remarks>
+            ignored for Price/DOM
+            </remarks>
+        </member>
+        <member name="F:OEC.API.Subscription.Amount">
+            <summary>
+            Amount of bars/ticks per request
+            </summary>
+            <remarks>
+            ignored for Price/DOM/Momentum and range bars
+            </remarks>
+        </member>
+        <member name="F:OEC.API.Subscription.IntInterval">
+            <summary>
+            Bar interval 
+            </summary>
+            <remarks>
+            0 for Price/DOM/Tick,
+            minutes for bars,
+            ticks for tickbars,
+            volume for volumebars
+            </remarks>
+        </member>
+        <member name="F:OEC.API.Subscription.IgnoreSessionBoundaries">
+            <summary>
+            Ignores session boundaries
+            </summary>
+        </member>
+        <member name="F:OEC.API.Subscription.Updatable">
+            <summary>
+            Updatable or one-time
+            </summary>
+        </member>
+        <member name="F:OEC.API.Subscription.Type">
+            <summary>
+            Subscription type
+            </summary>
+        </member>
+        <member name="M:OEC.API.Subscription.GetNextID">
+            <summary>
+            Local unique order ID generator
+            </summary>
+        </member>
+        <member name="P:OEC.API.Subscription.Interval">
+            <summary>
+            Bar interval 
+            </summary>
+            <remarks>
+            TimeSpan.Zero for Price/DOM/Tick,
+            minutes for bars,
+            ticks for tickbars,
+            milliseconds for volumebars
+            </remarks>
+        </member>
+        <member name="T:OEC.API.SubscriptionList">
+            <summary>
+            List of subscriptions
+            </summary>
+        </member>
+        <member name="T:OEC.API.Histogram">
+            <summary>
+            Histogram for price/volume values
+            </summary>
+        </member>
+        <member name="M:OEC.API.Histogram.GetPriceAt(System.Int32)">
+            <summary>
+            returns price at given level
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OEC.API.Histogram.GetVolumeAt(System.Int32)">
+            <summary>
+            returns volume at given level
+            </summary>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="M:OEC.API.Histogram.GetVolumeAtPrice(System.Single)">
+            <summary>
+            returns volume for given price
+            </summary>
+            <param name="price"></param>
+            <returns></returns>
+        </member>
+        <member name="P:OEC.API.Histogram.Count">
+            <summary>
+            count of histogram levels
+            </summary>
+        </member>
+        <member name="P:OEC.API.Histogram.TotalVolume">
+            <summary>
+            Total volume
+            </summary>
+        </member>
+        <member name="P:OEC.API.Histogram.WeighedAverage">
+            <summary>
+            Weighed Average
+            </summary>
+        </member>
+        <member name="P:OEC.API.Histogram.MaxVolume">
+            <summary>
+            Maximum Volume
+            </summary>
+        </member>
+        <member name="T:OEC.API.LoggingProperties">
+            <summary>
+            Property names used for Log.ThreadContext
+            </summary>
+        </member>
+        <member name="F:OEC.API.LoggingProperties.LogSourceLevelPropertyName">
+            <summary>
+            Logger context stack property name for loggin level. The following code will get logging level <code>(OECClient)Log.ThreadContext.Stacks[OECClient.LogSourceClientPropertyName].Peek()</code>
+            </summary>
+        </member>
+        <member name="F:OEC.API.LoggingProperties.LogSourceClientPropertyName">
+            <summary>
+            Logger context stack Property name for client instance. The following code will get logging client instance <code>(LogLevel)Log.ThreadContext.Stacks[OECClient.LogSourceLevelPropertyName].Peek()</code>
+            </summary>
+        </member>
+        <member name="T:OEC.API.LoggingConfiguration">
+            <summary>
+            API Logging configuration
+            </summary>
+        </member>
+        <member name="M:OEC.API.LoggingConfiguration.#ctor">
+            <exclude/>
+        </member>
+        <member name="P:OEC.API.LoggingConfiguration.Level">
+            <summary>
+            Level of logging
+            </summary>
+        </member>
+        <member name="P:OEC.API.LoggingConfiguration.DataFeedLoggingInterval">
+            <summary>
+            Gets or sets time interval meaning how often to log data feed messages. Every DataFeedLogIndexNumber messages will be logged not more often than DataFeedLoggingInterval
+            </summary>
+        </member>
+        <member name="P:OEC.API.LoggingConfiguration.DataFeedLogIndexNumber">
+            <summary>
+            Sets or gets index number of data feed message to log. Every DataFeedLogIndexNumber message (1st, 2nd ... etc) will be logged
+            </summary>
+        </member>
+        <member name="T:OEC.API.LogLevel">
+            <summary>
+            API log source layer
+            </summary>
+        </member>
+        <member name="F:OEC.API.LogLevel.Core">
+            <summary>
+            Non-application and non-transport activity inside API
+            </summary>
+        </member>
+        <member name="F:OEC.API.LogLevel.Datafeed">
+            <summary>
+            Incoming price connection activity (data feed)
+            </summary>
+        </member>
+        <member name="F:OEC.API.LogLevel.Transport">
+            <summary>
+            Activity between API and servers, all except incoming price connection (data feed)
+            </summary>
+        </member>
+        <member name="F:OEC.API.LogLevel.Application">
+            <summary>
+            Calls from application
+            </summary>
+        </member>
+        <member name="F:OEC.API.LogLevel.All">
+            <summary>
+            All logging levels
             </summary>
         </member>
         <member name="T:OEC.API.OnContractCreatedEvent">
@@ -2504,8 +2701,8 @@
         <member name="P:OEC.API.SimpleSymbolLookupCriteria.LockingType">
             <summary>
             Admin locking type
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="P:OEC.API.SimpleSymbolLookupCriteria.AdditionalExpression">
             <summary>
@@ -2728,7 +2925,6 @@
         </member>
         <member name="M:OEC.API.BaseContract.CreateForward(System.DateTime)">
             <summary>
-            <exclude/>
             </summary>
             <param name="settlementDate"></param>
             <returns></returns>
@@ -2808,6 +3004,11 @@
             Trading session stop time, in local time zone
             </summary>
         </member>
+        <member name="P:OEC.API.BaseContract.DayClose">
+            <summary>
+            Day close, in local time zone
+            </summary>
+        </member>
         <member name="P:OEC.API.BaseContract.Contracts">
             <summary>
             List of underlying contracts ES : (ESH6, ESM6, ESU6, ESZ6, ESH7, ...)
@@ -2863,6 +3064,11 @@
             Is the contract a future-only compound?
             </summary>
         </member>
+        <member name="P:OEC.API.BaseContract.Properties">
+            <summary>
+            Gets list of custom properties of basecontract
+            </summary>
+        </member>
         <member name="T:OEC.API.BaseContractList">
             <summary>
             List of <see cref="T:OEC.API.BaseContract"/> items. See <see cref="P:OEC.API.OECClient.BaseContracts">OECClient.BaseContracts</see>.
@@ -2878,50 +3084,101 @@
             <param name="Symbol"></param>
             <returns></returns>
         </member>
+        <member name="T:OEC.API.PriceRestraints">
+            <summary>
+            </summary>
+            <exclude/>
+        </member>
+        <member name="M:OEC.API.RiskLimitDetailKey.#ctor(OEC.Data.LimitType,OEC.API.Account,System.Nullable{OEC.Data.AccountType},OEC.API.TraderCategory,OEC.API.Contract,System.String,OEC.API.Exchange,System.Nullable{OEC.Data.ContractKind},System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="limitType"></param>
+            <param name="account">Optional</param>
+            <param name="accountType">Optional</param>
+            <param name="userCategory">Optional</param>
+            <param name="contract">Optional</param>
+            <param name="underlying">Optional</param>
+            <param name="exchange">Optional</param>
+            <param name="contractKind">Optional</param>
+            <param name="providerID"></param>
+        </member>
+        <member name="P:OEC.API.RiskLimitDetailKey.AccountID">
+            <summary>
+            Account ID. Optional.
+            <seealso cref="T:OEC.API.Account"/>
+            </summary>
+        </member>
+        <member name="P:OEC.API.RiskLimitDetailKey.ExchangeID">
+            <summary>
+            Exchange ID. Optional.
+            <seealso cref="T:OEC.API.Exchange"/>
+            </summary>
+        </member>
+        <member name="P:OEC.API.RiskLimitDetailKey.ContractID">
+            <summary>
+            Contract ID. Optional.
+            <seealso cref="T:OEC.API.Contract"/>
+            </summary>
+        </member>
+        <member name="P:OEC.API.RiskLimitDetailKey.TraderCategoryID">
+            <summary>
+            Trader's category ID. Optional.
+            <seealso cref="T:OEC.API.TraderCategory"/>
+            </summary>
+        </member>
+        <member name="P:OEC.API.RiskLimitDetailKey.Underlying">
+            <summary>
+            Underlying contract. Optional.
+            <seealso cref="T:OEC.API.BaseContract"/>
+            </summary>
+        </member>
+        <member name="P:OEC.API.RiskLimitDetailKey.ContractKind">
+            <summary>
+            Contract kind. Optional.
+            </summary>
+        </member>
+        <member name="P:OEC.API.RiskLimitDetailKey.AccountType">
+            <summary>
+            Account type. Optional.
+            </summary>
+        </member>
+        <member name="P:OEC.API.RiskLimitDetailKey.ProviderID">
+            <summary>
+            </summary>
+        </member>
+        <member name="P:OEC.API.RiskLimitDetailKey.Type">
+            <summary>
+            Limit Type
+            </summary>
+        </member>
         <member name="T:OEC.API.RiskLimitDetail">
-            <exclude/>
+            <summary>
+            Risk limit detail
+            </summary>
         </member>
-        <member name="M:OEC.API.RiskLimitDetail.#ctor(OEC.API.Account,OEC.API.Exchange,OEC.API.Contract,System.String,System.Nullable{OEC.Data.ContractKind},System.Int32,OEC.Data.LimitType)">
-            <exclude/>
+        <member name="F:OEC.API.RiskLimitDetail.Key">
+            <summary>
+            Unique key of risk limit
+            </summary>
         </member>
-        <member name="M:OEC.API.RiskLimitDetail.CompareTo(OEC.API.RiskLimitDetail)">
-            <exclude/>
-        </member>
-        <member name="M:OEC.API.RiskLimitDetail.Equals(System.Object)">
-            <exclude/>
-        </member>
-        <member name="M:OEC.API.RiskLimitDetail.GetHashCode">
-            <exclude/>
-        </member>
-        <member name="P:OEC.API.RiskLimitDetail.AccountId">
-            <exclude/>
-        </member>
-        <member name="P:OEC.API.RiskLimitDetail.ExchangeId">
-            <exclude/>
-        </member>
-        <member name="P:OEC.API.RiskLimitDetail.ContractId">
-            <exclude/>
-        </member>
-        <member name="P:OEC.API.RiskLimitDetail.Underlying">
-            <exclude/>
-        </member>
-        <member name="P:OEC.API.RiskLimitDetail.ContractKind">
-            <exclude/>
-        </member>
-        <member name="P:OEC.API.RiskLimitDetail.Type">
-            <exclude/>
-        </member>
-        <member name="P:OEC.API.RiskLimitDetail.ProviderId">
+        <member name="M:OEC.API.RiskLimitDetail.#ctor(OEC.API.RiskLimitDetailKey,System.Boolean,System.Boolean,System.Nullable{System.Double},System.Nullable{System.Double})">
             <exclude/>
         </member>
         <member name="P:OEC.API.RiskLimitDetail.Value">
-            <exclude/>
+            <summary>
+            Current value
+            </summary>
         </member>
         <member name="P:OEC.API.RiskLimitDetail.ApproveValue">
-            <exclude/>
+            <summary>
+            Approved value
+            </summary>
         </member>
         <member name="P:OEC.API.RiskLimitDetail.NewValue">
-            <exclude/>
+            <summary>
+            New value
+            </summary>
         </member>
         <member name="P:OEC.API.RiskLimitDetail.IsVirtual">
             <exclude/>
@@ -2931,35 +3188,55 @@
         </member>
         <member name="T:OEC.API.RiskLimitDetailList">
             <summary>
-            <exclude/>
+            Risk limit list
             </summary>
         </member>
-        <member name="T:OEC.API.Bases.BasicList`1">
+        <member name="T:OEC.API.PositionFill">
             <summary>
-            Base class for collections of unsorted non-keyed objects
+            Fill of the detailed <see cref="T:OEC.API.Position"/>.
             </summary>
-            <typeparam name="T">type of object</typeparam>
+            <remarks>
+            Position fill could be copy of order fill, part of split order fill 
+            or previous sesion position. 
+            See also <see cref="P:OEC.API.Account.DetailedPositions"/>
+            </remarks>
         </member>
-        <member name="M:OEC.API.Bases.BasicList`1.Sort(System.Comparison{`0})">
+        <member name="M:OEC.API.PositionFill.Split(System.Int32)">
             <summary>
-            Sorts the internal list 
+            Reduce the position to given quantity
             </summary>
-            <param name="comparison">user provided comparison procedure</param>
+            <param name="newQty">new position quantity</param>
+            <returns>remainder</returns>
         </member>
-        <member name="P:OEC.API.Bases.BasicList`1.Item(System.Int32)">
+        <member name="P:OEC.API.PositionFill.Quantity">
             <summary>
-            Gets an item from a collection by index
+            Quantity of fill with a '+' for long fills, '-' for short ones
             </summary>
-            <param name="index">Index</param>
-            <returns>Collection item</returns>
         </member>
-        <member name="P:OEC.API.Bases.BasicList`1.Count">
+        <member name="P:OEC.API.PositionFill.Price">
             <summary>
-            Gets the number of elements contained in the collection.
+            Fill price
             </summary>
         </member>
-        <member name="M:OEC.API.RiskLimitDetailList.#ctor(System.Collections.Generic.IEnumerable{OEC.Protocol.RiskLimitDetail})">
-            <exclude/>
+        <member name="P:OEC.API.PositionFill.AbsQuantity">
+            <summary>
+            Absolute value for quantity
+            </summary>
+        </member>
+        <member name="P:OEC.API.PositionFill.SourceFill">
+            <summary>
+            Fill source of a position fill
+            </summary>
+        </member>
+        <member name="P:OEC.API.PositionFill.SourcePreviousPosition">
+            <summary>
+            Position source of a position fill
+            </summary>
+        </member>
+        <member name="T:OEC.API.PositionFillList">
+            <summary>
+            List of <see cref="T:OEC.API.PositionFill">PositionFills</see>
+            </summary>
         </member>
         <member name="T:OEC.API.CustomCompoundLegList">
             <summary>
@@ -3029,6 +3306,11 @@
         <member name="F:OEC.API.Leg.Quantity">
             <summary>
             Quantity of the leg (can be negative)
+            </summary>
+        </member>
+        <member name="F:OEC.API.Leg.Weight">
+            <summary>
+            Price weight of the leg
             </summary>
         </member>
         <member name="F:OEC.API.CustomCompoundLeg.Side">
@@ -3137,6 +3419,11 @@
         <member name="F:OEC.API.Core.eventsTimeOut">
             <summary>
             Events batch interval
+            </summary>
+        </member>
+        <member name="F:OEC.API.Core.LightReconnectAttempts">
+            <summary>
+            Amount of attempts allowed for light-weight reconnect
             </summary>
         </member>
         <member name="F:OEC.API.Core.m_client">
@@ -3264,14 +3551,12 @@
             <param name="NewState">New state</param>
             <param name="callevent">notify user?</param>
         </member>
-        <member name="M:OEC.API.Core.AddOrderFill(OEC.Data.Fill,System.Boolean,System.Boolean)">
+        <member name="M:OEC.API.Core.AddOrderFill(OEC.Data.Fill)">
             <summary>
             Converts and adds a fill to order
             updates positions
             </summary>
             <param name="datafill">serializable fill</param>
-            <param name="callevent">notify user?</param>
-            <param name="updatePositions">update positions now?</param>
         </member>
         <member name="M:OEC.API.Core.RefreshPositions(OEC.API.Account,OEC.API.Contract)">
             <summary>
@@ -3300,12 +3585,12 @@
             </summary>
             <param name="position">serializable position</param>
         </member>
-        <member name="M:OEC.API.Core.FillPositions(System.Collections.Generic.IEnumerable{OEC.API.Fill})">
+        <member name="M:OEC.API.Core.FillPositions(System.Collections.Generic.List{OEC.API.Fill})">
             <summary>
             Initialize positions with all order fills
             </summary>
         </member>
-        <member name="M:OEC.API.Core.AddPositionFill(OEC.API.Order,OEC.API.Fill,System.Boolean,System.Boolean)">
+        <member name="M:OEC.API.Core.AddPositionFill(OEC.API.Account,OEC.API.Contract,System.Collections.Generic.IEnumerable{OEC.API.Fill},System.Boolean,System.Boolean)">
             <summary>
             Adds a fill to position
             </summary>
@@ -3409,6 +3694,12 @@
             <param name="subscribe">true=subscribe</param>
             <param name="contract">Contract to subscribe</param>
             <param name="permanent">Don't unsubscribe (for position subscriptions)</param>
+        </member>
+        <member name="M:OEC.API.Core.DoCurrencySubscription(OEC.API.Currency)">
+            <summary>
+            Perform subscription for a currency
+            </summary>
+            <param name="currency">Currency to subscribe</param>
         </member>
         <member name="M:OEC.API.Core.DoDOMSubscription(OEC.API.Contract,System.Boolean)">
             <summary>
@@ -3599,6 +3890,243 @@
             Compares fills by timestamp
             </summary>
         </member>
+        <member name="T:OEC.API.Strategies.ServerStrategy">
+            <summary>
+            Represents a server-side strategy. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategy.Type">
+            <summary>
+            Gets the type of this ServerStrategy. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategy.Params">
+            <summary>
+            Gets the param list of this ServerStrategy. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategy.RootOrder">
+            <summary>
+            Gets a root order of this ServerStrategy or null if no root order assigned to the ServerStrategy. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategy.State">
+            <summary>
+            Gets the state of this ServerStrategy. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategy.PhantomOrders">
+            <summary>
+            Gets a list of strategy phantom orders. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategy.Orders">
+            <summary>
+            Gets a list of strategy orders. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.ServerStrategyList">
+            <summary>
+            Represents a list of ServerStrategy instances. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.ServerStrategyChild">
+            <summary>
+            Represents an abstract child of ServerStrategy. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyChild.#ctor(OEC.API.Strategies.ServerStrategy,System.Int32)">
+            <summary>
+            Initializes new ServerStrategyChild instance. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyChild.#ctor">
+            <summary>
+            Initializes new ServerStrategyChild instance. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyChild.Parent">
+            <summary>
+            Gets the parent ServerStrategy for this child. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.ServerStrategyPhantomOrder">
+            <summary>
+            Represents a ServerStrategy phantom order. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyPhantomOrder.Quantity">
+            <summary>
+            Gets quantity of this strategy order. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyPhantomOrder.Price">
+            <summary>
+            Gets price of this strategy order. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.ServerStrategyPhantomOrderList">
+            <summary>
+            Represents a list of ServerStrategyPhantomOrder instances. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ReadOnlyState.Check">
+            <summary>
+            Throws InvalidOperationException if an object is read-only. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.ServerStrategyParam">
+            <summary>
+            Represents a param of ServerStrategy. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParam.#ctor(OEC.Data.ServerStrategyParam)">
+            <summary>
+            Deserializing constructor. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParam.Create(OEC.Data.ServerStrategyParamType,System.String,System.Object)">
+            <summary>
+            Creates new ServerStrategyParam instance. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParam.Create(System.String,System.Int32)">
+            <summary>
+            Creates new ServerStrategyParam instance. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParam.Create(System.String,System.Int64)">
+            <summary>
+            Creates new ServerStrategyParam instance. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParam.Create(System.String,System.Double)">
+            <summary>
+            Creates new ServerStrategyParam instance. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParam.Create(System.String,System.Boolean)">
+            <summary>
+            Creates new ServerStrategyParam instance. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParam.Create(System.String,System.String)">
+            <summary>
+            Creates new ServerStrategyParam instance. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParam.Create(System.String,System.DateTime)">
+            <summary>
+            Creates new ServerStrategyParam instance. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParam.Clone(System.Boolean)">
+            <summary>
+            Returns a copy of this ServerStrategyParam instance. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParam.ToString">
+            <summary>
+            Returns string representation of this object. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyParam.Name">
+            <summary>
+            Gets the name of this ServerStrategyParam. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyParam.Type">
+            <summary>
+            Gets the data type of this ServerStrategyParam. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyParam.FullName">
+            <summary>
+            Gets the full name of this param. 
+            Full name includes the param name with names of all parents. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyParam.Parent">
+            <summary>
+            Gets the parent param or null if this param has no parent. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyParam.Children">
+            <summary>
+            Gets a list of child params. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyParam.ReadOnly">
+            <summary>
+            Gets a value indicating this ServerStrategyParam is read-only. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyParam.Value">
+            <summary>
+            Gets or sets value of this ServerStrategyParam. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.ServerStrategyParamList">
+            <summary>
+            Represents a list of ServerStrategyParam instances. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParamList.#ctor(OEC.Data.ServerStrategyParams,OEC.API.Strategies.ServerStrategyParam)">
+            <summary>
+            Deserializing constructor. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParamList.#ctor(OEC.API.Strategies.ServerStrategyParam[])">
+            <summary>
+            Initializes new ServerStrategyParamList instance. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParamList.SetParam(OEC.API.Strategies.ServerStrategyParam,OEC.API.Strategies.ServerStrategyParam)">
+            <summary>
+            Sets ServerStrategyParam to this list. 
+            If the param with the same name already exists, it will be overridden. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParamList.ValueParam(System.String)">
+            <summary>
+            Returns ServerStrategyParam instance for the specified param fullName or null if no params found. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParamList.RemoveParam(System.String)">
+            <summary>
+            Removes ServerStrategyParam with the specified paramName. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParamList.Clear">
+            <summary>
+            Removes all params from this list. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParamList.ToString">
+            <summary>
+            Returns string representation of this object. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyParamList.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through this list. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyParamList.ReadOnly">
+            <summary>
+            Gets a value indicating this ServerStrategyParamList is read-only. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyParamList.Item(System.String)">
+            <summary>
+            Returns ServerStrategyParam instance for the specified paramName or null if no params found. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyParamList.Count">
+            <summary>
+            Gets the number of params contained in this list. 
+            </summary>
+        </member>
         <member name="T:OEC.API.Connection">
             <summary>
             Encapsulates low-level network operations using sockets and ObjectStream class.
@@ -3646,9 +4174,223 @@
             Checks whether there are something in incoming queue
             </summary>
         </member>
+        <member name="T:OEC.API.Monitoring.Monitor">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="E:OEC.API.Monitoring.Monitor.OnRuleAdded">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="E:OEC.API.Monitoring.Monitor.OnRuleReplaced">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="E:OEC.API.Monitoring.Monitor.OnRuleRemoved">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="E:OEC.API.Monitoring.Monitor.OnSignalAdded">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="E:OEC.API.Monitoring.Monitor.OnSignalChanged">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.OnRuleEvent">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.OnSignalEvent">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.CompletionResult">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
         <member name="T:OEC.HashTools.HashHelper`1">
             <summary>
             <exclude/>
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.Info.ServerStrategyParam">
+            <summary>
+            Represents the information for ServerStrategyParam. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.Info.ServerStrategyParam.#ctor(OEC.Data.ServerStrategyParamInfo)">
+            <summary>
+            Deserializing constructor. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.Info.ServerStrategyParam.CreateParam">
+            <summary>
+            Creates new ServerStrategyParam instance with default value, including all child params. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.Info.ServerStrategyParam.ValidateParam(OEC.API.Strategies.ServerStrategyParam)">
+            <summary>
+            Validates the specified param, including all child params. 
+            If the validation failed, an exception is thrown. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParam.Name">
+            <summary>
+            Gets the name of ServerStrategyParam. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParam.Type">
+            <summary>
+            Gets the data type of ServerStrategyParam. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParam.Description">
+            <summary>
+            Gets the description of ServerStrategyParam. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParam.Category">
+            <summary>
+            Gets the category of ServerStrategyParam. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParam.Optional">
+            <summary>
+            Gets a value indicating the param is optional and may be missing (in this case default value will be used). 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParam.DefaultValue">
+            <summary>
+            Gets the default value of ServerStrategyParam. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParam.DomainValues">
+            <summary>
+            Gets a list of available values if the param is of Enum type, or null. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParam.Parent">
+            <summary>
+            Gets the parent param or null if this param has no parent. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParam.Children">
+            <summary>
+            Gets a list of child params. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParam.FullName">
+            <summary>
+            Gets the full name of this param. 
+            Full name includes the param name with names of all parents. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.Info.ServerStrategyParamList">
+            <summary>
+            Represents a list of Info.ServerStrategyParam instances. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.Info.ServerStrategyParamList.#ctor(System.Collections.Generic.IEnumerable{OEC.Data.ServerStrategyParamInfo},OEC.API.Strategies.Info.ServerStrategyParam)">
+            <summary>
+            Deserializing constructor. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.Info.ServerStrategyParamList.ValueParam(System.String)">
+            <summary>
+            Returns Info.ServerStrategyParam instance for the specified param fullName or null if no params found. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.Info.ServerStrategyParamList.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through this list. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParamList.ValueParams">
+            <summary>
+            Gets a sequence of value (that's terminal, not container) params. 
+            The full name of a param can be used to get/set a value without iterating through a param tree. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParamList.Item(System.String)">
+            <summary>
+            Returns Info.ServerStrategyParam instance for the specified paramName or null if no params found. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyParamList.Count">
+            <summary>
+            Gets the number of params contained in this list. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.Info.ServerStrategy">
+            <summary>
+            Represents the information for ServerStrategy. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.Info.ServerStrategy.#ctor(OEC.Data.ServerStrategyInfo)">
+            <summary>
+            Deserializing constructor. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.Info.ServerStrategy.CreateParamList">
+            <summary>
+            Creates new Strategies.ServerStrategyParamList instance containing complete set of the strategy params with default values. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.Info.ServerStrategy.ValidateParamList(OEC.API.Strategies.ServerStrategyParamList)">
+            <summary>
+            Validates all params in the specified list. 
+            If the validation failed, an exception is thrown. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategy.Type">
+            <summary>
+            Gets the type of ServerStrategy. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategy.Description">
+            <summary>
+            Gets the description of ServerStrategy. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategy.Params">
+            <summary>
+            Gets a list of param informations for server strategy. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.Info.ServerStrategyList">
+            <summary>
+            Represents a list of Info.ServerStrategy instances. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.Info.ServerStrategyList.#ctor(System.Collections.Generic.IEnumerable{OEC.Data.ServerStrategyInfo})">
+            <summary>
+            Deserializing constructor. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.Info.ServerStrategyList.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through this list. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyList.Item(System.String)">
+            <summary>
+            Returns ServerStrategy instance for the specified strategyType or null if no strategies found. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.Info.ServerStrategyList.Count">
+            <summary>
+            Gets the number of strategies contained in this list. 
             </summary>
         </member>
         <member name="T:OEC.API.Route">
@@ -3658,7 +4400,6 @@
         </member>
         <member name="M:OEC.API.Route.ToString">
             <summary>
-            <exclude></exclude>
             </summary>
             <returns></returns>
         </member>
@@ -3686,7 +4427,6 @@
         </member>
         <member name="M:OEC.API.ReadonlyContractKindList.GetEnumerator">
             <summary>
-            <exclude></exclude>
             </summary>
             <returns></returns>
         </member>
@@ -3732,6 +4472,16 @@
             <seealso cref="T:OEC.API.BaseContract"/>
             <seealso cref="T:OEC.API.ContractGroup"/>
             <seealso cref="P:OEC.API.Order.Contract"/>
+        </member>
+        <member name="M:OEC.API.Contract.GetInitialMargin(OEC.API.Account)">
+            <summary>
+            Initial margin for contract
+            </summary>
+        </member>
+        <member name="M:OEC.API.Contract.GetMaintenanceMargin(OEC.API.Account)">
+            <summary>
+            Maintenance margin for contract
+            </summary>
         </member>
         <member name="M:OEC.API.Contract.#ctor(OEC.API.Core,OEC.Data.Contract,OEC.API.Contract,System.Collections.Generic.List{OEC.API.Leg},OEC.API.BaseContract)">
             <summary>
@@ -4034,9 +4784,7 @@
             </summary>
         </member>
         <member name="P:OEC.API.Contract.IsFrontMonth">
-            <summary>
-            <exclude />
-            </summary>
+            <exclude/>
         </member>
         <member name="P:OEC.API.Contract.Legs">
             <summary>
@@ -4085,7 +4833,7 @@
         </member>
         <member name="P:OEC.API.Contract.RiskLimitsType">
             <summary>
-            <exclude/>
+            Type of risk limitation for contract
             </summary>
         </member>
         <member name="T:OEC.API.Contract.ContractKey">
@@ -4215,6 +4963,36 @@
         <member name="P:OEC.API.ContractList.Values">
             <summary>
             Gets a list of contracts ordered by symbol/expliration date
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.Rule">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.RuleList">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.TriggerCondition">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.RuleScope">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.ExitMethodDescription">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.ExitStrategyDescription">
+            <summary>
+            <exclude />
             </summary>
         </member>
         <member name="T:OEC.API.Strings">
@@ -4483,6 +5261,73 @@
             get/set maxvalue
             </summary>
         </member>
+        <member name="T:OEC.API.Strategies.ServerStrategyManager">
+            <summary>
+            Represents a manager of ServerStrategy instances. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyManager.StartStrategy(System.String,OEC.API.Strategies.ServerStrategyParamList,OEC.API.OrderDraft)">
+            <summary>
+            Starts new ServerStrategy instance. 
+            </summary>
+        </member>
+        <member name="M:OEC.API.Strategies.ServerStrategyManager.StopStrategy(OEC.API.Strategies.ServerStrategy)">
+            <summary>
+            Stops executing the specified ServerStrategy. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyManager.Strategies">
+            <summary>
+            Gets a list of active strategies. 
+            </summary>
+        </member>
+        <member name="P:OEC.API.Strategies.ServerStrategyManager.InfoStrategies">
+            <summary>
+            Gets a list of available strategies and their features. 
+            </summary>
+        </member>
+        <member name="E:OEC.API.Strategies.ServerStrategyManager.OnServerStrategyStarted">
+            <summary>
+            Occurs when ServerStrategy execution started. 
+            </summary>
+        </member>
+        <member name="E:OEC.API.Strategies.ServerStrategyManager.OnServerStrategyStopped">
+            <summary>
+            Occurs when ServerStrategy execution stopped or ServerStrategy was not accepted by server. 
+            The actual reason of stopping is provided. 
+            </summary>
+        </member>
+        <member name="E:OEC.API.Strategies.ServerStrategyManager.OnServerStrategyConfirmed">
+            <summary>
+            Occurs when ServerStrategy is confirmed by server and global ID is assigned. 
+            Initial local ID of the ServerStrategy is provided. 
+            </summary>
+        </member>
+        <member name="E:OEC.API.Strategies.ServerStrategyManager.OnServerStrategyPhantomOrdersChanged">
+            <summary>
+            Occurs when a list of phantom orders of the ServerStrategy is changed. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.OnServerStrategyStartedEvent">
+            <summary>
+            Represents ServerStrategyStarted event handler. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.OnServerStrategyStoppedEvent">
+            <summary>
+            Represents ServerStrategyStopped event handler. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.OnServerStrategyConfirmedEvent">
+            <summary>
+            Represents ServerStrategyConfirmed event handler. 
+            </summary>
+        </member>
+        <member name="T:OEC.API.Strategies.OnServerStrategyPhantomOrdersChangedEvent">
+            <summary>
+            Represents ServerStrategyPhantomOrdersChanged event handler. 
+            </summary>
+        </member>
         <member name="T:OEC.API.Price">
             <summary>
             Realtime price data for a contract
@@ -4505,6 +5350,11 @@
         <member name="P:OEC.API.Price.LastVol">
             <summary>
             Volume of last trade
+            </summary>
+        </member>
+        <member name="P:OEC.API.Price.CumLastVol">
+            <summary>
+            Cumulative volume of last same price trades
             </summary>
         </member>
         <member name="P:OEC.API.Price.AskPrice">
@@ -4741,12 +5591,6 @@
         <member name="T:OEC.API.ClientInfo">
             <exclude/>
         </member>
-        <member name="M:OEC.API.ClientInfo.#ctor">
-            <exclude/>
-        </member>
-        <member name="P:OEC.API.ClientInfo.BrandId">
-            <exclude/>
-        </member>
         <member name="T:OEC.API.Bases.Set`1">
             <summary>
             Sorted list of objects
@@ -4765,40 +5609,25 @@
             See <see cref="T:OEC.API.OECClient"/> for API overview
             </summary>
         </member>
+        <member name="T:OECX.FuturesPairer._Action">
+            <summary>
+            <exclude/>
+            </summary>
+        </member>
         <member name="T:OEC.API.APIAction">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="T:OEC.API.ThreadingPolicy">
             <summary>
-            <exclude />
             </summary>
-        </member>
-        <member name="M:OEC.API.ThreadingPolicy.SetTimer(System.Int32,System.EventHandler)">
-            <summary>
             <exclude />
-            </summary>
-        </member>
-        <member name="M:OEC.API.ThreadingPolicy.KillTimer(System.Object)">
-            <summary>
-            <exclude />
-            </summary>
-        </member>
-        <member name="M:OEC.API.ThreadingPolicy.Send(OEC.API.APIAction)">
-            <summary>
-            <exclude />
-            </summary>
-        </member>
-        <member name="M:OEC.API.ThreadingPolicy.Post(OEC.API.APIAction)">
-            <summary>
-            <exclude />
-            </summary>
         </member>
         <member name="T:OEC.API.WinFormsThreadingPolicy">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="T:OEC.API.Version">
             <summary>
@@ -5170,6 +5999,10 @@
             Clones extended data.
             </summary>
         </member>
+        <member name="F:OEC.API.ExtendedData.OSMRoutedData">
+            <summary/>
+            <exclude/>
+        </member>
         <member name="M:OEC.API.OSM.RootOrder.#ctor(System.String,OEC.API.OSM.AlgoParams)">
             <summary>
             Creates an OSM root order. 
@@ -5219,170 +6052,6 @@
         <member name="P:OEC.API.OSM.ChildOrder.OsmRoot">
             <summary>
             Gets the OSM root order, which this child order belongs to. 
-            </summary>
-        </member>
-        <member name="T:OEC.Data.OsmParamDataType">
-            <summary>
-            Data type for data domain of OSM algo parameter. 
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmParamDataType.Integer">
-            <summary>
-            Signed 32-bit integer value
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmParamDataType.Long">
-            <summary>
-            Signed 64-bit integer value
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmParamDataType.Double">
-            <summary>
-            64-bit floating-point value
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmParamDataType.Bool">
-            <summary>
-            Boolean value
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmParamDataType.String">
-            <summary>
-            String value
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmParamDataType.DateTime">
-            <summary>
-            Date/time value
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmParamDataType.Enum">
-            <summary>
-            Enumeration of fixed string values
-            </summary>
-        </member>
-        <member name="T:OEC.Data.OsmAlgoInfo">
-            <summary>
-            <exclude/>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.Name">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.Params">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.OrderTypes">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.OrderFlags">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.OtherDetails">
-            <summary>
-            <exclude></exclude>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfo.#ctor">
-            <summary>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfo.#ctor(System.String)">
-            <summary>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfo.AddParam(OEC.Data.OsmAlgoInfo.Param)">
-            <summary>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfo.Clone">
-            <summary>
-            </summary>
-        </member>
-        <member name="T:OEC.Data.OsmAlgoInfo.Param">
-            <summary>
-            <exclude/>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.Param.Name">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.Param.Modifiable">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.Param.Enabled">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.Param.Description">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.Param.DataType">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.Param.Units">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.Param.DefaultValue">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.Param.Others">
-            <summary>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfo.Param.DomainValues">
-            <summary>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfo.Param.#ctor">
-            <summary>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfo.Param.#ctor(System.String,System.Boolean,System.String,OEC.Data.OsmParamDataType,System.String,System.Object[],System.Boolean,System.String,System.Xml.XmlElement[])">
-            <summary>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfo.Param.Clone">
-            <summary>
-            </summary>
-        </member>
-        <member name="T:OEC.Data.OsmAlgoInfoList">
-            <summary>
-            <exclude/>
-            </summary>
-        </member>
-        <member name="F:OEC.Data.OsmAlgoInfoList.List">
-            <summary>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfoList.AddAlgo(OEC.Data.OsmAlgoInfo)">
-            <summary>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfoList.#ctor">
-            <summary>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfoList.SerializeToXml">
-            <summary>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfoList.DeserializeFromXml(System.String)">
-            <summary>
-            </summary>
-        </member>
-        <member name="M:OEC.Data.OsmAlgoInfoList.Clone">
-            <summary>
             </summary>
         </member>
         <member name="T:OEC.API.AllocationBlockItem">
@@ -5549,6 +6218,16 @@
             Adds existing allocation block to list
             </summary>
             <param name="block">Existing AB</param>
+        </member>
+        <member name="T:OEC.API.Monitoring.Signal">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.SignalList">
+            <summary>
+            <exclude />
+            </summary>
         </member>
         <member name="T:OEC.API.User">
             <summary>
@@ -5819,8 +6498,8 @@
         <member name="F:OEC.API.OSM.Info.AlgoParam.Others">
             <summary>
             Flexible part of description. For internal use only.
-            <exclude/>
             </summary>
+            <exclude/>
         </member>
         <member name="M:OEC.API.OSM.Info.AlgoParam.Clone">
             <summary>
@@ -5915,8 +6594,8 @@
         </member>
         <member name="P:OEC.API.OSM.Info.IAlgo.OtherDetails">
             <summary>
-            <exclude/>
             </summary>
+            <exclude/>
         </member>
         <member name="T:OEC.API.OSM.Info.Algo">
             <summary>
@@ -5983,8 +6662,8 @@
         </member>
         <member name="P:OEC.API.OSM.Info.Algo.OtherDetails">
             <summary>
-            <exclude/>
             </summary>
+            <exclude/>
         </member>
         <member name="P:OEC.API.OSM.Info.Algo.OrderTypes">
             <summary>
@@ -6104,6 +6783,7 @@
             </summary>
             <param name="algo">OSM algorithm to be added</param>
             <seealso cref="T:OEC.API.OSM.Info.Algo"/>
+            <exlude/>
         </member>
         <member name="M:OEC.API.OSM.Info.AlgoList.Clear">
             <summary>
@@ -6151,6 +6831,26 @@
             Gets an enumerable list of OSM algorithms. 
             </summary>
             <seealso cref="T:OEC.API.OSM.Info.IAlgo"/>
+        </member>
+        <member name="T:OEC.API.Monitoring.BalanceGroup">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.BalanceGroupList">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.BalanceGroupItem">
+            <summary>
+            <exclude />
+            </summary>
+        </member>
+        <member name="T:OEC.API.Monitoring.BalanceGroupItemList">
+            <summary>
+            <exclude />
+            </summary>
         </member>
         <member name="T:OEC.API.IcebergData">
             <summary>
@@ -6365,6 +7065,47 @@
             PutCallRatio, ImpliedVolatility, etc.
             </summary>
         </member>
+        <member name="T:OEC.API.DetailedPositionList">
+            <summary>
+            List of detailed <see cref="T:OEC.API.Position"/> lists for an <see cref="F:OEC.API.DetailedPositionList.Account"/>. See <see cref="!:Account.DetailedPositions"/>.
+            </summary>
+            <remarks>
+            List contails <see cref="T:OEC.API.PositionList"/> items indexed by contract.<br/>
+            Each PositionList could contain zero or more closed positions and one open position, if any.
+            </remarks>
+            <seealso cref="T:OEC.API.AvgPositionList"/>
+        </member>
+        <member name="M:OEC.API.DetailedPositionList.Add(OEC.API.Contract,OEC.API.PositionList)">
+            <summary>
+            Add a position list
+            </summary>
+            <param name="contract">Contract</param>
+            <param name="poslist">List of detailed positions</param>
+        </member>
+        <member name="M:OEC.API.DetailedPositionList.GetOpenPosition(OEC.API.Contract)">
+            <summary>
+            Gets an open position from detailed position list for a given <see cref="T:OEC.API.Contract"/>
+            </summary>
+            <param name="contract">contract of position</param>
+            <returns>detailed position or null for a flat position</returns>
+        </member>
+        <member name="P:OEC.API.DetailedPositionList.Item(OEC.API.Contract)">
+            <summary>
+            Gets the detailed position list for a given <see cref="T:OEC.API.Contract"/>
+            </summary>
+            <param name="contract">contract</param>
+            <returns>Detailed position list</returns>
+        </member>
+        <member name="T:OEC.API.AvgPositionList">
+            <summary>
+            List of average positions for account by contract - see <see cref="!:Account.AvgPositions"/> for details.
+            </summary>
+        </member>
+        <member name="T:OEC.API.PositionIDList">
+            <summary>
+            List of <see cref="T:OEC.API.Position">Positions</see> indexed by <see cref="T:OEC.API.Contract"/>. See <see cref="T:OEC.API.AvgPositionList"/>
+            </summary>
+        </member>
         <member name="M:OEC.API.Remoting.SyncDelegateQueue.#ctor">
             <summary>
             Intializes a new queue object
@@ -6436,7 +7177,7 @@
             <seealso cref="M:OEC.API.OECClient.SendOrder(OEC.API.OrderDraft)"/>
             <seealso cref="T:OEC.API.OrderDraft"/>
         </member>
-        <member name="M:OEC.API.Order.#ctor">
+        <member name="M:OEC.API.Order.#ctor(System.Int32)">
             <summary>
             constructs an empty order
             </summary>
@@ -6521,8 +7262,8 @@
         </member>
         <member name="P:OEC.API.Order.DealQuote">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="P:OEC.API.Order.TradingSession">
             <summary>
@@ -6542,6 +7283,12 @@
         <member name="P:OEC.API.Order.CurrentState">
             <summary>
             Currest state of order
+            </summary>
+        </member>
+        <member name="P:OEC.API.Order.ServerStrategy">
+            <summary>
+            Gets the active server strategy, which the order belongs to, 
+            or null if no active server strategy is associated with the order. 
             </summary>
         </member>
         <member name="P:OEC.API.Order.OsmRoot">
@@ -6678,10 +7425,58 @@
             </summary>
             The list indexed by order ID
         </member>
-        <member name="T:OEC.API.DealQuoteSubscription">
+        <member name="T:OEC.API.PortfolioMargin">
             <summary>
-            <exclude />
+            Portfolio margining
             </summary>
+        </member>
+        <member name="P:OEC.API.PortfolioMargin.Current">
+            <summary>
+            Current portfolio margining for open positions
+            </summary>
+        </member>
+        <member name="P:OEC.API.PortfolioMargin.Hypo">
+            <summary>
+            Hypothetical portfolio margining for open positions and working orders
+            </summary>
+            <exclude />
+        </member>
+        <member name="T:OEC.API.PortfolioMargin.PortfolioMarginValues">
+            <summary>
+            </summary>
+        </member>
+        <member name="P:OEC.API.PortfolioMargin.PortfolioMarginValues.InitialRisk">
+            <summary>
+            Initial Margin Risk
+            </summary>
+        </member>
+        <member name="P:OEC.API.PortfolioMargin.PortfolioMarginValues.MaintenanceRisk">
+            <summary>
+            Maintenance Margin Risk
+            </summary>
+        </member>
+        <member name="P:OEC.API.PortfolioMargin.PortfolioMarginValues.RiskValue">
+            <summary>
+            OEC Risk Value
+            </summary>
+        </member>
+        <member name="P:OEC.API.PortfolioMargin.PortfolioMarginValues.NetOptionValue">
+            <summary>
+            Net Option Value
+            </summary>
+        </member>
+        <member name="P:OEC.API.PortfolioMargin.PortfolioMarginValues.InitialReq">
+            <summary>
+            Initial Requirements (Initial Margin Risk less Net Option Value)
+            </summary>
+        </member>
+        <member name="P:OEC.API.PortfolioMargin.PortfolioMarginValues.MaintenanceReq">
+            <summary>
+            Maintenance Requirements (Maintenance Margin Risk less Net Option Value)
+            </summary>
+        </member>
+        <member name="T:OEC.API.DealQuoteSubscription">
+            <exclude />
         </member>
         <member name="F:OEC.API.DealQuoteSubscription.Side">
             <summary>
@@ -6704,9 +7499,7 @@
             </summary>
         </member>
         <member name="T:OEC.API.DealQuote">
-            <summary>
             <exclude />
-            </summary>
         </member>
         <member name="M:OEC.API.DealQuote.ToString">
             <summary>
@@ -6715,103 +7508,84 @@
         </member>
         <member name="P:OEC.API.DealQuote.ID">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuote.State">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuote.Subscription">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuote.ValidUntil">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuote.QuoteData">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuote.QuoteData2">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuote.CombinedPtsBid">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuote.CombinedPtsOffer">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="T:OEC.API.DealQuoteData">
             <summary>
             Represents DealQuote data. 
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="P:OEC.API.DealQuoteData.BidSize">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuoteData.MinBidSize">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuoteData.OfferSize">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuoteData.MinOfferSize">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuoteData.BidPx">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuoteData.OfferPx">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuoteData.BidForwardPoints">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuoteData.OfferForwardPoints">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuoteData.BidSpotRate">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuoteData.OfferSpotRate">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="P:OEC.API.DealQuoteData.SettleDate">
             <summary>
-            <exclude />
             </summary>
         </member>
         <member name="T:OEC.API.Commission">
@@ -6836,8 +7610,8 @@
         </member>
         <member name="T:OEC.API.AdministratorExtenstion">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="M:OEC.API.AdministratorExtenstion.RequestCashAdjustment(OEC.API.Account,OEC.API.Currency,System.Double)">
             <summary>
@@ -6852,63 +7626,33 @@
         </member>
         <member name="M:OEC.API.AdministratorExtenstion.LockUnlockAccounts(System.Collections.Generic.IEnumerable{OEC.API.Account},System.Boolean,System.Boolean)">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="M:OEC.API.AdministratorExtenstion.LockUnlockContracts(System.Collections.Generic.IEnumerable{OEC.API.Contract},System.Boolean,System.Boolean)">
             <summary>
-            <exclude />
             </summary>
-        </member>
-        <member name="M:OEC.API.AdministratorExtenstion.RequestAccountRiskLimitDetails(System.Collections.Generic.IEnumerable{OEC.API.Account})">
-            <summary>
             <exclude />
-            </summary>
-        </member>
-        <member name="M:OEC.API.AdministratorExtenstion.RequestContractRiskLimitDetails(System.Collections.Generic.IEnumerable{OEC.API.Contract})">
-            <summary>
-            <exclude />
-            </summary>
-        </member>
-        <member name="M:OEC.API.AdministratorExtenstion.RequestSubmittedRiskLimitDetails">
-            <summary>
-            <exclude />
-            </summary>
-        </member>
-        <member name="M:OEC.API.AdministratorExtenstion.RequestGlobalRiskLimitDetails">
-            <summary>
-            <exclude />
-            </summary>
         </member>
         <member name="M:OEC.API.AdministratorExtenstion.SubmitRiskLimitDetails(System.Collections.Generic.IEnumerable{OEC.API.RiskLimitDetail},System.Boolean)">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
-        <member name="E:OEC.API.AdministratorExtenstion.OnAccountRiskLimitChanged">
+        <member name="E:OEC.API.AdministratorExtenstion.OnFrozenRiskChanged">
             <summary>
-            <exclude />
             </summary>
-        </member>
-        <member name="E:OEC.API.AdministratorExtenstion.OnContractRiskLimitChanged">
-            <summary>
             <exclude />
-            </summary>
-        </member>
-        <member name="E:OEC.API.AdministratorExtenstion.OnRiskLimitDetailsReceived">
-            <summary>
-            <exclude />
-            </summary>
         </member>
         <member name="P:OEC.API.AdministratorExtenstion.IsAdmin">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="P:OEC.API.AdministratorExtenstion.AdminUser">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="T:OEC.API.VolPrice">
             <summary>
@@ -6986,14 +7730,6 @@
             <param name="contract"></param>
             <param name="allocationBlock"></param>
             <returns></returns>
-        </member>
-        <member name="F:OEC.API.Position.CutOff">
-            <summary>
-            Position timestamp, UTC
-            </summary>
-            <remarks>
-            Fills placed earlier will not be added to statistics
-            </remarks>
         </member>
         <member name="P:OEC.API.Position.Detailed">
             <summary>
@@ -7089,22 +7825,32 @@
         </member>
         <member name="P:OEC.API.Position.CurrencyHypoPnL">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="P:OEC.API.Position.HypoPnL">
             <summary>
+            </summary>
             <exclude />
+        </member>
+        <member name="P:OEC.API.Position.CurrencyMarketValue">
+            <summary>
+            Current market value of position (equity, options) in native currency
             </summary>
         </member>
-        <member name="P:OEC.API.Position.CurrencyCost">
+        <member name="P:OEC.API.Position.MarketValue">
             <summary>
-            Cost of the position (equity, options) in native currency
+            Current market value of position (equity, options) in USD
             </summary>
         </member>
-        <member name="P:OEC.API.Position.Cost">
+        <member name="P:OEC.API.Position.CurrencyCostBasis">
             <summary>
-            Cost of the position (equity, options) in USD
+            Cost basis of position (equity, options) in native currency
+            </summary>
+        </member>
+        <member name="P:OEC.API.Position.CostBasis">
+            <summary>
+            Cost basis position (equity, options) in USD
             </summary>
         </member>
         <member name="P:OEC.API.Position.Fills">
@@ -7147,6 +7893,14 @@
             Initial margin of open position in native currency
             </summary>
         </member>
+        <member name="P:OEC.API.Position.CutOff">
+            <summary>
+            Position timestamp, UTC
+            </summary>
+            <remarks>
+            Fills placed earlier will not be added to statistics
+            </remarks>
+        </member>
         <member name="P:OEC.API.Position.DisplayContractSymbol">
             <summary>
             Display name of contract (single of dual)
@@ -7159,8 +7913,8 @@
         </member>
         <member name="P:OEC.API.Position.MarketPrice">
             <summary>
-            <exclude />
             </summary>
+            <exclude />
         </member>
         <member name="T:OEC.API.Position.PositionContractType">
             <summary>
@@ -7187,98 +7941,10 @@
             Position contains mixed type fills
             </summary>
         </member>
-        <member name="T:OEC.API.PositionFill">
-            <summary>
-            Fill of the detailed <see cref="T:OEC.API.Position"/>.
-            </summary>
-            <remarks>
-            Position fill could be copy of order fill, part of split order fill 
-            or previous sesion position. 
-            See also <see cref="P:OEC.API.Account.DetailedPositions"/>
-            </remarks>
-        </member>
-        <member name="F:OEC.API.PositionFill.Quantity">
-            <summary>
-            Quantity of fill with a '+' for long fills, '-' for short ones
-            </summary>
-        </member>
-        <member name="F:OEC.API.PositionFill.Price">
-            <summary>
-            Fill price
-            </summary>
-        </member>
-        <member name="M:OEC.API.PositionFill.Split(System.Int32)">
-            <summary>
-            Reduce the position to given quantity
-            </summary>
-            <param name="NewQty">new position quantity</param>
-            <returns>remainder</returns>
-        </member>
-        <member name="P:OEC.API.PositionFill.AbsQuantity">
-            <summary>
-            Absolute value for quantity
-            </summary>
-        </member>
-        <member name="P:OEC.API.PositionFill.SourceFill">
-            <summary>
-            Fill source of a position fill
-            </summary>
-        </member>
-        <member name="P:OEC.API.PositionFill.SourcePreviousPosition">
-            <summary>
-            Position source of a position fill
-            </summary>
-        </member>
-        <member name="T:OEC.API.PositionFillList">
-            <summary>
-            List of <see cref="T:OEC.API.PositionFill">PositionFills</see>
-            </summary>
-        </member>
-        <member name="T:OEC.API.PositionIDList">
-            <summary>
-            List of <see cref="T:OEC.API.Position">Positions</see> indexed by <see cref="T:OEC.API.Contract"/>. See <see cref="T:OEC.API.AvgPositionList"/>
-            </summary>
-        </member>
         <member name="T:OEC.API.PositionList">
             <summary>
             List of detailed <see cref="T:OEC.API.Position">Positions</see>. See <see cref="T:OEC.API.DetailedPositionList"/>
             </summary>
-        </member>
-        <member name="T:OEC.API.AvgPositionList">
-            <summary>
-            List of average positions for account by contract - see <see cref="P:OEC.API.Account.AvgPositions"/> for details.
-            </summary>
-        </member>
-        <member name="T:OEC.API.DetailedPositionList">
-            <summary>
-            List of detailed <see cref="T:OEC.API.Position"/> lists for an <see cref="T:OEC.API.Account"/>. See <see cref="P:OEC.API.Account.DetailedPositions"/>.
-            </summary>
-            <remarks>
-            List contails <see cref="T:OEC.API.PositionList"/> items indexed by contract.<br/>
-            Each PositionList could contain zero or more closed positions and one open position, if any.
-            </remarks>
-            <seealso cref="T:OEC.API.AvgPositionList"/>
-        </member>
-        <member name="M:OEC.API.DetailedPositionList.Add(OEC.API.Contract,OEC.API.PositionList)">
-            <summary>
-            Add a position list
-            </summary>
-            <param name="contract">Contract</param>
-            <param name="poslist">List of detailed positions</param>
-        </member>
-        <member name="M:OEC.API.DetailedPositionList.GetOpenPosition(OEC.API.Contract)">
-            <summary>
-            Gets an open position from detailed position list for a given <see cref="T:OEC.API.Contract"/>
-            </summary>
-            <param name="contract">contract of position</param>
-            <returns>detailed position or null for a flat position</returns>
-        </member>
-        <member name="P:OEC.API.DetailedPositionList.Item(OEC.API.Contract)">
-            <summary>
-            Gets the detailed position list for a given <see cref="T:OEC.API.Contract"/>
-            </summary>
-            <param name="contract">contract</param>
-            <returns>Detailed position list</returns>
         </member>
         <member name="T:OEC.API.Consts">
             <summary>
@@ -7559,18 +8225,24 @@
         </member>
         <member name="T:OEC.API.OnAccountRiskLimitChangedEvent">
             <summary>
-            <exclude />
+            Occurs when account risk limit changed
             </summary>
+            <param name="Account">affected account</param>
+            <seealso cref="P:OEC.API.Account.RiskLimitsType"/>
         </member>
         <member name="T:OEC.API.OnContractRiskLimitChangedEvent">
             <summary>
-            <exclude />
+            Occurs when contract risk limit changed
             </summary>
+            <param name="Contract">affected contract</param>
+            <seealso cref="P:OEC.API.Contract.RiskLimitsType"/>
         </member>
         <member name="T:OEC.API.OnRiskLimitDetailsReceivedEvent">
             <summary>
-            <exclude />
+            Occurs when risk limit changed
             </summary>
+            <param name="RiskLimitDetailList">list of changed risk limits</param>
+            <seealso cref="T:OEC.API.RiskLimitDetail"/>
         </member>
         <member name="T:OEC.API.OrderParts">
             <summary>
@@ -7939,9 +8611,9 @@
         </member>
         <member name="T:OEC.API.OnDealQuoteUpdatedEvent">
             <summary>
-            <exclude />
             </summary>
             <param name="dealQuote"></param>
+            <exclude />
         </member>
         <member name="T:OEC.API.Command">
             <summary>
