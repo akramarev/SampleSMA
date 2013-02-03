@@ -191,8 +191,8 @@ namespace SampleSMA
                 //var takeProfit = new TakeProfitStrategy(trade, 2) { UseQuoting = this.UseQuoting, IsTrailing = true };
                 //var stopLoss = new StopLossStrategy(trade, 1) { UseQuoting = this.UseQuoting, IsTrailing = true };
 
-                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) { UseQuoting = false };
-                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = false };
+                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) { UseQuoting = this.UseQuoting };
+                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = this.UseQuoting };
 
                 var takeProfitStopLoss = new TakeProfitStopLossStrategy(takeProfit, stopLoss);
                 ChildStrategies.Add(takeProfitStopLoss);

@@ -216,6 +216,7 @@ namespace SampleSMA
                 Security = _security,
                 Portfolio = this.Portfolios.SelectedPortfolio,
                 Trader = _trader,
+                UseQuoting = _trader is QuikTrader // hack to turn quoting off for RealTimeEmulationTrader
             };
 
             DateTime startTime;
