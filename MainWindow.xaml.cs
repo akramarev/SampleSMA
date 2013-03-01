@@ -216,7 +216,7 @@ namespace SampleSMA
                 Security = _security,
                 Portfolio = this.Portfolios.SelectedPortfolio,
                 Trader = _trader,
-                UseQuoting = _trader is QuikTrader // hack to turn quoting off for RealTimeEmulationTrader
+                UseQuoting = true //_trader is QuikTrader // hack to turn quoting off for RealTimeEmulationTrader
             };
 
             DateTime startTime;
@@ -483,7 +483,7 @@ namespace SampleSMA
             _candlesElem = new ChartCandleElement()
             {
                 ColorPriceDown = Color.FromRgb(133, 133, 133),
-                ColorPriceUp = Color.FromRgb(255, 255, 130)
+                ColorPriceUp = Color.FromRgb(255, 255, 255)
             };
             _area.Elements.Add(_candlesElem);
 
@@ -491,7 +491,7 @@ namespace SampleSMA
             {
                 Title = "LongMA",
                 Indicator = _longMA,
-                Color = Color.FromRgb(0, 255, 0)
+                Color = Color.FromRgb(120, 199, 130)
             };
             _area.Elements.Add(_longMaElem);
 
@@ -499,7 +499,7 @@ namespace SampleSMA
             {
                 Title = "ShortMA",
                 Indicator = _shortMA,
-                Color = Color.FromRgb(255, 0, 0)
+                Color = Color.FromRgb(193, 53, 45)
             };
             _area.Elements.Add(_shortMaElem);
 
@@ -507,14 +507,15 @@ namespace SampleSMA
             {
                 Title = "FilterMA",
                 Indicator = _filterMA,
-                Color = Color.FromRgb(0, 0, 255)
+                Color = Color.FromRgb(0, 124, 207)
             };
             _area.Elements.Add(_filterMaElem);
 
             _tradeElem = new ChartTradeElement()
-            {
+            {    
                 BuyColor = Color.FromRgb(255, 0, 0),
-                SellColor = Color.FromRgb(0, 0, 255)
+                SellColor = Color.FromRgb(0, 0, 255),
+                IsLegend = true
             };
             _area.Elements.Add(_tradeElem);
         }

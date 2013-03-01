@@ -22,6 +22,7 @@ namespace SampleSMA
         public Unit StopTradingUnit { get; set; }
 
         public bool UseQuoting { get; set; }
+        public Unit BestPriceOffset { get; set; }
 
         public CandleSeries CandleSeries { get; private set; }
 
@@ -46,6 +47,7 @@ namespace SampleSMA
             this.StopTradingUnit = this.StopLossUnit * 3;
 
             this.UseQuoting = true;
+            this.BestPriceOffset = 5;
 		}
 
         protected override void OnStarted()
@@ -102,7 +104,7 @@ namespace SampleSMA
             bool xDown = this.ShortMA.GetCurrentValue() < this.LongMA.GetCurrentValue() && this.ShortMA.GetValue(1) >= this.LongMA.GetValue(1);
 
             // calculate Filters
-            bool upFilter = this.FilterMA.GetCurrentValue() > this.FilterMA.GetValue(1);
+            bool upFilter = this.FilterMA.GetCurrentValue() > this.FilterMA.GetValue(10);
             bool downFilter = !upFilter;
 
             OrderDirections direction;
@@ -149,7 +151,7 @@ namespace SampleSMA
                 {
                     if (this.UseQuoting)
                     {
-                        LastTradeQuotingStrategy quotingStrategy = new LastTradeQuotingStrategy(order, new Unit());
+                        MarketQuotingStrategy quotingStrategy = new MarketQuotingStrategy(order, this.BestPriceOffset, -3) { PriceType = MarketPriceTypes.Following };
                         base.ChildStrategies.Add(quotingStrategy);
 
                         this.Trader
@@ -188,15 +190,15 @@ namespace SampleSMA
         {
             foreach (MyTrade trade in trades)
             {
-                //var takeProfit = new TakeProfitStrategy(trade, 2) { UseQuoting = this.UseQuoting, IsTrailing = true };
-                //var stopLoss = new StopLossStrategy(trade, 1) { UseQuoting = this.UseQuoting, IsTrailing = true };
-
-                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) { UseQuoting = this.UseQuoting };
-                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = this.UseQuoting };
+                var takeProfit = new TakeProfitStrategy(trade, this.TakeProfitUnit) { UseQuoting = this.UseQuoting, IsTrailing = true, BestPriceOffset = this.BestPriceOffset, PriceOffset = 1 };
+                var stopLoss = new StopLossStrategy(trade, this.StopLossUnit) { UseQuoting = this.UseQuoting, IsTrailing = true, BestPriceOffset = this.BestPriceOffset, PriceOffset = 1};
 
                 var takeProfitStopLoss = new TakeProfitStopLossStrategy(takeProfit, stopLoss);
                 ChildStrategies.Add(takeProfitStopLoss);
 
+                //var stopLoss = new StopLossCandleStrategy(this.CandleSeries, trade, this.StopLossUnit);
+                //ChildStrategies.Add(stopLoss);
+                
                 this.AddInfoLog("Hurrah, we have new trade (#{0}) and I've protected it.", trade.Trade.Id);
             };
         }

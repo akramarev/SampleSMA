@@ -64,7 +64,7 @@ namespace SampleSMA
             _storage = storage;
 
             this.Volume = 1;
-            this.UseQuoting = false;
+            this.UseQuoting = true;
         }
 
         public void Optimize()
@@ -73,10 +73,10 @@ namespace SampleSMA
             this.BestResult = new KeyValuePair<OptVarItem, EMAEventModelStrategy>();
 
             this.OnStateChanged(OptimizationState.Began);
-            ThreadPool.QueueUserWorkItem(AsyncOptimize);
+            Task.Factory.StartNew(AsyncOptimize);
         }
 
-        private void AsyncOptimize(Object threadContext)
+        private void AsyncOptimize()
         {
             var optVars = this.GetOptVarField().ToArray();
 
@@ -91,7 +91,7 @@ namespace SampleSMA
                 {
                     var a = i;
 
-                    ThreadPool.QueueUserWorkItem(state =>
+                    Task.Factory.StartNew(() =>
                     {
                         var done = new ManualResetEvent(false);
                         var context = GetOptContext(optVars[a]);
@@ -108,7 +108,21 @@ namespace SampleSMA
                         Stopwatch sw = new Stopwatch();
                         sw.Start();
 
-                        trader.Start(_startTime, _stopTime);
+                        try
+                        {
+                            trader.Start(_startTime, _stopTime);
+                        }
+                        catch (OutOfMemoryException)
+                        {
+                            context.Value.Trader.Dispose();
+                            context.Value.Trader = null;
+                            context.Value.Dispose();
+
+                            GC.Collect();
+
+                            Log.AddLog(new LogMessage(Log, DateTime.Now, LogLevels.Error, "OutOfMemoryException occurred. Try to restore app."));
+                        }
+                        
                         done.WaitOne();
 
                         sw.Stop();
@@ -142,7 +156,7 @@ namespace SampleSMA
                         }
 
                         countdownEvent.Signal();
-                    }, i);
+                    });
                 }
 
                 countdownEvent.Wait();
@@ -197,7 +211,7 @@ namespace SampleSMA
 
             if (trader.UseMarketDepth)
             {
-                trader.MarketEmulator.Settings.DepthExpirationTime = TimeSpan.FromHours(1); // Default: TimeSpan.FromDays(1);
+                trader.MarketEmulator.Settings.DepthExpirationTime = TimeSpan.FromMinutes(5); // Default: TimeSpan.FromDays(1);
                 var marketDepthGenerator = new TrendMarketDepthGenerator(security)
                 {
                     // стакан для инструмента в истории обновляется раз в 10 секунд
@@ -208,14 +222,14 @@ namespace SampleSMA
 
                 trader.RegisterMarketDepth(marketDepthGenerator);
 
-                //trader.StateChanged += (oldState, newState) =>
-                //{
-                //    if (trader.State == EmulationStates.Stopped)
-                //    {
-                //        trader.UnRegisterMarketDepth(marketDepthGenerator);
-                //        marketDepthGenerator = null;
-                //    }
-                //};
+                trader.StateChanged += (oldState, newState) =>
+                {
+                    if (trader.State == EmulationStates.Stopped)
+                    {
+                        trader.UnRegisterMarketDepth(marketDepthGenerator);
+                        marketDepthGenerator = null;
+                    }
+                };
             }
 
             // соединяемся с трейдером и запускаем экспорт,
@@ -299,9 +313,9 @@ namespace SampleSMA
             // --144--
             foreach (int t in new[] { 1 })
             {
-                for (int a = 90; a <= 90; a += 10)
+                foreach (int a in new[] { 84 })
                 {
-                    for (int b = 12; b <= 18; b++)
+                    for (int b = 12; b <= 16; b++)
                     {
                         for (int c = 9; c <= 11; c++)
                         {

@@ -60,6 +60,9 @@
   <PropertyGroup>
     <StartupObject>SampleSMA.App</StartupObject>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Both|AnyCPU'">
+    <OutputPath>bin\Both\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AmCharts.Windows.Stock">
       <HintPath>References\AmCharts.Windows.Stock.dll</HintPath>
@@ -128,6 +131,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="StopLossCandleStrategy.cs" />
     <Compile Include="Logging\JabberLogListener.cs" />
     <Compile Include="Logging\EmailUnitedLogListener.cs" />
     <Compile Include="EMAEventModelStrategy.cs" />
@@ -194,6 +198,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="stocksharp.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="stocksharp_license.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
