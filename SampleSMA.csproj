@@ -64,9 +64,6 @@
     <OutputPath>bin\Both\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AmCharts.Windows.Stock">
-      <HintPath>References\AmCharts.Windows.Stock.dll</HintPath>
-    </Reference>
     <Reference Include="Ecng.Collections">
       <HintPath>References\Ecng.Collections.dll</HintPath>
     </Reference>
@@ -90,9 +87,6 @@
     </Reference>
     <Reference Include="StockSharp.Algo">
       <HintPath>References\StockSharp.Algo.dll</HintPath>
-    </Reference>
-    <Reference Include="StockSharp.Algo.Indicators">
-      <HintPath>References\StockSharp.Algo.Indicators.dll</HintPath>
     </Reference>
     <Reference Include="StockSharp.BusinessEntities">
       <HintPath>References\StockSharp.BusinessEntities.dll</HintPath>

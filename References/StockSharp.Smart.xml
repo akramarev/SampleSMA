@@ -14,32 +14,6 @@
             Создать <see cref="T:StockSharp.Smart.Xaml.SmartAddressComboBox" />.
             </summary>
     </member>
-    <member name="T:StockSharp.Smart.SmartCandleManagerSource">
-      <summary>
-            SmartCOM источник свечек типа <see cref="T:StockSharp.Algo.Candles.TimeFrameCandle" />.
-            </summary>
-    </member>
-    <member name="M:StockSharp.Smart.SmartCandleManagerSource.#ctor(StockSharp.Smart.SmartTrader)">
-      <summary>
-            Создать <see cref="T:StockSharp.Smart.SmartCandleManagerSource" />.
-            </summary>
-      <param name="trader">Шлюз к SmartCOM, через событие <see cref="E:StockSharp.Smart.SmartTrader.NewHistoryCandles" /> будут получаться свечки.</param>
-    </member>
-    <member name="M:StockSharp.Smart.SmartCandleManagerSource.DisposeManaged">
-      <summary>
-            Освободить ресурсы.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartCandleManagerSource.Trader">
-      <summary>
-            Шлюз к SmartCOM, через событие <see cref="E:StockSharp.Smart.SmartTrader.NewHistoryCandles" /> будут получаться свечки.
-            </summary>
-    </member>
-    <member name="P:StockSharp.Smart.SmartCandleManagerSource.SpeedPriority">
-      <summary>
-            Приоритет источника по скорости (0 - самый оптимальный).
-            </summary>
-    </member>
     <member name="T:StockSharp.Smart.SmartExtensionInfoHelper">
       <summary>
             Вспомагательный класс, который используется для доступа к специфичной SmartCOM информации через <see cref="P:StockSharp.BusinessEntities.IExtendableEntity.ExtensionInfo" />.
@@ -593,6 +567,27 @@
       <param name="password">Пароль.</param>
       <param name="address">IP адрес и порт сервера.</param>
     </member>
+    <member name="M:StockSharp.Smart.SmartTrader.GetSupportedRanges(StockSharp.Algo.Candles.CandleSeries)">
+      <summary>
+            Получить временные диапазоны, для которых у данного источниках для передаваемой серии свечек есть данные.
+            </summary>
+      <param name="series">Серия свечек.</param>
+      <returns>Временные диапазоны.</returns>
+    </member>
+    <member name="M:StockSharp.Smart.SmartTrader.SubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries,System.DateTime,System.DateTime)">
+      <summary>
+            Подписаться на получение исторических значения инструмента с заданной периодичностью.
+            </summary>
+      <param name="series">Серия свечек.</param>
+      <param name="from">Начальная дата, с которой необходимо получать данные.</param>
+      <param name="to">Конечная дата, до которой необходимо получать данные.</param>
+    </member>
+    <member name="M:StockSharp.Smart.SmartTrader.UnSubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries)">
+      <summary>
+            Остановить подписку получения исторических данных, ранее созданную через <see cref="M:StockSharp.Smart.SmartTrader.SubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries,System.DateTime,System.DateTime)" />.
+            </summary>
+      <param name="series">Серия свечек.</param>
+    </member>
     <member name="M:StockSharp.Smart.SmartTrader.RegisterHistoryRealTimeCandles(StockSharp.BusinessEntities.Security,StockSharp.Smart.SmartTimeFrames)">
       <summary>
             Начать получать непрерывно исторические тайм-фрейм свечки от сервера SmartCOM, а так же свечки реального времени.
@@ -818,10 +813,9 @@
             Ассоциация площадок и их кодами, для заполнения <see cref="P:StockSharp.BusinessEntities.Portfolio.ExchangeBoard" />.
             </summary>
     </member>
-    <member name="E:StockSharp.Smart.SmartTrader.NewHistoryCandles">
+    <member name="E:StockSharp.Smart.SmartTrader.NewHistoricalCandles">
       <summary>
-            Событие появления исторических тайм-фрейм свечек от сервера SmartCOM, запрос на получение которых был отправлен через метод
-            <see cref="M:StockSharp.Smart.SmartTrader.RegisterHistoryCandles(StockSharp.BusinessEntities.Security,StockSharp.Smart.SmartTimeFrames,System.DateTime,System.Int32,StockSharp.Smart.SmartHistoryDirections)" />.
+            Событие появления новых исторических свечек, полученных после подписки через <see cref="M:StockSharp.Smart.SmartTrader.SubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries,System.DateTime,System.DateTime)" />.
             </summary>
     </member>
     <member name="T:StockSharp.Smart.Xaml.SmartSettings">

@@ -999,32 +999,6 @@
             Заместить действие.
             </summary>
     </member>
-    <member name="T:StockSharp.InteractiveBrokers.IBCandleManagerSource">
-      <summary>
-            Interactive Brokers источник свечек типа <see cref="T:StockSharp.Algo.Candles.TimeFrameCandle" />.
-            </summary>
-    </member>
-    <member name="M:StockSharp.InteractiveBrokers.IBCandleManagerSource.#ctor(StockSharp.InteractiveBrokers.IBTrader)">
-      <summary>
-            Создать <see cref="T:StockSharp.InteractiveBrokers.IBCandleManagerSource" />.
-            </summary>
-      <param name="trader">Шлюз к Interactive Brokers, через событие <see cref="E:StockSharp.InteractiveBrokers.IBTrader.NewRealTimeCandle" /> будут получаться свечки.</param>
-    </member>
-    <member name="M:StockSharp.InteractiveBrokers.IBCandleManagerSource.DisposeManaged">
-      <summary>
-            Освободить ресурсы.
-            </summary>
-    </member>
-    <member name="P:StockSharp.InteractiveBrokers.IBCandleManagerSource.Trader">
-      <summary>
-            Шлюз к Interactive Brokers, через событие <see cref="E:StockSharp.InteractiveBrokers.IBTrader.NewRealTimeCandle" /> будут получаться свечки.
-            </summary>
-    </member>
-    <member name="P:StockSharp.InteractiveBrokers.IBCandleManagerSource.SpeedPriority">
-      <summary>
-            Приоритет источника по скорости (0 - самый оптимальный).
-            </summary>
-    </member>
     <member name="T:StockSharp.InteractiveBrokers.IBTrader">
       <summary>
             Шлюз для подключения к Interactive Brokers через IB Gateway.
@@ -1042,23 +1016,37 @@
             </summary>
       <param name="filter">Настройки фильтра сканера инструментов.</param>
     </member>
-    <member name="M:StockSharp.InteractiveBrokers.IBTrader.SubscribeHistoricalCandles(StockSharp.BusinessEntities.Security,System.DateTime,System.DateTime,StockSharp.InteractiveBrokers.IBTimeFrames,StockSharp.Algo.Storages.SecurityChangeTypes,System.Boolean)">
+    <member name="M:StockSharp.InteractiveBrokers.IBTrader.SubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries,System.DateTime,System.DateTime,StockSharp.Algo.Storages.SecurityChangeTypes,System.Boolean)">
       <summary>
             Подписаться на получение исторических значения инструмента с заданной периодичностью.
             </summary>
-      <param name="security">Инструмент.</param>
+      <param name="series">Серия свечек.</param>
       <param name="startDate">Начальная дата.</param>
       <param name="endDate">Конечная дата.</param>
-      <param name="timeFrame">Тайм-фрем.</param>
       <param name="dataType">Тип получаемых данных. Поддерживаются следующие значения:
             <list type="number"><item><description><see cref="F:StockSharp.InteractiveBrokers.CandleDataTypes.Trades" />.</description></item><item><description><see cref="F:StockSharp.InteractiveBrokers.CandleDataTypes.Bid" />.</description></item><item><description><see cref="F:StockSharp.InteractiveBrokers.CandleDataTypes.Ask" />.</description></item><item><description><see cref="F:StockSharp.InteractiveBrokers.CandleDataTypes.Midpoint" />.</description></item><item><description><see cref="F:StockSharp.InteractiveBrokers.CandleDataTypes.BidAsk" />.</description></item><item><description><see cref="F:StockSharp.InteractiveBrokers.CandleDataTypes.ImpliedVolatility" />.</description></item><item><description><see cref="F:StockSharp.InteractiveBrokers.CandleDataTypes.HistoricalVolatility" />.</description></item></list></param>
       <param name="useRth">Получать данные только по торговому времени. По-умолчанию используется торговое время.</param>
     </member>
-    <member name="M:StockSharp.InteractiveBrokers.IBTrader.UnSubscribeHistoricalCandles(StockSharp.BusinessEntities.Security)">
+    <member name="M:StockSharp.InteractiveBrokers.IBTrader.SubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries,System.DateTime,System.DateTime)">
       <summary>
-            Остановить подписку получения исторических данных, ранее созданную через <see cref="M:StockSharp.InteractiveBrokers.IBTrader.SubscribeHistoricalCandles(StockSharp.BusinessEntities.Security,System.DateTime,System.DateTime,StockSharp.InteractiveBrokers.IBTimeFrames,StockSharp.Algo.Storages.SecurityChangeTypes,System.Boolean)" />.
+            Подписаться на получение исторических значения инструмента с заданной периодичностью.
             </summary>
-      <param name="security">Инструмент.</param>
+      <param name="series">Серия свечек.</param>
+      <param name="from">Начальная дата, с которой необходимо получать данные.</param>
+      <param name="to">Конечная дата, до которой необходимо получать данные.</param>
+    </member>
+    <member name="M:StockSharp.InteractiveBrokers.IBTrader.UnSubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries)">
+      <summary>
+            Остановить подписку получения исторических данных, ранее созданную через <see cref="M:StockSharp.InteractiveBrokers.IBTrader.SubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries,System.DateTime,System.DateTime,StockSharp.Algo.Storages.SecurityChangeTypes,System.Boolean)" />.
+            </summary>
+      <param name="series">Серия свечек.</param>
+    </member>
+    <member name="M:StockSharp.InteractiveBrokers.IBTrader.GetSupportedRanges(StockSharp.Algo.Candles.CandleSeries)">
+      <summary>
+            Получить временные диапазоны, для которых у данного источниках для передаваемой серии свечек есть данные.
+            </summary>
+      <param name="series">Серия свечек.</param>
+      <returns>Временные диапазоны.</returns>
     </member>
     <member name="M:StockSharp.InteractiveBrokers.IBTrader.SubscribeRealTimeCandles(StockSharp.BusinessEntities.Security,StockSharp.InteractiveBrokers.IBTimeFrames,StockSharp.Algo.Storages.SecurityChangeTypes,System.Boolean)">
       <summary>
@@ -1285,7 +1273,7 @@
     </member>
     <member name="E:StockSharp.InteractiveBrokers.IBTrader.NewHistoricalCandles">
       <summary>
-            Событие появления новых исторических данных, полученных после подписки через <see cref="M:StockSharp.InteractiveBrokers.IBTrader.SubscribeHistoricalCandles(StockSharp.BusinessEntities.Security,System.DateTime,System.DateTime,StockSharp.InteractiveBrokers.IBTimeFrames,StockSharp.Algo.Storages.SecurityChangeTypes,System.Boolean)" />.
+            Событие появления новых исторических данных, полученных после подписки через <see cref="M:StockSharp.InteractiveBrokers.IBTrader.SubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries,System.DateTime,System.DateTime)" />.
             </summary>
     </member>
     <member name="E:StockSharp.InteractiveBrokers.IBTrader.NewFundamentalReport">

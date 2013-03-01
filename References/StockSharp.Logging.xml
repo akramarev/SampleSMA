@@ -570,7 +570,7 @@
         </member>
         <member name="P:StockSharp.Logging.LoggingHelper.TimeZoneOffset">
             <summary>
-            Временное смещение временной зоны.
+            Смещение временной зоны.
             </summary>
         </member>
         <member name="T:StockSharp.Logging.LogLevels">

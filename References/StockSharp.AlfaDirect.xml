@@ -1,451 +1,380 @@
 <?xml version="1.0"?>
 <doc>
-    <assembly>
-        <name>StockSharp.AlfaDirect</name>
-    </assembly>
-    <members>
-        <member name="T:StockSharp.AlfaDirect.AlfaException">
-            <summary>
+  <assembly>
+    <name>StockSharp.AlfaDirect</name>
+  </assembly>
+  <members>
+    <member name="T:StockSharp.AlfaDirect.AlfaExceptionCodes">
+      <summary>
+            Коды ошибок.
+            </summary>
+    </member>
+    <member name="F:StockSharp.AlfaDirect.AlfaExceptionCodes.CriticalClientError">
+      <summary>
+            Критическая ошибка клиента.
+            </summary>
+    </member>
+    <member name="F:StockSharp.AlfaDirect.AlfaExceptionCodes.ClientError">
+      <summary>
+            Ошибка клиента.
+            </summary>
+    </member>
+    <member name="F:StockSharp.AlfaDirect.AlfaExceptionCodes.NotConnected">
+      <summary>
+            Нет соединения.
+            </summary>
+    </member>
+    <member name="F:StockSharp.AlfaDirect.AlfaExceptionCodes.ServerError">
+      <summary>
+            Ошибка сервера.
+            </summary>
+    </member>
+    <member name="F:StockSharp.AlfaDirect.AlfaExceptionCodes.Timeout">
+      <summary>
+            Тайм-аут.
+            </summary>
+    </member>
+    <member name="F:StockSharp.AlfaDirect.AlfaExceptionCodes.Warning">
+      <summary>
+            Предупреждение.
+            </summary>
+    </member>
+    <member name="T:StockSharp.AlfaDirect.AlfaException">
+      <summary>
             Исключение, содержащее код и текст ошибки.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaException.Code">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaException.Code">
+      <summary>
             Код ошибки.
             </summary>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaExtensions">
-            <summary>
-            Вспомагательный класс, который используется для доступа к специфичной AlfaDirect информации через <see cref="P:StockSharp.BusinessEntities.IExtendableEntity.ExtensionInfo"/>.
+    </member>
+    <member name="T:StockSharp.AlfaDirect.AlfaExtensions">
+      <summary>
+            Вспомагательный класс, который используется для доступа к специфичной AlfaDirect информации через <see cref="P:StockSharp.BusinessEntities.IExtendableEntity.ExtensionInfo" />.
             </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetCurrency(StockSharp.BusinessEntities.Security)">
-            <summary>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetCurrency(StockSharp.BusinessEntities.Security)">
+      <summary>
             Получить валюту для инструмента.
             </summary>
-            <param name="security">Инструмент.</param>
-            <returns>Валюта.</returns>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetPaperNo(StockSharp.BusinessEntities.Security)">
-            <summary>
+      <param name="security">Инструмент.</param>
+      <returns>Валюта.</returns>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetPaperNo(StockSharp.BusinessEntities.Security)">
+      <summary>
             Получить AlfaDirect-номер инструмента.
             </summary>
-            <param name="security">Инструмент.</param>
-            <returns>AlfaDirect-номер инструмента.</returns>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetPlaceCode(StockSharp.BusinessEntities.Security)">
-            <summary>
+      <param name="security">Инструмент.</param>
+      <returns>AlfaDirect-номер инструмента.</returns>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetPlaceCode(StockSharp.BusinessEntities.Security)">
+      <summary>
             Получить код площадки инструмента.
             </summary>
-            <param name="security">Инструмент.</param>
-            <returns>Код площадки.</returns>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetAlfaAveragePrice(StockSharp.BusinessEntities.Order)">
-            <summary>
+      <param name="security">Инструмент.</param>
+      <returns>Код площадки.</returns>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetAveragePrice(StockSharp.BusinessEntities.Order)">
+      <summary>
             Получить среднюю цену исполнения.
             </summary>
-            <param name="order">Заявка.</param>
-            <returns>Средняя цену исполнения..</returns>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetOptionInfo(System.String)">
-            <summary>
-            Получить дополнительные поля по опционам: Страйк, Тип опциона, Базовый актив
-            </summary>
-            <remarks>
-            http://stocksharp.com/forum/yaf_postsm21467_Optsiony-v-Al-fa-Diriekt.aspx#post21467
-            </remarks>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaExtensions.GetFutures(System.String,System.Int32,System.Int32)">
-            <remarks>
-            http://stocksharp.com/forum/yaf_postsm21467_Optsiony-v-Al-fa-Diriekt.aspx#post21467
-            </remarks>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaLimitOrderCondition">
-            <summary>
+      <param name="order">Заявка.</param>
+      <returns>Средняя цену исполнения.</returns>
+    </member>
+    <member name="T:StockSharp.AlfaDirect.AlfaLimitOrderCondition">
+      <summary>
             Условие лимитной стоп-заявки.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaLimitOrderCondition.StopPrice">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaLimitOrderCondition.StopPrice">
+      <summary>
             Стоп-цена.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaLimitOrderCondition.Slippage">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaLimitOrderCondition.Slippage">
+      <summary>
             Проскальзывание.
             </summary>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaTargetLimitOrderCondition">
-            <summary>
+    </member>
+    <member name="T:StockSharp.AlfaDirect.AlfaTargetLimitOrderCondition">
+      <summary>
             Условие лимитной стоп-заявки + цель.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTargetLimitOrderCondition.TargetPrice">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTargetLimitOrderCondition.TargetPrice">
+      <summary>
             Цена фиксирования прибыли.
             </summary>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaTrailingOrderCondition">
-            <summary>
+    </member>
+    <member name="T:StockSharp.AlfaDirect.AlfaTrailingOrderCondition">
+      <summary>
             Условие заявки "скользящий стоп".
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTrailingOrderCondition.Level">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTrailingOrderCondition.Level">
+      <summary>
             Максимальное отклонение в противоположную сторону.
             </summary>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaTimeFrames">
-            <summary>
+    </member>
+    <member name="T:StockSharp.AlfaDirect.AlfaTimeFrames">
+      <summary>
             Тайм-фреймы для исторических свечек Альфа-Директ.
             </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTimeFrames.op_Implicit(System.TimeSpan)~StockSharp.AlfaDirect.AlfaTimeFrames">
-            <summary>
-            Привести <see cref="T:System.TimeSpan"/> значение к объекту <see cref="T:StockSharp.AlfaDirect.AlfaTimeFrames"/>.
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTimeFrames.op_Implicit(System.TimeSpan)~StockSharp.AlfaDirect.AlfaTimeFrames">
+      <summary>
+            Привести <see cref="T:System.TimeSpan" /> значение к объекту <see cref="T:StockSharp.AlfaDirect.AlfaTimeFrames" />.
             </summary>
-            <param name="value"><see cref="T:System.TimeSpan"/> значение.</param>
-            <returns>Объект <see cref="T:StockSharp.AlfaDirect.AlfaTimeFrames"/>.</returns>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTimeFrames.op_Explicit(StockSharp.AlfaDirect.AlfaTimeFrames)~System.TimeSpan">
-            <summary>
-            Привести объект <see cref="T:StockSharp.AlfaDirect.AlfaTimeFrames"/> к <see cref="T:System.TimeSpan"/> значению.
+      <param name="value">
+        <see cref="T:System.TimeSpan" /> значение.</param>
+      <returns>Объект <see cref="T:StockSharp.AlfaDirect.AlfaTimeFrames" />.</returns>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTimeFrames.op_Explicit(StockSharp.AlfaDirect.AlfaTimeFrames)~System.TimeSpan">
+      <summary>
+            Привести объект <see cref="T:StockSharp.AlfaDirect.AlfaTimeFrames" /> к <see cref="T:System.TimeSpan" /> значению.
             </summary>
-            <param name="timeFrame">Объект <see cref="T:StockSharp.AlfaDirect.AlfaTimeFrames"/>.</param>
-            <returns><see cref="T:System.TimeSpan"/> значение.</returns>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTimeFrames.ToString">
-            <summary>
-            Привести объект <see cref="T:StockSharp.AlfaDirect.AlfaTimeFrames"/> к <see cref="T:System.String"/> значению.
+      <param name="timeFrame">Объект <see cref="T:StockSharp.AlfaDirect.AlfaTimeFrames" />.</param>
+      <returns>
+        <see cref="T:System.TimeSpan" /> значение.</returns>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTimeFrames.ToString">
+      <summary>
+            Привести объект <see cref="T:StockSharp.AlfaDirect.AlfaTimeFrames" /> к <see cref="T:System.String" /> значению.
             </summary>
-            <returns><see cref="T:System.String"/> значение.</returns>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Minute1">
-            <summary>
+      <returns>
+        <see cref="T:System.String" /> значение.</returns>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Minute1">
+      <summary>
             Минутный тайм-фрейм.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Minute5">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Minute5">
+      <summary>
             Пяти минутный тайм-фрейм.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Minute10">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Minute10">
+      <summary>
             Десяти минутный тайм-фрейм.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Minute15">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Minute15">
+      <summary>
             Пятнадцати минутный тайм-фрейм.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Minute30">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Minute30">
+      <summary>
             Тридцати минутный тайм-фрейм.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Hour">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Hour">
+      <summary>
             Часовой тайм-фрейм.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Day">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Day">
+      <summary>
             Дневной тайм-фрейм.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Week">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Week">
+      <summary>
             Недельный тайм-фрейм.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Month">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Month">
+      <summary>
             Месячный тайм-фрейм.
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Year">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTimeFrames.Year">
+      <summary>
             Годовой тайм-фрейм.
             </summary>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.AlfaTrader">
-            <summary>
-            Реализация интерфейса <see cref="T:StockSharp.BusinessEntities.ITrader"/>, предоставляющая шлюз взаимодействия с системой AlfaDirect.
+    </member>
+    <member name="T:StockSharp.AlfaDirect.AlfaTrader">
+      <summary>
+            Реализация интерфейса <see cref="T:StockSharp.BusinessEntities.ITrader" />, предоставляющая шлюз взаимодействия с системой AlfaDirect.
             </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.#ctor">
-            <summary>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.#ctor">
+      <summary>
             Конструктор.
             </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnProcessSecurities(System.String)">
-            <summary>
-            Creation/Update of the securities.
-            </summary>
-            <param name="data">AD raw data</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnProcessPositions(System.String)">
-            <summary>
-            Update positions
-            </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnProcessMyTrades(System.String)">
-            <summary>
-            Update my trades
-            </summary>
-            <param name="data"></param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnRegisterOrder(StockSharp.BusinessEntities.Order)">
-            <summary>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnRegisterOrder(StockSharp.BusinessEntities.Order)">
+      <summary>
             Зарегистрировать заявку на бирже.
             </summary>
-            <param name="order">Заявка, содержащая информацию для регистрации.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnCancelOrder(StockSharp.BusinessEntities.Order)">
-            <summary>
+      <param name="order">Заявка, содержащая информацию для регистрации.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnCancelOrder(StockSharp.BusinessEntities.Order)">
+      <summary>
             Отменить заявку на бирже.
             </summary>
-            <param name="order">Заявка, которую нужно отменять.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.CancelOrders(System.Nullable{System.Boolean},StockSharp.BusinessEntities.Portfolio,System.Nullable{StockSharp.BusinessEntities.OrderDirections},System.String,StockSharp.BusinessEntities.Security)">
-            <summary>
+      <param name="order">Заявка, которую нужно отменять.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.CancelOrders(System.Nullable{System.Boolean},StockSharp.BusinessEntities.Portfolio,System.Nullable{StockSharp.BusinessEntities.OrderDirections},System.String,StockSharp.BusinessEntities.Security)">
+      <summary>
             Отменить группу заявок на бирже по фильтру.
             </summary>
-            <param name="isStopOrder">True, если нужно отменить только стоп-заявки, false - если только обычный и null - если оба типа.</param>
-            <param name="portfolio">Портфель. Если значение равно null, то портфель не попадает в фильтр снятия заявок.</param>
-            <param name="direction">Направление заявки. Если значение равно null, то направление не попадает в фильтр снятия заявок.</param>
-            <param name="classCode">Код класса. Если переданная строка пустая, то код не попадает в фильтр снятия заявок.</param>
-            <param name="security">Инструмент. Если значение равно null, то инструмент не попадает в фильтр снятия заявок.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnConnect">
-            <summary>
+      <param name="isStopOrder">True, если нужно отменить только стоп-заявки, false - если только обычный и null - если оба типа.</param>
+      <param name="portfolio">Портфель. Если значение равно null, то портфель не попадает в фильтр снятия заявок.</param>
+      <param name="direction">Направление заявки. Если значение равно null, то направление не попадает в фильтр снятия заявок.</param>
+      <param name="classCode">Код класса. Если переданная строка пустая, то код не попадает в фильтр снятия заявок.</param>
+      <param name="security">Инструмент. Если значение равно null, то инструмент не попадает в фильтр снятия заявок.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnConnect">
+      <summary>
             Подключиться к торговой системе.
             </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnDisconnect">
-            <summary>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnDisconnect">
+      <summary>
             Отключиться от торговой системы.
             </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnRegisterPortfolio(StockSharp.BusinessEntities.Portfolio)">
-            <summary>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnRegisterPortfolio(StockSharp.BusinessEntities.Portfolio)">
+      <summary>
             Начать получать новую информацию по портфелю.
             </summary>
-            <param name="portfolio">Портфель, по которому необходимо начать получать новую информацию.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnUnRegisterPortfolio(StockSharp.BusinessEntities.Portfolio)">
-            <summary>
+      <param name="portfolio">Портфель, по которому необходимо начать получать новую информацию.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnUnRegisterPortfolio(StockSharp.BusinessEntities.Portfolio)">
+      <summary>
             Остановить получение новой информации по портфелю.
             </summary>
-            <param name="portfolio">Портфель, по которому необходимо остановить получение новой информации.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnRegisterSecurity(StockSharp.BusinessEntities.Security)">
-            <summary>
-            Начать получать новую информацию (например, <see cref="P:StockSharp.BusinessEntities.Security.LastTrade"/> или <see cref="P:StockSharp.BusinessEntities.Security.BestBid"/>) по инструменту.
+      <param name="portfolio">Портфель, по которому необходимо остановить получение новой информации.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnRegisterSecurity(StockSharp.BusinessEntities.Security)">
+      <summary>
+            Начать получать новую информацию (например, <see cref="P:StockSharp.BusinessEntities.Security.LastTrade" /> или <see cref="P:StockSharp.BusinessEntities.Security.BestBid" />) по инструменту.
             </summary>
-            <param name="security">Инструмент, по которому необходимо начать получать новую информацию.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnUnRegisterSecurity(StockSharp.BusinessEntities.Security)">
-            <summary>
+      <param name="security">Инструмент, по которому необходимо начать получать новую информацию.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnUnRegisterSecurity(StockSharp.BusinessEntities.Security)">
+      <summary>
             Остановить получение новой информации.
             </summary>
-            <param name="security">Инструмент, по которому необходимо остановить получение новой информации.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnRegisterMarketDepth(StockSharp.BusinessEntities.Security)">
-            <summary>
+      <param name="security">Инструмент, по которому необходимо остановить получение новой информации.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnRegisterMarketDepth(StockSharp.BusinessEntities.Security)">
+      <summary>
             Начать получать котировки (стакан) по инструменту.
-            Значение котировок можно получить через метод <see cref="M:StockSharp.BusinessEntities.ITrader.GetMarketDepth(StockSharp.BusinessEntities.Security)"/>.
+            Значение котировок можно получить через метод <see cref="M:StockSharp.BusinessEntities.ITrader.GetMarketDepth(StockSharp.BusinessEntities.Security)" />.
             </summary>
-            <param name="security">Инструмент, по которому необходимо начать получать котировки.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnUnRegisterMarketDepth(StockSharp.BusinessEntities.Security)">
-            <summary>
+      <param name="security">Инструмент, по которому необходимо начать получать котировки.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnUnRegisterMarketDepth(StockSharp.BusinessEntities.Security)">
+      <summary>
             Остановить получение котировок по инструменту.
             </summary>
-            <param name="security">Инструмент, по которому необходимо остановить получение котировок.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnRegisterTrades(StockSharp.BusinessEntities.Security)">
-            <summary>
+      <param name="security">Инструмент, по которому необходимо остановить получение котировок.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnRegisterTrades(StockSharp.BusinessEntities.Security)">
+      <summary>
             Начать получать сделки (тиковые данные) по инструменту.
-            Новые сделки будут приходить через событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewTrades"/>.
+            Новые сделки будут приходить через событие <see cref="E:StockSharp.BusinessEntities.ITrader.NewTrades" />.
             </summary>
-            <param name="security">Инструмент, по которому необходимо начать получать сделки.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnUnRegisterTrades(StockSharp.BusinessEntities.Security)">
-            <summary>
+      <param name="security">Инструмент, по которому необходимо начать получать сделки.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.OnUnRegisterTrades(StockSharp.BusinessEntities.Security)">
+      <summary>
             Остановить получение сделок (тиковые данные) по инструменту.
             </summary>
-            <param name="security">Инструмент, по которому необходимо остановить получение сделок.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.StartExport">
-            <summary>
+      <param name="security">Инструмент, по которому необходимо остановить получение сделок.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.StartExport">
+      <summary>
             Запустить экспорт данных из торговой системы в программу (получение портфелей, инструментов, заявок и т.д.).
             </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.StopExport">
-            <summary>
-            Остановить экспорт данных из торговой системы в программу, запущенный через <see cref="M:StockSharp.BusinessEntities.ITrader.StartExport"/>.
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.StopExport">
+      <summary>
+            Остановить экспорт данных из торговой системы в программу, запущенный через <see cref="M:StockSharp.BusinessEntities.ITrader.StartExport" />.
             </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.GetHistoryData(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames,Ecng.ComponentModel.Range{System.DateTime})">
-            <summary>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.GetHistoryData(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames,Ecng.ComponentModel.Range{System.DateTime})">
+      <summary>
             Получить исторические данные (тайм-фрейм свечки) от сервера Альфа-Директ.
             </summary>
-            <param name="security">Инструмент, для которого необходимо получить исторические данные.</param>
-            <param name="timeFrame">Тайм-фрейм.</param>
-            <param name="range">Диапазон времени, для которого нужно получить данные.</param>
-            <returns>Исторические данные.</returns>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.GetLocalHistoryData(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames,Ecng.ComponentModel.Range{System.DateTime})">
-            <summary>
+      <param name="security">Инструмент, для которого необходимо получить исторические данные.</param>
+      <param name="timeFrame">Тайм-фрейм.</param>
+      <param name="range">Диапазон времени, для которого нужно получить данные.</param>
+      <returns>Исторические данные.</returns>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.GetLocalHistoryData(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames,Ecng.ComponentModel.Range{System.DateTime})">
+      <summary>
             Получить исторические данные (тайм-фрейм свечки) из локальной базы Альфа-Директ.
             </summary>
-            <param name="security">Инструмент, для которого необходимо получить исторические данные.</param>
-            <param name="timeFrame">Тайм-фрейм.</param>
-            <param name="range">Диапазон времени, для которого нужно получить данные.</param>
-            <returns>Исторические данные.</returns>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.RegisterCandles(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames,StockSharp.Algo.Candles.CandleSeries@)">
-            <summary>
-            Начать получать тайм-фрейм свечки реального времени от Альфа-Директ.
+      <param name="security">Инструмент, для которого необходимо получить исторические данные.</param>
+      <param name="timeFrame">Тайм-фрейм.</param>
+      <param name="range">Диапазон времени, для которого нужно получить данные.</param>
+      <returns>Исторические данные.</returns>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.GetSupportedRanges(StockSharp.Algo.Candles.CandleSeries)">
+      <summary>
+            Получить временные диапазоны, для которых у данного источниках для передаваемой серии свечек есть данные.
             </summary>
-            <param name="security">Инструмент, для которого необходимо начать получать исторические свечки.</param>
-            <param name="timeFrame">Тайм-фрейм.</param>
-            <param name="token"> Идентификатор непрерывного получения свечек. Необходим для отмены через метод <see cref="M:StockSharp.AlfaDirect.AlfaTrader.UnRegisterCandles(StockSharp.Algo.Candles.CandleSeries)"/> </param>
-            <remarks>
-            После окончания получения исторических свечек возвращаются свечки реального времени.
-            Исторические свечки будут получены еще до завершения работы метода <see cref="M:StockSharp.AlfaDirect.AlfaTrader.RegisterCandles(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames,StockSharp.Algo.Candles.CandleSeries@)"/>.
-            </remarks>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.RegisterCandles(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames,System.DateTime,StockSharp.Algo.Candles.CandleSeries@)">
-            <summary>
-            Начать получать непрерывно исторические тайм-фрейм свечки от сервера AlfaDirect, а так же свечки реального времени.
+      <param name="series">Серия свечек.</param>
+      <returns>
+            Временные диапазоны.
+            </returns>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.SubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries,System.DateTime,System.DateTime)">
+      <summary>
+            Подписаться на получение исторических значения инструмента с заданной периодичностью.
             </summary>
-            <param name="security">Инструмент, для которого необходимо начать получать исторические свечки.</param>
-            <param name="timeFrame">Тайм-фрейм.</param>
-            <param name="from">Временная точка отсчета, с которой необходимо начать получать свечки.</param>
-            <param name="token">Идентификатор непрерывного получения свечек. Необходим для отмены через метод <see cref="M:StockSharp.AlfaDirect.AlfaTrader.UnRegisterCandles(StockSharp.Algo.Candles.CandleSeries)"/></param>
-            <remarks>
-            После окончания получения исторических свечек возвращаются свечки реального времени.
-            Исторические свечки будут получены еще до завершения работы метода <see cref="M:StockSharp.AlfaDirect.AlfaTrader.RegisterCandles(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames,System.DateTime,StockSharp.Algo.Candles.CandleSeries@)"/>.
-            </remarks>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.UnRegisterCandles(StockSharp.Algo.Candles.CandleSeries)">
-            <summary>
-            Отменить получение исторических свечек, зарегистрированные через
-            <see cref="M:StockSharp.AlfaDirect.AlfaTrader.RegisterCandles(StockSharp.BusinessEntities.Security,StockSharp.AlfaDirect.AlfaTimeFrames,StockSharp.Algo.Candles.CandleSeries@)"/>.
+      <param name="series">Серия свечек.</param>
+      <param name="from">Начальная дата, с которой необходимо получать данные.</param>
+      <param name="to">Конечная дата, до которой необходимо получать данные.</param>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.AlfaTrader.UnSubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries)">
+      <summary>
+            Остановить подписку получения исторических данных, ранее созданную через <see cref="M:StockSharp.Algo.Candles.IExternalCandleSource.SubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries,System.DateTime,System.DateTime)" />.
             </summary>
-            <param name="token">Идентификатор группировки свечек.</param>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaTrader.ProcessHistoryCandles(StockSharp.Algo.Candles.CandleSeries,StockSharp.AlfaDirect.AlfaTimeFrames,Ecng.ComponentModel.Range{System.DateTime},System.Boolean,StockSharp.AlfaDirect.CandleTimeInfo@)">
-            <summary>
-            Получить исторические тайм-фрейм свечки из локальной базы AlfaDirect.
-            </summary>
-            <param name="token">Токен, для которого необходимо начать получать исторические свечки.</param>
-            <param name="timeFrame">Тайм-фрейм.</param>
-            <param name="range">Диапазон времени, для которого нужно получить свечки.</param>
-            <param name="isHistory">True для исторических свечек, false для реал-тайм.</param>
-            <param name="timeInfo"></param>
-            <returns>Идентификатор получения исторических свечек.</returns>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTrader.Login">
-            <summary>
+      <param name="series">Серия свечек.</param>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTrader.Login">
+      <summary>
             Имя пользователя в терминале Альфа-Директ
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTrader.Password">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTrader.Password">
+      <summary>
             Пароль для входа в терминал
             </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTrader.Wrapper">
-            <summary>
-            Отложенная инициализация AlfaWrapper
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.AlfaTrader.DisplayName">
-            <summary>
+    </member>
+    <member name="P:StockSharp.AlfaDirect.AlfaTrader.DisplayName">
+      <summary>
             Текстовое описание шлюза.
             </summary>
-        </member>
-        <member name="E:StockSharp.AlfaDirect.AlfaTrader.CandlesStarted">
-            <summary>
-            Событие появления исторических тайм-фрейм свечек от Альфа-Директ.
+    </member>
+    <member name="E:StockSharp.AlfaDirect.AlfaTrader.NewHistoricalCandles">
+      <summary>
+            Событие появления новых исторических свечек, полученных после подписки через <see cref="M:StockSharp.Algo.Candles.IExternalCandleSource.SubscribeHistoricalCandles(StockSharp.Algo.Candles.CandleSeries,System.DateTime,System.DateTime)" />.
             </summary>
-        </member>
-        <member name="E:StockSharp.AlfaDirect.AlfaTrader.CandlesChanged">
-            <summary>
-            Событие появления исторических тайм-фрейм свечек от Альфа-Директ.
+    </member>
+    <member name="T:StockSharp.AlfaDirect.Xaml.AlfaSettings">
+      <summary>
+            Визуальная панель для редактирования настроек <see cref="T:StockSharp.AlfaDirect.AlfaTrader" />.
             </summary>
-        </member>
-        <member name="E:StockSharp.AlfaDirect.AlfaTrader.CandlesFinished">
-            <summary>
-            Событие появления исторических тайм-фрейм свечек от Альфа-Директ.
-            </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaUtils.BoardCodeToSecurityType(System.String)">
-            <summary>
-            Converts a board code to the security type
-            </summary>
-            <param name="boardCode">Код торгового раздела: FUTURES, MOPTIONS, MCX_SHR_LSTB, MCX_SHR_NLST...</param>
-            <returns>Security type</returns>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.AlfaWrapper.GetPriceStepInfo(StockSharp.BusinessEntities.Security,System.Decimal@,System.Decimal@)">
-            <summary>
-            Получить информацию о минимальном шаге и его стоимости.
-            </summary>
-            <param name="security">Инструмент.</param>
-            <param name="step">Минимальный шаг цены.</param>
-            <param name="cost">Стоимость шага цены.</param>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.RngCryptoTransactionIdGenerator">
-            <summary>
-            Класс для генерации уникальных transaction id.
-            </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.RngCryptoTransactionIdGenerator.GetNextId">
-            <summary>
-            Получить следующий transaction id.
-            </summary>
-            <returns>
-            Следующий transaction id.
-            </returns>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.Xaml.AlfaSettings">
-            <summary>
-            Визуальная панель для редактирования настроек <see cref="T:StockSharp.AlfaDirect.AlfaTrader"/>.
-            </summary>
-            <summary>
+      <summary>
             AlfaSettings
             </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.Xaml.AlfaSettings.#ctor">
-            <summary>
-            Создать <see cref="T:StockSharp.AlfaDirect.Xaml.AlfaSettings"/>.
+    </member>
+    <member name="M:StockSharp.AlfaDirect.Xaml.AlfaSettings.#ctor">
+      <summary>
+            Создать <see cref="T:StockSharp.AlfaDirect.Xaml.AlfaSettings" />.
             </summary>
-        </member>
-        <member name="M:StockSharp.AlfaDirect.Xaml.AlfaSettings.InitializeComponent">
-            <summary>
+    </member>
+    <member name="M:StockSharp.AlfaDirect.Xaml.AlfaSettings.InitializeComponent">
+      <summary>
             InitializeComponent
             </summary>
-        </member>
-        <member name="T:StockSharp.AlfaDirect.Properties.Resources">
-            <summary>
-              A strongly-typed resource class, for looking up localized strings, etc.
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.Properties.Resources.ResourceManager">
-            <summary>
-              Returns the cached ResourceManager instance used by this class.
-            </summary>
-        </member>
-        <member name="P:StockSharp.AlfaDirect.Properties.Resources.Culture">
-            <summary>
-              Overrides the current thread's CurrentUICulture property for all
-              resource lookups using this strongly typed resource class.
-            </summary>
-        </member>
-    </members>
+    </member>
+  </members>
 </doc>
