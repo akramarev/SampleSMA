@@ -5738,6 +5738,16 @@
             Нетто-сумма денег, в рублях, на которую были совершены сделки. Положительное число - деньги приходят, отрицательное - деньги выплачиваются.
             </summary>
     </member>
+    <member name="F:StockSharp.Plaza.Metadata.PlazaPositionColumns.LastTradeId">
+      <summary>
+            Номер последней сделки.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Plaza.Metadata.PlazaPositionColumns.AveragePrice">
+      <summary>
+            Средневзвешенная цена.
+            </summary>
+    </member>
     <member name="T:StockSharp.Plaza.PlazaRecord">
       <summary>
             Запись в потоке репликации.

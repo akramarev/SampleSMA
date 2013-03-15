@@ -2936,6 +2936,11 @@
              Cнять все заявки на внебиржевые сделки и заявки на сделки РЕПО.
             </summary>
     </member>
+    <member name="F:StockSharp.Quik.TransactionActions.Iceberg">
+      <summary>
+            Айсберг заявка.
+            </summary>
+    </member>
     <member name="T:StockSharp.Quik.TransactionStopOrderKinds">
       <summary>
             Типы стоп-заявки.
@@ -3044,6 +3049,11 @@
     <member name="F:StockSharp.Quik.Transaction.Volume">
       <summary>
             Количество лотов в заявке.
+            </summary>
+    </member>
+    <member name="F:StockSharp.Quik.Transaction.VisibleVolume">
+      <summary>
+            Видимое количество лотов в заявке.
             </summary>
     </member>
     <member name="F:StockSharp.Quik.Transaction.Price">
@@ -3414,6 +3424,13 @@
     <member name="M:StockSharp.Quik.Transaction.SetVolume(System.Int32)">
       <summary>
             Установить значение для инструкции <see cref="F:StockSharp.Quik.Transaction.Volume" />.
+            </summary>
+      <param name="volume">Значение.</param>
+      <returns>Транзакция.</returns>
+    </member>
+    <member name="M:StockSharp.Quik.Transaction.SetVisibleVolume(System.Int32)">
+      <summary>
+            Установить значение для инструкции <see cref="F:StockSharp.Quik.Transaction.VisibleVolume" />.
             </summary>
       <param name="volume">Значение.</param>
       <returns>Транзакция.</returns>

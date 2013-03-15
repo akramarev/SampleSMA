@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Windows.Interop;
 using System.Windows.Media;
 using Ecng.Collections;
 using Ecng.Common;
@@ -79,6 +80,7 @@ namespace SampleSMA
 	    public MainWindow()
 		{
 			InitializeComponent();
+            RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
 
             this.Title = String.Format("{0} - {1}", this._version, MainOptVarItem);
 
@@ -278,6 +280,8 @@ namespace SampleSMA
                 MinStepPrice = 1,
                 ExchangeBoard = ExchangeBoard.Forts,
             };
+
+            security.ExchangeBoard.IsSupportAtomicReRegister = false; // fixed quoting reregister error
 
             var storageRegistry = new StorageRegistry();
             ((LocalMarketDataDrive) storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
@@ -482,8 +486,8 @@ namespace SampleSMA
 
             _candlesElem = new ChartCandleElement()
             {
-                ColorPriceDown = Color.FromRgb(133, 133, 133),
-                ColorPriceUp = Color.FromRgb(255, 255, 255)
+                DownBodyColor = Color.FromRgb(133, 133, 133),
+                UpBodyColor = Color.FromRgb(255, 255, 255)
             };
             _area.Elements.Add(_candlesElem);
 

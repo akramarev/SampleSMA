@@ -16215,6 +16215,11 @@
             Останавливается.
             </summary>
     </member>
+    <member name="F:StockSharp.Algo.Testing.EmulationStates.Starting">
+      <summary>
+            Запускается.
+            </summary>
+    </member>
     <member name="F:StockSharp.Algo.Testing.EmulationStates.Started">
       <summary>
             Работает.
