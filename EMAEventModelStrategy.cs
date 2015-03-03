@@ -4,10 +4,12 @@ using System.Linq;
 using StockSharp.Algo;
 using StockSharp.Algo.Candles;
 using StockSharp.Algo.Indicators;
-using StockSharp.Algo.Indicators.Trend;
 using StockSharp.Algo.Strategies;
 using StockSharp.BusinessEntities;
 using StockSharp.Logging;
+using StockSharp.Messages;
+using StockSharp.Algo.Strategies.Protective;
+using StockSharp.Algo.Strategies.Quoting;
 
 namespace SampleSMA
 {
@@ -107,7 +109,7 @@ namespace SampleSMA
             bool upFilter = this.FilterMA.GetCurrentValue() > this.FilterMA.GetValue(10);
             bool downFilter = !upFilter;
 
-            OrderDirections direction;
+            Sides side;
             decimal price;
             Order order = null;
 
@@ -116,9 +118,9 @@ namespace SampleSMA
             {
                 if (upFilter)
                 {
-                    direction = OrderDirections.Buy;
-                    price = (this.UseQuoting) ? Security.GetMarketPrice(direction) : Security.LastTrade.Price;
-                    order = this.CreateOrder(direction, price, base.Volume);
+                    side = Sides.Buy;
+                    price = (this.UseQuoting) ? Security.GetMarketPrice(side) : Security.LastTrade.Price;
+                    order = this.CreateOrder(side, price, base.Volume);
 
                     this.AddInfoLog("Xing Up appeared (MarketTime: {0}), and filter allowed the deal.", base.Security.GetMarketTime());
                 }
@@ -132,9 +134,9 @@ namespace SampleSMA
             {
                 if (downFilter)
                 {
-                    direction = OrderDirections.Sell;
-                    price = (this.UseQuoting) ? Security.GetMarketPrice(direction) : Security.LastTrade.Price;
-                    order = this.CreateOrder(direction, price, base.Volume);
+                    side = Sides.Sell;
+                    price = (this.UseQuoting) ? Security.GetMarketPrice(side) : Security.LastTrade.Price;
+                    order = this.CreateOrder(side, price, base.Volume);
 
                     this.AddInfoLog("Xing Down appeared (MarketTime: {0}), and filter allowed the deal.", base.Security.GetMarketTime());
                 }
@@ -154,7 +156,7 @@ namespace SampleSMA
                         MarketQuotingStrategy quotingStrategy = new MarketQuotingStrategy(order, this.BestPriceOffset, -3) { PriceType = MarketPriceTypes.Following };
                         base.ChildStrategies.Add(quotingStrategy);
 
-                        this.Trader
+                        this
                             .WhenNewMyTrades()
                             .Do(ProtectMyNewTrades)
                             .Once()

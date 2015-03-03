@@ -10,13 +10,14 @@ using Ecng.Collections;
 using Ecng.Common;
 using StockSharp.Algo.Candles;
 using StockSharp.Algo.Candles.Compression;
-using StockSharp.Algo.Indicators.Trend;
 using StockSharp.Algo.Storages;
 using StockSharp.Algo.Testing;
 using StockSharp.BusinessEntities;
 using StockSharp.Algo;
 using SampleSMA.Logging;
 using StockSharp.Logging;
+using StockSharp.Messages;
+using StockSharp.Algo.Indicators;
 
 namespace SampleSMA
 {
@@ -162,7 +163,7 @@ namespace SampleSMA
                 countdownEvent.Wait();
             }
 
-            GC.Collect();
+            //GC.Collect();
 
             this.OnStateChanged(OptimizationState.Finished);
         }
@@ -185,9 +186,9 @@ namespace SampleSMA
                 Id = _security.Id,
                 Code = _security.Code,
                 Name = _security.Name,
-                MinStepSize = _security.MinStepSize,
-                MinStepPrice = _security.MinStepPrice,
-                ExchangeBoard = _security.ExchangeBoard,
+                PriceStep = _security.PriceStep,
+                StepPrice = _security.StepPrice,
+                Board = _security.Board,
                 MaxPrice = 99999,
                 MinPrice = 1
             };
@@ -195,7 +196,6 @@ namespace SampleSMA
             // Create local Storage to make it disposable after optimization
             var storage = new StorageRegistry();
             ((LocalMarketDataDrive) storage.DefaultDrive).Path = ((LocalMarketDataDrive) _storage.DefaultDrive).Path;
-            ((LocalMarketDataDrive) storage.DefaultDrive).UseAlphabeticPath = true;
 
             var portfolio = new Portfolio { BeginValue = _portfolio.BeginValue };
 
@@ -211,7 +211,7 @@ namespace SampleSMA
 
             if (trader.UseMarketDepth)
             {
-                trader.MarketEmulator.Settings.DepthExpirationTime = TimeSpan.FromMinutes(5); // Default: TimeSpan.FromDays(1);
+                trader.MarketEmulator.Settings.DepthExpirationTime = TimeSpan.FromMinutes(1); // Default: TimeSpan.FromDays(1);
                 var marketDepthGenerator = new TrendMarketDepthGenerator(security)
                 {
                     // стакан для инструмента в истории обновляется раз в 10 секунд

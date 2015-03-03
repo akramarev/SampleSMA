@@ -9,7 +9,6 @@ using StockSharp.Algo;
 using StockSharp.Algo.Candles;
 using StockSharp.Algo.Candles.Compression;
 using StockSharp.Algo.Indicators;
-using StockSharp.Algo.Indicators.Trend;
 using StockSharp.Algo.Storages;
 using StockSharp.Algo.Testing;
 using StockSharp.BusinessEntities;
@@ -28,6 +27,8 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using MessageBox = System.Windows.MessageBox;
+using StockSharp.Xaml.Charting;
+using StockSharp.Messages;
 
 namespace SampleSMA
 {
@@ -276,16 +277,15 @@ namespace SampleSMA
                 Name = this.txtSecurityCode.Text,
                 MinPrice = 1,
                 MaxPrice = 99999,
-                MinStepSize = 1,
-                MinStepPrice = 1,
-                ExchangeBoard = ExchangeBoard.Forts,
+                PriceStep = 1,
+                StepPrice = 1,
+                Board = ExchangeBoard.Forts,
             };
 
-            security.ExchangeBoard.IsSupportAtomicReRegister = false; // fixed quoting reregister error
+            security.Board.IsSupportAtomicReRegister = false; // fixed quoting reregister error
 
             var storageRegistry = new StorageRegistry();
             ((LocalMarketDataDrive) storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
-            ((LocalMarketDataDrive) storageRegistry.DefaultDrive).UseAlphabeticPath = true;
 
             var portfolio = new Portfolio { Name = "test account", BeginValue = 30000m };
 
@@ -329,6 +329,7 @@ namespace SampleSMA
             var segment = Math.Floor(totalMinutes / 10);
             var nSegment = 1;
             var sSegment = segment;
+
             _trader.MarketTimeChanged += span =>
             {
                 var currentMinute = (_trader.CurrentTime - startTime).TotalMinutes;
@@ -402,14 +403,13 @@ namespace SampleSMA
                 Id = this.txtSecurityId.Text, // по идентификатору инструмента будет искаться папка с историческими маркет данными
                 Code = this.txtSecurityCode.Text,
                 Name = this.txtSecurityCode.Text,
-                MinStepSize = 1,
-                MinStepPrice = 1,
-                ExchangeBoard = ExchangeBoard.Forts,
+                PriceStep = 1,
+                StepPrice =1,
+                Board = ExchangeBoard.Forts,
             };
 
             var storageRegistry = new StorageRegistry();
             ((LocalMarketDataDrive) storageRegistry.DefaultDrive).Path = this.txtHistoryPath.Text;
-            ((LocalMarketDataDrive) storageRegistry.DefaultDrive).UseAlphabeticPath = true;
 
             var portfolio = new Portfolio { Name = "test account", BeginValue = 30000m };
 
@@ -486,8 +486,8 @@ namespace SampleSMA
 
             _candlesElem = new ChartCandleElement()
             {
-                DownBodyColor = Color.FromRgb(133, 133, 133),
-                UpBodyColor = Color.FromRgb(255, 255, 255)
+                DownFillColor = Color.FromRgb(133, 133, 133),
+                UpFillColor = Color.FromRgb(255, 255, 255),
             };
             _area.Elements.Add(_candlesElem);
 
@@ -634,8 +634,8 @@ namespace SampleSMA
 
         private void SetDefaultHistoryRange()
         {
-            txtHistoryRangeBegin.Text = (DateTime.Now.AddDays(-4).Date + ExchangeBoard.Forts.WorkingTime.Times[0].Min).ToString("g");
-            txtHistoryRangeEnd.Text = (DateTime.Now.AddDays(-1).Date + ExchangeBoard.Forts.WorkingTime.Times[2].Max).ToString("g");
+            txtHistoryRangeBegin.Text = (DateTime.Now.AddDays(-4).Date + ExchangeBoard.Forts.WorkingTime.Periods[0].Min).ToString("g");
+            txtHistoryRangeEnd.Text = (DateTime.Now.AddDays(-1).Date + ExchangeBoard.Forts.WorkingTime.Periods[2].Max).ToString("g");
         }
 
         #endregion
